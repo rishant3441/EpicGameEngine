@@ -20,10 +20,17 @@ namespace EpicGameEngine
 	public:
 		virtual ~Window() {}
 		virtual void OnUpdate() = 0;
+		virtual void OnRender() = 0;
+
+		virtual void PollEvents(SDL_Event event) = 0;
 
 		virtual unsigned int GetWidth() const = 0;
 		virtual unsigned int GetHeight() const = 0;
 
-		virtual Window* CreateWindow(const WindowData& data = WindowData()) = 0;
+		static Window* CreateWindow(const WindowData& data = WindowData());
+
+		SDL_Renderer* renderer; 
+
+		bool running = true;
 	};
 }

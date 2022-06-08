@@ -1,10 +1,9 @@
 #include "EpicGameEngine/ege_pch.h"
 #include "EpicGameEngine/Window/WindowsWindow.h"
-#include <SDL.h>
 
 namespace EpicGameEngine
 {
-	Window* WindowsWindow::CreateWindow(const WindowData& data)
+	Window* Window::CreateWindow(const WindowData& data)
 	{
 		return new WindowsWindow(data);
 	}
@@ -23,11 +22,31 @@ namespace EpicGameEngine
 	{	
 		SDL_Init(SDL_INIT_VIDEO);
 
-		window = SDL_CreateWindow(data.Title.c_str(), 500, 500, data.width, data.height, SDL_RENDERER_ACCELERATED);
-		printf("Could not create window");
+		window = SDL_CreateWindow(data.Title.c_str(), 500, 500, data.width, data.height, SDL_WINDOW_RESIZABLE);
+		renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 	}
+
 	void WindowsWindow::OnUpdate()
 	{
 
+	}
+
+	void WindowsWindow::OnRender()
+	{
+		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+		SDL_RenderPresent(renderer);
+	}
+	
+	void WindowsWindow::PollEvents(SDL_Event event)
+	{
+		if (SDL_PollEvent(&event))
+		{
+			switch (event.type)
+			{
+			case SDL_QUIT:
+				running = false; 
+				break;
+			}
+		}
 	}
 }

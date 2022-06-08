@@ -1,5 +1,4 @@
 #include <EpicGameEngine.h>
-#include <stdio.h>
 
 class Sandbox : public EpicGameEngine::Application
 {
@@ -11,16 +10,6 @@ public:
 	~Sandbox()
 	{
 
-	}
-
-	void Run()
-	{
-		EpicGameEngine::WindowsWindow window = EpicGameEngine::WindowsWindow::WindowsWindow();
-	
-		while (true)
-		{
-
-		}
 	}
 };
 

@@ -1,13 +1,13 @@
 #include "EpicGameEngine/Application.h"
 #ifdef EGE_PLATFORM_WINDOWS
-#include "EpicGameEngine/Window/WindowsWindow.h"
+#include "EpicGameEngine/Window/Window.h"
 #endif
 
 namespace EpicGameEngine
 {
 	Application::Application()
 	{
-
+		window = std::unique_ptr<Window>(Window::CreateWindow());
 	}
 	Application::~Application()
 	{
@@ -16,6 +16,12 @@ namespace EpicGameEngine
 
 	void Application::Run()
 	{
-		while (true);
+		SDL_Event event{};
+		while (window->running)
+		{
+			window->PollEvents(event);
+			window->OnUpdate();
+			window->OnRender();
+		}
 	}
 }

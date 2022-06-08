@@ -4,3 +4,4 @@
 #include <memory>
 
 #include <string>
+#include <SDL.h>
