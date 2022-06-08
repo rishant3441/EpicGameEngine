@@ -8,7 +8,7 @@ include_directories(${SDL2_INCLUDE_DIRS})
 add_library(
 	EpicGameEngine SHARED 
 	src/EpicGameEngine/Application.cpp
- "include/EpicGameEngine/Window.h")
+ "include/EpicGameEngine/Window/Window.h" "include/EpicGameEngine/ege_pch.h" "include/EpicGameEngine/Window/WindowsWindow.h" "src/EpicGameEngine/Window/WindowsWindow.cpp")
 
 target_include_directories(
 	EpicGameEngine PUBLIC
@@ -17,8 +17,16 @@ target_include_directories(
 	${SDL2_INCLUDE_DIRS}
 )
 
+include_directories(
+	include/
+)
+
 target_compile_definitions(
 	EpicGameEngine PUBLIC
+)
+
+target_precompile_headers(
+	EpicGameEngine PRIVATE "include/EpicGameEngine/ege_pch.h"
 )
 
 target_link_libraries(EpicGameEngine ${SDL2_LIBRARIES})

@@ -9,7 +9,7 @@ namespace EpicGameEngine
 		Application();
 		virtual ~Application();
 
-		void Run();
+		virtual void Run();
 	};
 
 	// To be defined in CLIENT
