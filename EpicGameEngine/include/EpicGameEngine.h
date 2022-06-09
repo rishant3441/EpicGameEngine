@@ -11,4 +11,5 @@
 #include <EpicGameEngine/Window/Window.h>
 #ifdef EGE_PLATFORM_WINDOWS
 	#include <EpicGameEngine/Window/WindowsWindow.h>
+	#include <EpicGameEngine/Input/Input.h>
 #endif
