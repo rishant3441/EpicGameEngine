@@ -8,7 +8,7 @@ include_directories(${SDL2_INCLUDE_DIRS})
 add_library(
 	EpicGameEngine SHARED 
 	src/EpicGameEngine/Application.cpp
- "include/EpicGameEngine/Window/Window.h" "include/EpicGameEngine/ege_pch.h" "include/EpicGameEngine/Window/WindowsWindow.h" "src/EpicGameEngine/Window/WindowsWindow.cpp")
+ "include/EpicGameEngine/Window/Window.h" "include/EpicGameEngine/ege_pch.h" "include/EpicGameEngine/Window/WindowsWindow.h" "src/EpicGameEngine/Window/WindowsWindow.cpp" "include/EpicGameEngine/Input/Input.h" "include/EpicGameEngine/Input/MouseCodes.h" "src/EpicGameEngine/Input/WindowsInput.cpp")
 
 target_include_directories(
 	EpicGameEngine PUBLIC
