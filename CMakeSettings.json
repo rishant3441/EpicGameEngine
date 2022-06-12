@@ -13,7 +13,7 @@
       "variables": [
         {
           "name": "SDL2_DIR",
-          "value": "D:/Dev/SDL2/SDL2-2.0.22",
+          "value": "D:\\chrome downloads\\SDL2-devel-2.0.22-VC\\SDL2-2.0.22",
           "type": "PATH"
         }
       ]
