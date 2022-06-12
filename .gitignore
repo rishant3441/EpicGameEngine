@@ -33,6 +33,7 @@
 
 # Visual Studio
 .vs/
+.vscode/
 bin/
 bin-int/
 out/
