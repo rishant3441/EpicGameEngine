@@ -1,5 +1,7 @@
 #pragma once
 
+#define EGE_BIND_EVENT_FN(fn) [this](auto&&... args) -> decltype(auto) { return this->fn(std::forward<decltype(args)>(args)...); }
+
 namespace EpicGameEngine
 {
 	// TODO: Create derived Event classes based on these EventTypes.
