@@ -1,4 +1,5 @@
 #pragma once
+#include <EpicGameEngine/ege_pch.h>
 
 namespace EpicGameEngine
 {
