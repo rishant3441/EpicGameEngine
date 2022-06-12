@@ -37,3 +37,5 @@ bin/
 bin-int/
 out/
 build/
+
+CMakeSettings.json
