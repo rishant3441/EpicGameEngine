@@ -15,7 +15,7 @@ namespace EpicGameEngine
 		None = 0,
 		MousePressed, MouseReleased, KeyPressed, KeyReleased,
 		WindowClose, WindowResize
-	}
+	};
 
 	class Event
 	{
