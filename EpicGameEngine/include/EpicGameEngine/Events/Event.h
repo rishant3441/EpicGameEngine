@@ -13,8 +13,8 @@ namespace EpicGameEngine
 	enum class EventType
 	{
 		None = 0,
-		MousePressed, MouseReleased, KeyPressed, KeyReleased,
-		WindowClose, WindowResize
+		MousePressed, MouseReleased, KeyPressed, KeyReleased, // Input Events
+		WindowClose, WindowResize // Window Events
 	};
 
 	class Event
