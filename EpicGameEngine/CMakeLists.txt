@@ -17,6 +17,8 @@ target_include_directories(
 	include/
 	PUBLIC
 	${SDL2_INCLUDE_DIRS}
+	PUBLIC 
+	dependencies/spdlog/include/
 )
 
 include_directories(
