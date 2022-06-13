@@ -22,6 +22,8 @@ namespace EpicGameEngine
 
         }
 
+        virtual EventType GetEventType() { return EventType::WindowResize; }
+
         unsigned int GetNewWidth() { return width; }
         unsigned int GetNewHeight() { return height; }
 
