@@ -16,7 +16,11 @@ namespace EpicGameEngine
 			Button4 = 4,
 			Button5 = 5,
 			Button6 = 6,
-			Button7 = 7
+			Button7 = 7,
+
+			ButtonLeft = 0,
+			ButtonRight = 1,
+			ButtonMiddle = 2
 		};
 	}
 }
