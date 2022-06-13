@@ -1,4 +1,6 @@
 #pragma once
+#include <EpicGameEngine/Events/WindowEvent.h>
+#include <EpicGameEngine/Events/InputEvent.h>
 
 #define EGE_BIND_EVENT_FN(fn) [this](auto&&... args) -> decltype(auto) { return this->fn(std::forward<decltype(args)>(args)...); }
 
@@ -53,8 +55,16 @@ namespace EpicGameEngine
 	};
 	
 	// TODO: Implement this after derived EventTypes are created.
-	/*Event SDL_Event_to_Event(SDL_Event* event)
+	Event SDL_Event_to_Event(SDL_Event* event)
 	{
-
-	}*/
+		switch (event->type)
+		{
+			case SDL_QUIT:
+				return WindowCloseEvent();
+				break;
+			case SDL_WINDOWEVENT_RESIZED:
+					return WindowResizeEvent(event->window.data1, event->window.data2);
+					break;
+		}
+	}
 }
