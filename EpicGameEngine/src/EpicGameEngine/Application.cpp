@@ -14,6 +14,7 @@ namespace EpicGameEngine
 
 	}
 
+	// TODO: Rewrite this to use our new event system when it is complete.
 	void Application::Run()
 	{
 		SDL_Event event{};

@@ -23,7 +23,7 @@ namespace EpicGameEngine
 		SDL_Init(SDL_INIT_VIDEO);
 
 		window = SDL_CreateWindow(data.Title.c_str(), 500, 500, data.width, data.height, SDL_WINDOW_RESIZABLE);
-		renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+		renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED); // TODO: Potentially move this to a new renderer class in the future. 
 	}
 
 	void WindowsWindow::OnUpdate()
@@ -37,6 +37,7 @@ namespace EpicGameEngine
 		SDL_RenderPresent(renderer);
 	}
 	
+	// TODO: Rewrite this to use our new Event system when completed.
 	void WindowsWindow::PollEvents(SDL_Event event)
 	{
 		if (SDL_PollEvent(&event))
