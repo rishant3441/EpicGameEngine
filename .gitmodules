@@ -1,0 +1,3 @@
+[submodule "EpicGameEngine/dependencies/spdlog"]
+	path = EpicGameEngine/dependencies/spdlog
+	url = https://github.com/gabime/spdlog
