@@ -19,11 +19,14 @@ namespace EpicGameEngine
 
 	class Event
 	{
+	public:
 		Event();
 		virtual ~Event();
 
-		virtual EventType EventType() const = 0;
+		virtual EventType GetEventType() const = 0;
 		virtual void toString() const = 0;
+
+		bool handled = false;
 	};
 
 	// Use to "dispatch" events to their respective function handlers. 
@@ -38,9 +41,9 @@ namespace EpicGameEngine
 		template<typename T, typename F>
 		bool Dispatch(const F& func)
 		{
-			if (event.GetEventType() == T::GetStaticType())
+			if (event.GetEventType() == T::GetEventType())
 			{
-				event.Handled |= func(static_cast<T&>(event));
+				event.handled |= func(static_cast<T&>(event));
 				return true;
 			}
 			return false;
@@ -50,8 +53,8 @@ namespace EpicGameEngine
 	};
 	
 	// TODO: Implement this after derived EventTypes are created.
-	Event& SDL_Event_to_Event(SDL_Event* event)
+	/*Event SDL_Event_to_Event(SDL_Event* event)
 	{
 
-	}
+	}*/
 }
