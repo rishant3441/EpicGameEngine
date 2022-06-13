@@ -2,6 +2,8 @@ set(EGE_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include CACHE INTERNAL "Directory of E
 set(EGE_LIB_DIR ${PROJECT_BINARY_DIR} CACHE INTERNAL "Directory of Epic Games Engine Library Files")
 set(EGE_LIB EpicGameEngine CACHE INTERNAL "Library File")
 
+add_subdirectory(dependencies)
+
 find_package(SDL2 REQUIRED)
 include_directories(${SDL2_INCLUDE_DIRS})
 
@@ -29,7 +31,8 @@ target_precompile_headers(
 	EpicGameEngine PRIVATE "include/EpicGameEngine/ege_pch.h"
 )
 
-target_link_libraries(EpicGameEngine ${SDL2_LIBRARIES})
+target_link_libraries(EpicGameEngine PRIVATE ${SDL2_LIBRARIES})
+target_link_libraries(EpicGameEngine PRIVATE spdlog::spdlog)
 
 if (MSVC)
 	target_compile_definitions(
