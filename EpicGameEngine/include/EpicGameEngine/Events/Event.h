@@ -63,8 +63,8 @@ namespace EpicGameEngine
 				return WindowCloseEvent();
 				break;
 			case SDL_WINDOWEVENT_RESIZED:
-					return WindowResizeEvent(event->window.data1, event->window.data2);
-					break;
+				return WindowResizeEvent(event->window.data1, event->window.data2);
+				break;
 		}
 	}
 }
