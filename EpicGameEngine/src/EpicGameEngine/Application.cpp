@@ -2,6 +2,7 @@
 #ifdef EGE_PLATFORM_WINDOWS
 #include "EpicGameEngine/Window/Window.h"
 #endif
+#include <spdlog/spdlog.h>
 
 namespace EpicGameEngine
 {
@@ -17,6 +18,8 @@ namespace EpicGameEngine
 	// TODO: Rewrite this to use our new event system when it is complete.
 	void Application::Run()
 	{
+		spdlog::info("EpicGameEngine Initialized");
+
 		SDL_Event event{};
 		while (window->running)
 		{
