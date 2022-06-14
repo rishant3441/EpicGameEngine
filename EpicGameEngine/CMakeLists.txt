@@ -9,6 +9,8 @@ include_directories(${SDL2_INCLUDE_DIRS})
 
 find_package (SDL_gpu REQUIRED)
 
+find_package(OpenGL REQUIRED)
+
 add_library(
 	EpicGameEngine SHARED 
 	src/EpicGameEngine/Application.cpp
@@ -23,6 +25,8 @@ target_include_directories(
 	dependencies/spdlog/include/
 	PUBLIC
 	${SDL2_GPU_INCLUDE_DIR}
+	PUBLIC
+	${OPENGL_INCLUDE_DIRS}
 )
 
 include_directories(
@@ -39,7 +43,8 @@ target_precompile_headers(
 
 target_link_libraries(EpicGameEngine PRIVATE ${SDL2_LIBRARIES})
 target_link_libraries(EpicGameEngine PRIVATE spdlog::spdlog)
-target_link_libraries(EpicGameEngine PRIVATE ${SDL2_GPU_LIBRARY_PATH})
+target_link_libraries(EpicGameEngine PUBLIC ${SDL2_GPU_LIBRARY_PATH})
+target_link_directories(EpicGameEngine PUBLIC opengl32)
 
 if (MSVC)
 	target_compile_definitions(
