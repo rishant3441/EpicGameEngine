@@ -22,7 +22,7 @@ target_include_directories(
 	PUBLIC 
 	dependencies/spdlog/include/
 	PUBLIC
-	${SDL2_GPU_INCLUDE_PATH}
+	${SDL2_GPU_INCLUDE_DIR}
 )
 
 include_directories(
