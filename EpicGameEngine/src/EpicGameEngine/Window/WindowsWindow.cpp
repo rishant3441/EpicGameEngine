@@ -1,5 +1,6 @@
 #include "EpicGameEngine/ege_pch.h"
 #include "EpicGameEngine/Window/WindowsWindow.h"
+#include "EpicGameEngine/Events/Event.h"
 
 namespace EpicGameEngine
 {
