@@ -3,6 +3,7 @@
 #include "EpicGameEngine/Core.h"
 #include "EpicGameEngine/Window/Window.h"
 #include "EpicGameEngine/ege_pch.h"
+
 namespace EpicGameEngine
 {
 	class EPICGAMEENGINE_API WindowsWindow : public Window
@@ -26,7 +27,6 @@ namespace EpicGameEngine
 	private:
 		WindowData data;
 	public:
-		SDL_Window* window;
-		SDL_Renderer* renderer;
+		GPU_Target* window;
 	};
 }
