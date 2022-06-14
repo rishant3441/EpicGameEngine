@@ -20,11 +20,6 @@ namespace EpicGameEngine
 
 	void WindowsWindow::Init(const WindowData& data)
 	{	
-		/*SDL_Init(SDL_INIT_VIDEO);
-
-		window = SDL_CreateWindow(data.Title.c_str(), 500, 500, data.width, data.height, SDL_WINDOW_RESIZABLE);
-		renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED); // TODO: Potentially move this to a new renderer class in the future.*/ 
-
 		window = GPU_Init(data.width, data.height, GPU_DEFAULT_INIT_FLAGS);
 	}
 
