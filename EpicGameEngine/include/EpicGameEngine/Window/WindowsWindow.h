@@ -3,6 +3,7 @@
 #include "EpicGameEngine/Core.h"
 #include "EpicGameEngine/Window/Window.h"
 #include "EpicGameEngine/ege_pch.h"
+#include "EpicGameEngine/Events/WindowEvent.h"
 
 namespace EpicGameEngine
 {
@@ -16,7 +17,11 @@ namespace EpicGameEngine
 		void OnUpdate() override;
 		void OnRender() override;
 
-		void PollEvents(SDL_Event event) override;
+		void OnEvent(std::shared_ptr<Event> e) override;
+
+		bool OnWindowCloseEvent(WindowCloseEvent& e);
+
+		bool OnWindowResizeEvent(WindowResizeEvent& e);
 
 		inline unsigned int GetWidth() const override { return data.width; }
 		inline unsigned int GetHeight() const override { return data.height; }

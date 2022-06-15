@@ -1,6 +1,7 @@
 #pragma once
 #include "EpicGameEngine/Core.h"
 #include "EpicGameEngine/ege_pch.h"
+#include "EpicGameEngine/Events/Event.h"
 
 namespace EpicGameEngine
 {
@@ -22,15 +23,15 @@ namespace EpicGameEngine
 		virtual void OnUpdate() = 0;
 		virtual void OnRender() = 0;
 
-		virtual void PollEvents(SDL_Event event) = 0;
-
 		virtual unsigned int GetWidth() const = 0;
 		virtual unsigned int GetHeight() const = 0;
+
+		virtual void OnEvent(std::shared_ptr<Event> e) = 0;
 
 		static Window* CreateWindow(const WindowData& data = WindowData());
 
 		SDL_Renderer* renderer; 
 
-		bool running = true;
+		inline static bool running;
 	};
 }

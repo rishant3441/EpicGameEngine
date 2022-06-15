@@ -1,6 +1,9 @@
 #include "EpicGameEngine/ege_pch.h"
 #include "EpicGameEngine/Window/WindowsWindow.h"
 #include "EpicGameEngine/Events/Event.h"
+#include "EpicGameEngine/Events/EventConversion.h"
+#include "EpicGameEngine/Events/WindowEvent.h"
+#include "spdlog/spdlog.h"
 
 namespace EpicGameEngine
 {
@@ -12,6 +15,7 @@ namespace EpicGameEngine
 	WindowsWindow::WindowsWindow(const WindowData& data)
 		: data(data)
 	{
+		running = true;
 		Init(data);
 	}
 
@@ -34,19 +38,22 @@ namespace EpicGameEngine
 		GPU_ClearRGBA(window, 0, 0, 0, 255);
 		GPU_Flip(window);
 	}
-	
-	// TODO: Rewrite this to use our new Event system when completed.
-	void WindowsWindow::PollEvents(SDL_Event event)
+    void WindowsWindow::OnEvent(std::shared_ptr<Event> e)
 	{
-		if (SDL_PollEvent(&event))
-		{
-			switch (event.type)
-			{
-			case SDL_QUIT:
-				GPU_Quit();
-				running = false; 
-				break;
-			}
-		}
+		EventDispatcher eventDispatcher(e);
+		
+		eventDispatcher.Dispatch<WindowCloseEvent>(EGE_BIND_EVENT_FN(WindowsWindow::OnWindowCloseEvent));
+		eventDispatcher.Dispatch<WindowResizeEvent>(EGE_BIND_EVENT_FN(WindowsWindow::OnWindowResizeEvent));
+	}
+
+	bool WindowsWindow::OnWindowCloseEvent(WindowCloseEvent& e)
+	{
+		running = false;
+		return true;
+	}
+	
+	bool WindowsWindow::OnWindowResizeEvent(WindowResizeEvent& e)
+	{
+		return true;
 	}
 }

@@ -1,6 +1,6 @@
 #pragma once
-#include <EpicGameEngine/Events/WindowEvent.h>
-#include <EpicGameEngine/Events/InputEvent.h>
+
+#include <EpicGameEngine/ege_pch.h>
 
 #define EGE_BIND_EVENT_FN(fn) [this](auto&&... args) -> decltype(auto) { return this->fn(std::forward<decltype(args)>(args)...); }
 
@@ -22,19 +22,36 @@ namespace EpicGameEngine
 	class Event
 	{
 	public:
-		Event();
-		virtual ~Event();
+		Event() {}
+		virtual ~Event() {}
 
 		virtual EventType GetEventType() const = 0;
-		virtual void toString() const = 0;
+		virtual std::string toString() const = 0;
 
 		bool handled = false;
 	};
 
+	class NoEvent : public Event
+	{
+	public:
+		NoEvent() {}
+		~NoEvent() {}
+
+		EventType GetEventType() const override { return EventType::None; }
+		virtual std::string toString() const override 
+		{
+			return "No Event";
+		} 
+	};
+
+#define EVENT_CLASS_TYPE(type) static EventType GetStaticType() { return EventType::type; }\
+								virtual EventType GetEventType() const override { return GetStaticType(); }
+
 	// Use to "dispatch" events to their respective function handlers. 
 	class EventDispatcher
 	{
-		EventDispatcher(Event& event)
+	public:
+		EventDispatcher(std::shared_ptr<Event> event)
 			: event(event)
 		{
 		}
@@ -43,28 +60,15 @@ namespace EpicGameEngine
 		template<typename T, typename F>
 		bool Dispatch(const F& func)
 		{
-			if (event.GetEventType() == T::GetEventType())
+			if (event->GetEventType() == T::GetStaticType())
 			{
-				event.handled |= func(static_cast<T&>(event));
+				event->handled |= func(static_cast<T&>(*event));
 				return true;
 			}
 			return false;
 		}
 	private:
-		Event& event;
+		std::shared_ptr<Event> event;
 	};
 	
-	// TODO: Implement this after derived EventTypes are created.
-	Event SDL_Event_to_Event(SDL_Event* event)
-	{
-		switch (event->type)
-		{
-			case SDL_QUIT:
-				return WindowCloseEvent();
-				break;
-			case SDL_WINDOWEVENT_RESIZED:
-				return WindowResizeEvent(event->window.data1, event->window.data2);
-				break;
-		}
-	}
 }
