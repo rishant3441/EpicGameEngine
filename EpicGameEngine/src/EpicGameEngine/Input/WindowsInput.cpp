@@ -2,6 +2,7 @@
 
 namespace EpicGameEngine
 {
+	// TODO: Rewrite this to use our Event system instead of unreadable SDL code
 	bool Input::isMouseButtonPressed(const MouseCode button)
 	{
 		int x, y;
