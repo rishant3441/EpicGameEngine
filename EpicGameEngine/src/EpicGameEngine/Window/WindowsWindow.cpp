@@ -25,7 +25,9 @@ namespace EpicGameEngine
 
 	void WindowsWindow::Init(const WindowData& data)
 	{	
-		window = GPU_Init(data.width, data.height, GPU_DEFAULT_INIT_FLAGS);
+		window = SDL_CreateWindow(data.Title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, data.width, data.height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+		GPU_SetInitWindow(SDL_GetWindowID(window));
+		target = GPU_Init(data.width, data.height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 	}
 
 	void WindowsWindow::OnUpdate()
@@ -35,8 +37,8 @@ namespace EpicGameEngine
 
 	void WindowsWindow::OnRender()
 	{
-		GPU_ClearRGBA(window, 0, 0, 0, 255);
-		GPU_Flip(window);
+		GPU_ClearRGBA(target, 0, 0, 0, 255);
+		GPU_Flip(target);
 	}
     void WindowsWindow::OnEvent(std::shared_ptr<Event> e)
 	{
@@ -54,6 +56,7 @@ namespace EpicGameEngine
 	
 	bool WindowsWindow::OnWindowResizeEvent(WindowResizeEvent& e)
 	{
+		GPU_SetWindowResolution(e.GetNewWidth(), e.GetNewHeight());
 		return true;
 	}
 }
