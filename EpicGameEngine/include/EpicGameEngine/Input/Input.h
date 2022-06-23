@@ -5,7 +5,7 @@
 
 namespace EpicGameEngine
 {
-	class Input
+	class EPICGAMEENGINE_API Input
 	{
 	public:
 		static bool isMouseButtonPressed(MouseCode button);

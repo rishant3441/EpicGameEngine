@@ -6,12 +6,13 @@
 #include <spdlog/spdlog.h>
 #include <EpicGameEngine/Events/Event.h>
 #include <EpicGameEngine/Events/EventConversion.h>
+#include <EpicGameEngine/Renderer/Renderer.h>
 
 namespace EpicGameEngine
 {
 	Application::Application()
 	{
-		window = std::unique_ptr<Window>(Window::CreateWindow());
+		
 	}
 	Application::~Application()
 	{
@@ -21,6 +22,8 @@ namespace EpicGameEngine
 	// TODO: Rewrite this to use our new event system when it is complete.
 	void Application::Run()
 	{
+		window = std::unique_ptr<Window>(Window::CreateWindow());
+
 		spdlog::info("EpicGameEngine Initialized");
 
 		SDL_Event event{};
@@ -28,8 +31,14 @@ namespace EpicGameEngine
 		{
 			Application::PollEvents(sdlEvent);
 			window->OnUpdate();
+			GPU_ClearRGBA(Renderer::GetTarget(), 0, 0, 0, 255);
+			for (auto l : layers.layers)
+			{
+				l->OnRender();
+			}
 			window->OnRender();
 		}
+		Renderer::Shutdown();
 	}
 
 	void Application::PollEvents(SDL_Event e)
@@ -38,6 +47,14 @@ namespace EpicGameEngine
 		{
 			event = SDL_Event_to_Event(&e);
 			Application::OnEvent(event);
+			/*for (auto it = layers.layers.rbegin(); it != layers.layers.rend(); it++)
+			{
+				if (event->handled)
+				{
+					break;
+				}
+				(*it)->OnEvent(event);
+			}*/
 		}	
 	}
 

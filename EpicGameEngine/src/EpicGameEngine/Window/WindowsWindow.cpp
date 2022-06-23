@@ -4,6 +4,7 @@
 #include "EpicGameEngine/Events/EventConversion.h"
 #include "EpicGameEngine/Events/WindowEvent.h"
 #include "spdlog/spdlog.h"
+#include "EpicGameEngine/Renderer/Renderer.h"
 
 namespace EpicGameEngine
 {
@@ -27,7 +28,8 @@ namespace EpicGameEngine
 	{	
 		window = SDL_CreateWindow(data.Title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, data.width, data.height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 		GPU_SetInitWindow(SDL_GetWindowID(window));
-		target = GPU_Init(data.width, data.height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+		//target = GPU_Init(data.width, data.height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+		Renderer::Init(data);
 	}
 
 	void WindowsWindow::OnUpdate()
@@ -37,8 +39,7 @@ namespace EpicGameEngine
 
 	void WindowsWindow::OnRender()
 	{
-		GPU_ClearRGBA(target, 0, 0, 0, 255);
-		GPU_Flip(target);
+		GPU_Flip(Renderer::GetTarget());
 	}
     void WindowsWindow::OnEvent(std::shared_ptr<Event> e)
 	{
