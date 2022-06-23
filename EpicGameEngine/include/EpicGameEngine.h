@@ -4,10 +4,8 @@
 
 #include <EpicGameEngine/Application.h>
 #include "SDL.h"
+#include <SDL_gpu.h>
 
-// -------------ENTRY POINT------------------
-#include <EpicGameEngine/EntryPoint.h>
-// ------------------------------------------
 // WINDOW:
 #include <EpicGameEngine/Window/Window.h>
 #ifdef EGE_PLATFORM_WINDOWS
@@ -25,3 +23,11 @@
 #include <EpicGameEngine/Input/Input.h>
 #include <EpicGameEngine/Input/KeyCodes.h>
 #include <EpicGameEngine/Input/MouseCodes.h>
+
+// LAYERS:
+#include <EpicGameEngine/Layers/Layer.h>
+#include <EpicGameEngine/Layers/LayerArray.h>
+
+// GAMEOBJECTS:
+#include <EpicGameEngine/GameObjects/GameObject.h>
+#include <EpicGameEngine/GameObjects/Rectangle.h>
