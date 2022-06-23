@@ -3,10 +3,12 @@
 #include <EpicGameEngine/ege_pch.h>
 #include <spdlog/spdlog.h>
 
+#include <utility>
+
 namespace EpicGameEngine
 {
     Rectangle::Rectangle(double x, double y, double w, double h, std::string name, SDL_Color color)
-    :   name(name), color(color)
+    :   name(std::move(name)), color(color)
     {
         position.x = x;
         position.y = y;

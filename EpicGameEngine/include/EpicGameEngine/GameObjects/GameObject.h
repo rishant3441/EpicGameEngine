@@ -10,14 +10,14 @@ namespace EpicGameEngine
     class EPICGAMEENGINE_API GameObject
     {
     public:
-        GameObject() {}
-        virtual ~GameObject() = 0 {}
+        GameObject() = default;
+        virtual ~GameObject() = default;
 
         Vector2 position;
 
         virtual void Render() = 0;
         virtual void Shutdown() = 0;
-        std::string GetName() const { return name; }
+        [[nodiscard]] auto GetName() const -> std::string { return name; }
          
 
         // doesn't actually delete class

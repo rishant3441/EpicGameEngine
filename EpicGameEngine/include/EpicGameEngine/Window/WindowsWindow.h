@@ -12,19 +12,19 @@ namespace EpicGameEngine
 	public: 
 		WindowsWindow(const WindowData& data = WindowData());
 
-		virtual ~WindowsWindow();
+		~WindowsWindow() override;
 
 		void OnUpdate() override;
 		void OnRender() override;
 
 		void OnEvent(std::shared_ptr<Event> e) override;
 
-		bool OnWindowCloseEvent(WindowCloseEvent& e);
+		auto OnWindowCloseEvent(WindowCloseEvent& e) -> bool;
 
-		bool OnWindowResizeEvent(WindowResizeEvent& e);
+		auto OnWindowResizeEvent(WindowResizeEvent& e) -> bool;
 
-		inline unsigned int GetWidth() const override { return data.width; }
-		inline unsigned int GetHeight() const override { return data.height; }
+		[[nodiscard]] inline auto GetWidth() const -> unsigned int override { return data.width; }
+		[[nodiscard]] inline auto GetHeight() const -> unsigned int override { return data.height; }
 	private:
 		void Init(const WindowData& data);
 		void Shutdown();

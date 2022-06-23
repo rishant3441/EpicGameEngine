@@ -22,11 +22,11 @@ namespace EpicGameEngine
 	class Event
 	{
 	public:
-		Event() {}
-		virtual ~Event() {}
+		Event() = default;
+		virtual ~Event() = default;
 
-		virtual EventType GetEventType() const = 0;
-		virtual std::string toString() const = 0;
+		[[nodiscard]] virtual auto GetEventType() const -> EventType = 0;
+		[[nodiscard]] virtual auto toString() const -> std::string = 0;
 
 		bool handled = false;
 	};
@@ -34,11 +34,11 @@ namespace EpicGameEngine
 	class NoEvent : public Event
 	{
 	public:
-		NoEvent() {}
-		~NoEvent() {}
+		NoEvent() = default;
+		~NoEvent() override = default;
 
-		EventType GetEventType() const override { return EventType::None; }
-		virtual std::string toString() const override 
+		[[nodiscard]] auto GetEventType() const -> EventType override { return EventType::None; }
+		[[nodiscard]] auto toString() const -> std::string override 
 		{
 			return "No Event";
 		} 
@@ -58,7 +58,7 @@ namespace EpicGameEngine
 
 		//	This is from TheCherno - I honestly don't know how it works 
 		template<typename T, typename F>
-		bool Dispatch(const F& func)
+		auto Dispatch(const F& func) -> bool
 		{
 			if (event->GetEventType() == T::GetStaticType())
 			{

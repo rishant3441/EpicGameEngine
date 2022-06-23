@@ -8,7 +8,7 @@ namespace EpicGameEngine
     public:
         static void Init(const WindowData& data);
         static void Shutdown();
-        static GPU_Target* GetTarget();
+        static auto GetTarget() -> GPU_Target*;
 
         inline static GPU_Target* target;
     };

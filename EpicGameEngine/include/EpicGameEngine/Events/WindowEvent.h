@@ -7,10 +7,10 @@ namespace EpicGameEngine
     class WindowCloseEvent : public Event
     {
     public:
-        WindowCloseEvent() {}
-        ~WindowCloseEvent() {}
+        WindowCloseEvent() = default;
+        ~WindowCloseEvent() override = default;
 
-        std::string toString() const override 
+        [[nodiscard]] auto toString() const -> std::string override 
         {
             return "Window Close Event";
         }
@@ -26,15 +26,15 @@ namespace EpicGameEngine
         {
 
         }
-        ~WindowResizeEvent() {}
+        ~WindowResizeEvent() override = default;
 
-        std::string toString() const override 
+        [[nodiscard]] auto toString() const -> std::string override 
         {
             return "Window Resize Event";
         }
 
-        unsigned int GetNewWidth() { return width; }
-        unsigned int GetNewHeight() { return height; }
+        auto GetNewWidth() -> unsigned int { return width; }
+        auto GetNewHeight() -> unsigned int { return height; }
 
         EVENT_CLASS_TYPE(WindowResize);
 

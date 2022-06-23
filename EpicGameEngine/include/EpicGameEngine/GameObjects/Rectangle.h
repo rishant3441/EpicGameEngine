@@ -13,12 +13,12 @@ namespace EpicGameEngine
     public:
 
         Rectangle(double x, double y, double w, double h, std::string name, SDL_Color color);
-        ~Rectangle();
+        ~Rectangle() override;
 
         transformS transform;
 
-        void Render();
-        void Shutdown();
+        void Render() override;
+        void Shutdown() override;
 
         GPU_Rect rect;
         SDL_Color color;

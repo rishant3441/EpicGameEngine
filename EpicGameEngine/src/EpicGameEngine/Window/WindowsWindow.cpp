@@ -8,7 +8,7 @@
 
 namespace EpicGameEngine
 {
-	Window* Window::CreateWindow(const WindowData& data)
+	auto Window::CreateWindow(const WindowData& data) -> Window*
 	{
 		return new WindowsWindow(data);
 	}
@@ -21,8 +21,7 @@ namespace EpicGameEngine
 	}
 
 	WindowsWindow::~WindowsWindow()
-	{
-	}
+	= default;
 
 	void WindowsWindow::Init(const WindowData& data)
 	{	
@@ -49,13 +48,13 @@ namespace EpicGameEngine
 		eventDispatcher.Dispatch<WindowResizeEvent>(EGE_BIND_EVENT_FN(WindowsWindow::OnWindowResizeEvent));
 	}
 
-	bool WindowsWindow::OnWindowCloseEvent(WindowCloseEvent& e)
+	auto WindowsWindow::OnWindowCloseEvent(WindowCloseEvent& e) -> bool
 	{
 		running = false;
 		return true;
 	}
 	
-	bool WindowsWindow::OnWindowResizeEvent(WindowResizeEvent& e)
+	auto WindowsWindow::OnWindowResizeEvent(WindowResizeEvent& e) -> bool
 	{
 		GPU_SetWindowResolution(e.GetNewWidth(), e.GetNewHeight());
 		return true;
