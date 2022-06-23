@@ -10,5 +10,7 @@
 #include <memory>
 #include <cstdint>
 #include <string>
+#include <vector>
 #include <SDL.h>
 #include <SDL_gpu.h>
+#include "Core.h"

@@ -2,6 +2,7 @@
 
 #include "Core.h"
 #include <EpicGameEngine/Window/Window.h>
+#include <EpicGameEngine/Layers/LayerArray.h>
 #include <EpicGameEngine/Events/Event.h>
 #include <EpicGameEngine/ege_pch.h>
 namespace EpicGameEngine
@@ -20,6 +21,8 @@ namespace EpicGameEngine
 
 		SDL_Event sdlEvent{};
 		std::shared_ptr<Event> event = nullptr; 
+
+		LayerArray layers; 
 	private: 
 		void PollEvents(SDL_Event e);	
 	};
