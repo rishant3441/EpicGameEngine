@@ -34,6 +34,7 @@ namespace EpicGameEngine
 			GPU_ClearRGBA(Renderer::GetTarget(), 0, 0, 0, 255);
 			for (auto l : layers.layers)
 			{
+				l->OnUpdate();
 				l->OnRender();
 			}
 			window->OnRender();

@@ -26,6 +26,11 @@ namespace EpicGameEngine
 
     void Rectangle::Render()
     {
+        rect.x = position.x;
+        rect.y = position.y;
+        rect.w = transform.w;
+        rect.h = transform.h;
+
         GPU_RectangleFilled2(Renderer::target, rect, color);
     }
     

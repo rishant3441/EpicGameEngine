@@ -29,14 +29,14 @@ namespace EpicGameEngine
 			return false;
 	}
 
-	float GetMouseX()
+	float Input::GetMouseX()
 	{
 		int x;
 		Uint32 buttons = SDL_GetMouseState(&x, NULL);
 		return (float) x;
 	}
 
-	float GetMouseY()
+	float Input::GetMouseY()
 	{
 		int y;
 		Uint32 buttons = SDL_GetMouseState(NULL, &y);

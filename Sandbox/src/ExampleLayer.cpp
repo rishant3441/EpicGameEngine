@@ -11,3 +11,9 @@ void ExampleLayer::OnAttach()
     EpicGameEngine::Rectangle* rect = new EpicGameEngine::Rectangle(50, 50, 50, 50, "Rectangle", color);
     gameObjects.push_back(rect);
 }
+
+void ExampleLayer::OnUpdate()
+{
+    gameObjects[0]->position.x = EpicGameEngine::Input::GetMouseX();
+    gameObjects[0]->position.y = EpicGameEngine::Input::GetMouseY();
+}
