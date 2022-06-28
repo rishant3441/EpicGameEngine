@@ -32,7 +32,7 @@ namespace EpicGameEngine
 	private:
 		WindowData data;
 	public:
-		SDL_Window* window;
-		GPU_Target* target;
+		inline static SDL_Window* window;
+		inline static GPU_Target* target;
 	};
 }

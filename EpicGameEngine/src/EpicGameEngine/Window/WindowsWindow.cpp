@@ -17,7 +17,7 @@ namespace EpicGameEngine
 		: data(data)
 	{
 		running = true;
-		Init(data);
+		WindowsWindow::Init(data);
 	}
 
 	WindowsWindow::~WindowsWindow()

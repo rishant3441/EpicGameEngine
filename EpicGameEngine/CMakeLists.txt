@@ -14,7 +14,7 @@ find_package(OpenGL REQUIRED)
 add_library(
 	EpicGameEngine SHARED 
 	src/EpicGameEngine/Application.cpp
- "include/EpicGameEngine/Window/Window.h" "include/EpicGameEngine/ege_pch.h" "include/EpicGameEngine/Window/WindowsWindow.h" "src/EpicGameEngine/Window/WindowsWindow.cpp" "include/EpicGameEngine/Input/Input.h" "include/EpicGameEngine/Input/MouseCodes.h" "src/EpicGameEngine/Input/WindowsInput.cpp" "include/EpicGameEngine/Events/Event.h" "src/EpicGameEngine/Events/EventConversion.cpp" "include/EpicGameEngine/Renderer/Renderer.h" "src/EpicGameEngine/Renderer/Renderer.cpp" "include/EpicGameEngine/Layers/Layer.h" "include/EpicGameEngine/Layers/LayerArray.h" "src/EpicGameEngine/Layers/LayerArray.cpp" "include/EpicGameEngine/GameObjects/GameObject.h" "src/EpicGameEngine/GameObjects/Rectangle.cpp" "src/EpicGameEngine/Layers/Layer.cpp")
+ "include/EpicGameEngine/Window/Window.h" "include/EpicGameEngine/ege_pch.h" "include/EpicGameEngine/Window/WindowsWindow.h" "src/EpicGameEngine/Window/WindowsWindow.cpp" "include/EpicGameEngine/Input/Input.h" "include/EpicGameEngine/Input/MouseCodes.h" "src/EpicGameEngine/Input/WindowsInput.cpp" "include/EpicGameEngine/Events/Event.h" "src/EpicGameEngine/Events/EventConversion.cpp" "include/EpicGameEngine/Renderer/Renderer.h" "src/EpicGameEngine/Renderer/Renderer.cpp" "include/EpicGameEngine/Layers/Layer.h" "include/EpicGameEngine/Layers/LayerArray.h" "src/EpicGameEngine/Layers/LayerArray.cpp" "include/EpicGameEngine/GameObjects/GameObject.h" "src/EpicGameEngine/GameObjects/Rectangle.cpp" "src/EpicGameEngine/Layers/Layer.cpp" "include/EpicGameEngine/ImGui/ImGuiLayer.h" "src/EpicGameEngine/ImGui/ImGuiLayer.cpp" "src/EpicGameEngine/ImGui/ImGuiSDL.cpp" "src/EpicGameEngine/ImGui/ImGuiOpenGL.cpp")
 
 target_include_directories(
 	EpicGameEngine PUBLIC
@@ -27,6 +27,8 @@ target_include_directories(
 	${SDL2_GPU_INCLUDE_DIR}
 	PUBLIC
 	${OPENGL_INCLUDE_DIRS}
+	PUBLIC
+	dependencies/imgui/include/
 )
 
 include_directories(
@@ -41,10 +43,13 @@ target_precompile_headers(
 	EpicGameEngine PRIVATE "include/EpicGameEngine/ege_pch.h"
 )
 
+add_dependencies(EpicGameEngine IMGUI)
+
 target_link_libraries(EpicGameEngine PRIVATE ${SDL2_LIBRARIES})
 target_link_libraries(EpicGameEngine PRIVATE spdlog::spdlog)
 target_link_libraries(EpicGameEngine PUBLIC ${SDL2_GPU_LIBRARY_PATH})
 target_link_directories(EpicGameEngine PUBLIC opengl32)
+target_link_libraries(EpicGameEngine PUBLIC IMGUI)
 
 if (MSVC)
 	target_compile_definitions(

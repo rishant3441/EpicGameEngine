@@ -1,6 +1,7 @@
 #include <EpicGameEngine/Renderer/Renderer.h>
 #include <EpicGameEngine/Window/Window.h>
 #include <EpicGameEngine/ege_pch.h>
+#include <spdlog/spdlog.h>
 
 namespace EpicGameEngine
 {

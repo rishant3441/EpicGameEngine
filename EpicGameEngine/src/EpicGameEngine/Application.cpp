@@ -7,6 +7,7 @@
 #include <EpicGameEngine/Events/Event.h>
 #include <EpicGameEngine/Events/EventConversion.h>
 #include <EpicGameEngine/Renderer/Renderer.h>
+#include <EpicGameEngine/ImGui/ImGuiLayer.h>
 
 namespace EpicGameEngine
 {
@@ -23,6 +24,7 @@ namespace EpicGameEngine
 		spdlog::info("EpicGameEngine Initialized");
 
 		SDL_Event event{};
+		layers.PushLayer(new ImGuiLayer());
 		while (window->running)
 		{
 			Application::PollEvents(sdlEvent);
