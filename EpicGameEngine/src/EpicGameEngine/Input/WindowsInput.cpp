@@ -3,7 +3,7 @@
 namespace EpicGameEngine
 {
 	// TODO: Rewrite this to use our Event system instead of unreadable SDL code
-	bool Input::isMouseButtonPressed(const MouseCode button)
+	auto Input::isMouseButtonPressed(const MouseCode button) -> bool
 	{
 		int x, y;
 		Uint32 buttons = SDL_GetMouseState(&x, &y);
@@ -29,14 +29,14 @@ namespace EpicGameEngine
 			return false;
 	}
 
-	float Input::GetMouseX()
+	auto Input::GetMouseX() -> float
 	{
 		int x;
 		Uint32 buttons = SDL_GetMouseState(&x, NULL);
 		return (float) x;
 	}
 
-	float Input::GetMouseY()
+	auto Input::GetMouseY() -> float
 	{
 		int y;
 		Uint32 buttons = SDL_GetMouseState(NULL, &y);

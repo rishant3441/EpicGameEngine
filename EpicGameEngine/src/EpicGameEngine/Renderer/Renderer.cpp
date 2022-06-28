@@ -14,7 +14,7 @@ namespace EpicGameEngine
         GPU_Quit();
     }
 
-    GPU_Target* Renderer::GetTarget()
+    auto Renderer::GetTarget() -> GPU_Target*
     {
         return Renderer::target;
     }

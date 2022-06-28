@@ -7,7 +7,7 @@
 namespace EpicGameEngine
 {
     // TODO: Finish implementing this as we write more events
-    std::shared_ptr<Event> SDL_Event_to_Event(const SDL_Event* event)
+    auto SDL_Event_to_Event(const SDL_Event* event) -> std::shared_ptr<Event>
     {
         switch (event->type)
         {

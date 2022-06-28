@@ -15,7 +15,7 @@ public:
 	}
 };
 
-EpicGameEngine::Application* EpicGameEngine::CreateApplication()
+auto EpicGameEngine::CreateApplication() -> EpicGameEngine::Application*
 {
 	return new Sandbox();
 }
