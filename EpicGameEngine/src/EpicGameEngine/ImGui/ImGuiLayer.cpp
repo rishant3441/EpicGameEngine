@@ -37,7 +37,6 @@ namespace EpicGameEngine
     }
     void ImGuiLayer::OnUpdate()
     {
-        spdlog::info("This happened");
         ImGui_ImplSDL2_NewFrame();
         ImGui_ImplOpenGL3_NewFrame();
 
