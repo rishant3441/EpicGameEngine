@@ -46,14 +46,16 @@ namespace EpicGameEngine
 		{
 			event = SDL_Event_to_Event(&e);
 			Application::OnEvent(event);
-			/*for (auto it = layers.layers.rbegin(); it != layers.layers.rend(); it++)
+			for (auto it = layers.layers.rbegin(); it != layers.layers.rend(); it++)
 			{
+				if (event == nullptr)
+					break;
 				if (event->handled)
 				{
 					break;
 				}
 				(*it)->OnEvent(event);
-			}*/
+			}
 		}	
 	}
 
