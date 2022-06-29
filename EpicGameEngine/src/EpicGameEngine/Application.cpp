@@ -8,6 +8,7 @@
 #include <EpicGameEngine/Events/EventConversion.h>
 #include <EpicGameEngine/Renderer/Renderer.h>
 #include <EpicGameEngine/ImGui/ImGuiLayer.h>
+#include <sdl_gpu.h>
 
 namespace EpicGameEngine
 {
@@ -32,8 +33,19 @@ namespace EpicGameEngine
 			GPU_ClearRGBA(Renderer::GetTarget(), 0, 0, 0, 255);
 			for (auto l : layers.layers)
 			{
-				l->OnUpdate();
-				l->OnRender();
+				if (!(l->GetName() == "ImGuiLayer"))
+				{
+					l->OnUpdate();
+					l->OnRender();
+				}
+			}
+			GPU_FlushBlitBuffer();
+			for (auto l : layers.layers)
+			{
+				if (l->GetName() == "ImGuiLayer")
+				{
+					l->OnUpdate();
+				}
 			}
 			window->OnRender();
 		}
