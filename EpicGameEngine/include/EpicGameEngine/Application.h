@@ -4,6 +4,7 @@
 #include <EpicGameEngine/Window/Window.h>
 #include <EpicGameEngine/Layers/LayerArray.h>
 #include <EpicGameEngine/Events/Event.h>
+#include <EpicGameEngine/Input/Input.h>
 #include <EpicGameEngine/ege_pch.h>
 namespace EpicGameEngine
 {
@@ -23,6 +24,8 @@ namespace EpicGameEngine
 		std::shared_ptr<Event> event = nullptr; 
 
 		LayerArray layers; 
+
+		Input InputSystem;
 	private: 
 		void PollEvents(SDL_Event e);	
 	};

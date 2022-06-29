@@ -27,6 +27,8 @@ namespace EpicGameEngine
         ImGuiIO& io = ImGui::GetIO();
         io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;
         io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;
+        io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+        io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
         ImGui_ImplSDL2_InitForOpenGL(WindowsWindow::window, SDL_GL_GetCurrentContext());
         ImGui_ImplOpenGL3_Init("#version 120");
@@ -45,12 +47,11 @@ namespace EpicGameEngine
 
         static bool show = true;
         ImGui::ShowDemoWindow(&show);
+        SDL_Event e; 
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-    }
-    void ImGuiLayer::OnEvent(std::shared_ptr<Event> e)
-    {
-
+        ImGui::UpdatePlatformWindows();
+        ImGui::RenderPlatformWindowsDefault();
     }
 }

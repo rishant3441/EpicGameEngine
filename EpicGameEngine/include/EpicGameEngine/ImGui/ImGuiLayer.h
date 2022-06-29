@@ -1,6 +1,7 @@
 #include <EpicGameEngine/ege_pch.h>
 #include <EpicGameEngine/Layers/Layer.h>
 #include <EpicGameEngine/Events/Event.h>
+#include <EpicGameEngine/Events/InputEvent.h>
 
 namespace EpicGameEngine
 {
@@ -13,6 +14,5 @@ namespace EpicGameEngine
         void OnAttach();
         void OnDetach();
         void OnUpdate();
-        void OnEvent(std::shared_ptr<Event> e);
     };
 }

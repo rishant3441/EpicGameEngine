@@ -1,10 +1,19 @@
 #include <EpicGameEngine/Input/Input.h>
+#include <EpicGameEngine/Events/Event.h>
 
 namespace EpicGameEngine
 {
+	void Input::OnEvent(std::shared_ptr<Event> e)
+	{
+		EventDispatcher dispatcher(e);
+		dispatcher.Dispatch<MousePressedEvent>(EGE_BIND_EVENT_FN(Input::OnMousePressed));
+		dispatcher.Dispatch<MouseReleasedEvent>(EGE_BIND_EVENT_FN(Input::OnMouseReleased));
+	}
+
 	// TODO: Rewrite this to use our Event system instead of unreadable SDL code
 	auto Input::isMouseButtonPressed(const MouseCode button) -> bool
 	{
+
 		int x, y;
 		Uint32 buttons = SDL_GetMouseState(&x, &y);
 		if (button == 0 && (buttons & SDL_BUTTON_LMASK) != 0)
@@ -41,5 +50,13 @@ namespace EpicGameEngine
 		int y;
 		Uint32 buttons = SDL_GetMouseState(NULL, &y);
 		return (float) y;
+	}
+	bool Input::OnMouseReleased(MouseReleasedEvent& e)
+	{
+		return true;
+	}
+	bool Input::OnMousePressed(MousePressedEvent& e)
+	{
+		return true;
 	}
 }

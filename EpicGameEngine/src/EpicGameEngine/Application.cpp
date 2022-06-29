@@ -8,6 +8,9 @@
 #include <EpicGameEngine/Events/EventConversion.h>
 #include <EpicGameEngine/Renderer/Renderer.h>
 #include <EpicGameEngine/ImGui/ImGuiLayer.h>
+#include <EpicGameEngine/Input/Input.h>
+#include <imgui.h>
+#include <imgui_impl_sdl.h>
 #include <sdl_gpu.h>
 
 namespace EpicGameEngine
@@ -56,8 +59,9 @@ namespace EpicGameEngine
 	{
 		if (SDL_PollEvent(&e))
 		{
+
 			event = SDL_Event_to_Event(&e);
-			Application::OnEvent(event);
+			ImGui_ImplSDL2_ProcessEvent(&e);
 			for (auto it = layers.layers.rbegin(); it != layers.layers.rend(); it++)
 			{
 				if (event == nullptr)
@@ -68,6 +72,7 @@ namespace EpicGameEngine
 				}
 				(*it)->OnEvent(event);
 			}
+			Application::OnEvent(event);
 		}	
 	}
 
@@ -79,6 +84,10 @@ namespace EpicGameEngine
 		if (e->GetEventType() == EventType::WindowClose || e->GetEventType() == EventType::WindowResize)
 		{
 			window->OnEvent(e);
+		}
+		if (e->GetEventType() == EventType::MousePressed || e->GetEventType() == EventType::MouseReleased)
+		{
+			InputSystem.OnEvent(e);
 		}
 	}
 }

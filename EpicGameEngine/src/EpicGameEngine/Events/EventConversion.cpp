@@ -22,6 +22,33 @@ namespace EpicGameEngine
                         break;
                 }
                 break;
+            case SDL_MOUSEBUTTONDOWN:
+            //if (event->button.button == SDL_BUTTON_LEFT)
+            //    return std::make_shared<MousePressedEvent>(Mouse::ButtonLeft);
+            //    break;
+                switch(event->button.button)
+                {
+                    case SDL_BUTTON_LEFT:
+                        return std::make_shared<MousePressedEvent>(Mouse::ButtonLeft);
+                        break;
+                    case SDL_BUTTON_RIGHT:
+                        return std::make_shared<MousePressedEvent>(Mouse::ButtonRight);
+                        break;
+                    case SDL_BUTTON_MIDDLE:
+                        return std::make_shared<MousePressedEvent>(Mouse::ButtonMiddle);
+                }
+            case SDL_MOUSEBUTTONUP: 
+                switch(event->button.button)
+                {
+                    case SDL_BUTTON_LEFT:
+                        return std::make_shared<MouseReleasedEvent>(Mouse::ButtonLeft);
+                        break;
+                    case SDL_BUTTON_RIGHT:
+                        return std::make_shared<MouseReleasedEvent>(Mouse::ButtonRight);
+                        break;
+                    case SDL_BUTTON_MIDDLE:
+                        return std::make_shared<MouseReleasedEvent>(Mouse::ButtonMiddle);
+                }
         }
         return nullptr;
     }
