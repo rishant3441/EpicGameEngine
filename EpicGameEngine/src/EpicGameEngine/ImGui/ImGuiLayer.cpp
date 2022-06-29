@@ -5,6 +5,7 @@
 #include <EpicGameEngine/Renderer/Renderer.h>
 #include <spdlog/spdlog.h>
 
+#include <imgui.h>
 #include <imgui_impl_sdl.h>
 #include <imgui_impl_opengl3.h>
 
@@ -17,7 +18,9 @@ namespace EpicGameEngine
     }
     ImGuiLayer::~ImGuiLayer()
     {
-
+        ImGui_ImplOpenGL3_Shutdown();
+        ImGui_ImplSDL2_Shutdown();
+        ImGui::DestroyContext();
     }
     void ImGuiLayer::OnAttach()
     {
@@ -35,7 +38,9 @@ namespace EpicGameEngine
     }
     void ImGuiLayer::OnDetach()
     {
-
+        ImGui_ImplOpenGL3_Shutdown();
+        ImGui_ImplSDL2_Shutdown();
+        ImGui::DestroyContext();
     }
     void ImGuiLayer::OnUpdate()
     {
@@ -47,11 +52,16 @@ namespace EpicGameEngine
 
         static bool show = true;
         ImGui::ShowDemoWindow(&show);
-        SDL_Event e; 
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-        ImGui::UpdatePlatformWindows();
-        ImGui::RenderPlatformWindowsDefault();
+        if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        {
+            SDL_Window* backup_current_window = SDL_GL_GetCurrentWindow();
+            SDL_GLContext backup_current_context = SDL_GL_GetCurrentContext();
+            ImGui::UpdatePlatformWindows();
+            ImGui::RenderPlatformWindowsDefault();
+            SDL_GL_MakeCurrent(backup_current_window, backup_current_context);
+        }
     }
 }
