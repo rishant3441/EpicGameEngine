@@ -31,3 +31,8 @@
 // GAMEOBJECTS:
 #include <EpicGameEngine/GameObjects/GameObject.h>
 #include <EpicGameEngine/GameObjects/Rectangle.h>
+
+// CAMERA:
+#include <EpicGameEngine/Renderer/Camera/CameraController.h>
+
+#include <EpicGameEngine/Renderer/Renderer.h>

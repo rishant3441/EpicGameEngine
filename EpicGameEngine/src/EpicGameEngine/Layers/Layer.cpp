@@ -11,4 +11,9 @@ namespace EpicGameEngine
             gameObjects[i]->Render();
         }
     }
+
+    void Layer::OnImGuiRender()
+    {
+
+    }
 }

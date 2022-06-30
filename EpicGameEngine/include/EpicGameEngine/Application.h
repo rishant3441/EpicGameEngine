@@ -5,6 +5,7 @@
 #include <EpicGameEngine/Layers/LayerArray.h>
 #include <EpicGameEngine/Events/Event.h>
 #include <EpicGameEngine/Input/Input.h>
+#include <EpicGameEngine/ImGui/ImGuiLayer.h>
 #include <EpicGameEngine/ege_pch.h>
 namespace EpicGameEngine
 {
@@ -26,6 +27,10 @@ namespace EpicGameEngine
 		LayerArray layers; 
 
 		Input InputSystem;
+
+		ImGuiLayer* m_ImGuiLayer;
+
+		GPU_Camera camera;
 	private: 
 		void PollEvents(SDL_Event e);	
 	};

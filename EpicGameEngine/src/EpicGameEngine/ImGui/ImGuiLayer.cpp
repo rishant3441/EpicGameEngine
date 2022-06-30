@@ -33,6 +33,8 @@ namespace EpicGameEngine
         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
         io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
+
+
         ImGui_ImplSDL2_InitForOpenGL(WindowsWindow::window, SDL_GL_GetCurrentContext());
         ImGui_ImplOpenGL3_Init("#version 120");
     }
@@ -42,26 +44,26 @@ namespace EpicGameEngine
         ImGui_ImplSDL2_Shutdown();
         ImGui::DestroyContext();
     }
-    void ImGuiLayer::OnUpdate()
+    void ImGuiLayer::BeginFrame()
     {
         ImGui_ImplSDL2_NewFrame();
         ImGui_ImplOpenGL3_NewFrame();
 
-
         ImGui::NewFrame();
-
+    }
+    void ImGuiLayer::OnImGuiRender()
+    {
         static bool show = true;
         ImGui::ShowDemoWindow(&show);
-
+    }
+    void ImGuiLayer::EndFrame()
+    {
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-        if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-        {
-            SDL_Window* backup_current_window = SDL_GL_GetCurrentWindow();
-            SDL_GLContext backup_current_context = SDL_GL_GetCurrentContext();
-            ImGui::UpdatePlatformWindows();
-            ImGui::RenderPlatformWindowsDefault();
-            SDL_GL_MakeCurrent(backup_current_window, backup_current_context);
-        }
+		SDL_Window* backup_current_window = SDL_GL_GetCurrentWindow();
+		SDL_GLContext backup_current_context = SDL_GL_GetCurrentContext();
+		ImGui::UpdatePlatformWindows();
+		ImGui::RenderPlatformWindowsDefault();
+		SDL_GL_MakeCurrent(backup_current_window, backup_current_context);
     }
 }

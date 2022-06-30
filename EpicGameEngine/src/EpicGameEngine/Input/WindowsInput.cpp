@@ -51,6 +51,48 @@ namespace EpicGameEngine
 		Uint32 buttons = SDL_GetMouseState(NULL, &y);
 		return (float) y;
 	}
+
+	bool Input::isKeyPressed(KeyCode key)
+	{
+		// TODO: Make this better
+		const Uint8* state = SDL_GetKeyboardState(NULL);
+		if (key == Keyboard::W)
+			if (state[SDL_SCANCODE_W])
+				return true;
+			else
+				return false;
+		if (key == Keyboard::A)
+			if (state[SDL_SCANCODE_A])
+				return true;
+			else
+				return false;
+
+		if (key == Keyboard::S)
+			if (state[SDL_SCANCODE_S])
+				return true;
+			else
+				return false;
+
+		if (key == Keyboard::D)
+			if (state[SDL_SCANCODE_D])
+				return true;
+			else
+				return false;
+		
+		if (key == Keyboard::E)
+			if (state[SDL_SCANCODE_E])
+				return true;
+			else
+				return false;
+
+		if (key == Keyboard::R)
+			if (state[SDL_SCANCODE_R])
+				return true;
+			else
+				return false;
+		return false;
+	}
+
 	bool Input::OnMouseReleased(MouseReleasedEvent& e)
 	{
 		return true;
@@ -59,4 +101,5 @@ namespace EpicGameEngine
 	{
 		return true;
 	}
+	
 }

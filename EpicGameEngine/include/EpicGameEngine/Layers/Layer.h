@@ -18,9 +18,11 @@ namespace EpicGameEngine
         virtual void OnAttach() {}
         virtual void OnDetach() {}
         virtual void OnUpdate() {}
-        void OnRender();
+        virtual void OnImGuiRender();
         virtual void OnEvent(std::shared_ptr<Event> e)  {}
         
+        void OnRender();
+
         const std::string& GetName() const { return name; }
 
         std::vector<GameObject*> gameObjects{};

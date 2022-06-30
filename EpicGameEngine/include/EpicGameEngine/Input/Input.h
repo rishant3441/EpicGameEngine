@@ -13,6 +13,7 @@ namespace EpicGameEngine
 		void OnEvent(std::shared_ptr<Event> e);
 
 		static bool isMouseButtonPressed(MouseCode button);
+		static bool isKeyPressed(KeyCode key);
 		static float GetMouseX();
 		static float GetMouseY();
 	private:

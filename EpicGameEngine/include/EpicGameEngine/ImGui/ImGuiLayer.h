@@ -1,3 +1,4 @@
+#pragma once
 #include <EpicGameEngine/ege_pch.h>
 #include <EpicGameEngine/Layers/Layer.h>
 #include <EpicGameEngine/Events/Event.h>
@@ -13,6 +14,8 @@ namespace EpicGameEngine
 
         void OnAttach();
         void OnDetach();
-        void OnUpdate();
+        void BeginFrame();
+        void OnImGuiRender();
+        void EndFrame();
     };
 }

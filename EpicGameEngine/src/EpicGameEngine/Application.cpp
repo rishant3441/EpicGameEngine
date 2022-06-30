@@ -9,6 +9,7 @@
 #include <EpicGameEngine/Renderer/Renderer.h>
 #include <EpicGameEngine/ImGui/ImGuiLayer.h>
 #include <EpicGameEngine/Input/Input.h>
+#include <EpicGameEngine/Renderer/Camera/CameraController.h>
 #include <imgui.h>
 #include <imgui_impl_sdl.h>
 #include <sdl_gpu.h>
@@ -18,17 +19,23 @@ namespace EpicGameEngine
 	Application::Application()
 	= default;
 	Application::~Application()
-	= default;
+	{
+		delete m_ImGuiLayer;
+	}
 
 	// TODO: Rewrite this to use our new event system when it is complete.
 	void Application::Run()
 	{
 		window = std::unique_ptr<Window>(Window::CreateWindow());
 
+		m_ImGuiLayer = new ImGuiLayer();
+		m_ImGuiLayer->OnAttach();
+
+		CameraController::UpdateCamera();
+		
 		spdlog::info("EpicGameEngine Initialized");
 
 		SDL_Event event{};
-		layers.PushLayer(new ImGuiLayer());
 		while (window->running)
 		{
 			Application::PollEvents(sdlEvent);
@@ -36,20 +43,17 @@ namespace EpicGameEngine
 			GPU_ClearRGBA(Renderer::GetTarget(), 0, 0, 0, 255);
 			for (auto l : layers.layers)
 			{
-				if (!(l->GetName() == "ImGuiLayer"))
-				{
-					l->OnUpdate();
-					l->OnRender();
-				}
+				l->OnUpdate();
+				l->OnRender();
 			}
 			GPU_FlushBlitBuffer();
+			m_ImGuiLayer->BeginFrame();
 			for (auto l : layers.layers)
 			{
-				if (l->GetName() == "ImGuiLayer")
-				{
-					l->OnUpdate();
-				}
+				l->OnImGuiRender();
 			}
+			m_ImGuiLayer->OnImGuiRender();
+			m_ImGuiLayer->EndFrame();
 			window->OnRender();
 		}
 		Renderer::Shutdown();

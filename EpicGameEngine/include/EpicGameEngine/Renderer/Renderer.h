@@ -1,9 +1,11 @@
+#pragma once
 #include <EpicGameEngine/ege_pch.h>
+#include <EpicGameEngine/Core.h>
 #include <EpicGameEngine/Window/Window.h>
 
 namespace EpicGameEngine
 {
-    class Renderer
+    class EPICGAMEENGINE_API Renderer
     {
     public:
         static void Init(const WindowData& data);
