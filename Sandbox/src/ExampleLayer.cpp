@@ -19,7 +19,7 @@ void ExampleLayer::OnUpdate()
 {
     if (Input::isKeyPressed(Keyboard::W))
     {
-        CameraController::camera->y += 10;
+        CameraController::camera->y -= 10;
     }
 
     if (Input::isKeyPressed(Keyboard::A))
@@ -29,7 +29,7 @@ void ExampleLayer::OnUpdate()
 
     if (Input::isKeyPressed(Keyboard::S))
     {
-        CameraController::camera->y -= 10;
+        CameraController::camera->y += 10;
     }
 
     if (Input::isKeyPressed(Keyboard::D))
