@@ -6,6 +6,7 @@
 #include <EpicGameEngine/Events/Event.h>
 #include <EpicGameEngine/Input/Input.h>
 #include <EpicGameEngine/ImGui/ImGuiLayer.h>
+#include <EpicGameEngine/Timestep.h>
 #include <EpicGameEngine/ege_pch.h>
 namespace EpicGameEngine
 {
@@ -33,6 +34,9 @@ namespace EpicGameEngine
 		GPU_Camera camera;
 	private: 
 		void PollEvents(SDL_Event e);	
+
+	private:
+		float lastFrameTime = 0.0f;
 	};
 
 	// To be defined in CLIENT

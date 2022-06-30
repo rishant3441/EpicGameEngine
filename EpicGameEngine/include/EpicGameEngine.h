@@ -32,7 +32,9 @@
 #include <EpicGameEngine/GameObjects/GameObject.h>
 #include <EpicGameEngine/GameObjects/Rectangle.h>
 
-// CAMERA:
+// RENDERING:
+#include <EpicGameEngine/Renderer/Renderer.h>
 #include <EpicGameEngine/Renderer/Camera/CameraController.h>
 
-#include <EpicGameEngine/Renderer/Renderer.h>
+// TIME
+#include <EpicGameEngine/Timestep.h>

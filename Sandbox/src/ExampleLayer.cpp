@@ -15,26 +15,26 @@ void ExampleLayer::OnAttach()
 
 using namespace EpicGameEngine;
 
-void ExampleLayer::OnUpdate()
+void ExampleLayer::OnUpdate(Timestep time)
 {
     if (Input::isKeyPressed(Keyboard::W))
     {
-        CameraController::camera->y -= 10;
+        CameraController::camera->y -= 300 * time.GetSeconds();
     }
 
     if (Input::isKeyPressed(Keyboard::A))
     {
-        CameraController::camera->x -= 10;
+        CameraController::camera->x -= 300 * time.GetSeconds();
     }
 
     if (Input::isKeyPressed(Keyboard::S))
     {
-        CameraController::camera->y += 10;
+        CameraController::camera->y += 300 * time.GetSeconds();
     }
 
     if (Input::isKeyPressed(Keyboard::D))
     {
-        CameraController::camera->x += 10;
+        CameraController::camera->x += 300 * time.GetSeconds();
     }
 
     if (Input::isKeyPressed(Keyboard::E))

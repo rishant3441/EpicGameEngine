@@ -5,5 +5,5 @@ class ExampleLayer : public EpicGameEngine::Layer
 {
 public:
     void OnAttach();
-    void OnUpdate();
+    void OnUpdate(EpicGameEngine::Timestep time);
 };

@@ -2,6 +2,7 @@
 #include <EpicGameEngine/ege_pch.h>
 #include <EpicGameEngine/Events/Event.h>
 #include <EpicGameEngine/GameObjects/GameObject.h>
+#include <EpicGameEngine/Timestep.h>
 
 namespace EpicGameEngine
 {
@@ -17,7 +18,7 @@ namespace EpicGameEngine
 
         virtual void OnAttach() {}
         virtual void OnDetach() {}
-        virtual void OnUpdate() {}
+        virtual void OnUpdate(Timestep time) {}
         virtual void OnImGuiRender();
         virtual void OnEvent(std::shared_ptr<Event> e)  {}
         

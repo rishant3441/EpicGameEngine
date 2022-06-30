@@ -38,12 +38,16 @@ namespace EpicGameEngine
 		SDL_Event event{};
 		while (window->running)
 		{
+			float time = (float) SDL_GetTicks() / 1000;
+			Timestep timestep = time - lastFrameTime;
+			lastFrameTime = time;
+
 			Application::PollEvents(sdlEvent);
 			window->OnUpdate();
 			GPU_ClearRGBA(Renderer::GetTarget(), 0, 0, 0, 255);
 			for (auto l : layers.layers)
 			{
-				l->OnUpdate();
+				l->OnUpdate(timestep);
 				l->OnRender();
 			}
 			GPU_FlushBlitBuffer();
