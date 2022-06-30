@@ -12,6 +12,7 @@ target_sources(IMGUI PRIVATE
     ${IMGUI_DIR}/imgui_widgets.cpp
     ${IMGUI_DIR}/imgui.cpp
     ${IMGUI_DIR}/backends/imgui_impl_sdl.cpp
+    ${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp
 )
 
 target_include_directories(IMGUI PUBLIC ${IMGUI_DIR} PUBLIC ${IMGUI_DIR}/backends PUBLIC ${SDL2_INCLUDE_DIRS})
