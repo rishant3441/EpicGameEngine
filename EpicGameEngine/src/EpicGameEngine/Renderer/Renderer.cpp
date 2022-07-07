@@ -29,7 +29,7 @@ namespace EpicGameEngine
 
     void Renderer::Shutdown()
     {
-        if (enableDrawingToTexture)
+        if (Renderer::enableDrawingToTexture)
             GPU_FreeTarget(Renderer::target);
         GPU_Quit();
     }
@@ -41,7 +41,7 @@ namespace EpicGameEngine
 
     void Renderer::Render()
     {
-        if (Renderer::enableDrawingToTexture == false)
+        if (!Renderer::enableDrawingToTexture)
         {
             GPU_Flip(Renderer::target);
         }
