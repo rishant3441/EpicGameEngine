@@ -1,5 +1,6 @@
 #include <EpicGameEngine/Renderer/Renderer.h>
 #include <EpicGameEngine/Window/Window.h>
+#include <EpicGameEngine/Renderer/Texture.h>
 #include <EpicGameEngine/ege_pch.h>
 #include <spdlog/spdlog.h>
 
@@ -25,7 +26,7 @@ namespace EpicGameEngine
         GPU_Rectangle2(Renderer::GetTarget(), { static_cast<float>(x), static_cast<float>(y), static_cast<float>(w), static_cast<float>(h) }, color);
     }
 
-    void Renderer::DrawTexturedRect(double x, double y, double w, double h, GPU_Image* texture, double rot, SDL_Color color)
+    void Renderer::DrawTexturedRect(double x, double y, double w, double h, const Texture& texture, double rot, SDL_Color color)
     {
         GPU_Rect rect = { static_cast<float>(x), static_cast<float>(y), static_cast<float>(w), static_cast<float>(h) };
         GPU_BlitRectX(texture, nullptr, Renderer::GetTarget(), &rect, rot, 0, 0, GPU_FLIP_VERTICAL);
