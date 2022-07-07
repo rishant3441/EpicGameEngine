@@ -11,6 +11,8 @@ find_package (SDL_gpu REQUIRED)
 
 find_package(OpenGL REQUIRED)
 
+find_package(glew REQUIRED)
+
 add_library(
 	EpicGameEngine STATIC 
 	src/EpicGameEngine/Application.cpp
@@ -29,6 +31,8 @@ target_include_directories(
 	${OPENGL_INCLUDE_DIRS}
 	PUBLIC
 	dependencies/imgui/include/
+	PUBLIC
+	${GLEW_INCLUDE_DIR}
 )
 
 include_directories(
@@ -50,6 +54,7 @@ target_link_libraries(EpicGameEngine PRIVATE spdlog::spdlog)
 target_link_libraries(EpicGameEngine PUBLIC ${SDL2_GPU_LIBRARY_PATH})
 target_link_directories(EpicGameEngine PUBLIC opengl32)
 target_link_libraries(EpicGameEngine PUBLIC IMGUI)
+target_link_libraries(EpicGameEngine PUBLIC ${GLEW_GPU_LIBRARY_PATH})
 
 if (MSVC)
 	target_compile_definitions(

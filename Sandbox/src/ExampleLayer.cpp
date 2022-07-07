@@ -3,6 +3,7 @@
 
 void ExampleLayer::OnAttach()
 {
+    EpicGameEngine::Renderer::enableDrawingToTexture = false;
     SDL_Color color;
     color.a = 255;
     color.r = 255;

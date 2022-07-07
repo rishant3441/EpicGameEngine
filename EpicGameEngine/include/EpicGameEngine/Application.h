@@ -20,7 +20,11 @@ namespace EpicGameEngine
 
 		void OnEvent(std::shared_ptr<Event> e);
 
-		std::unique_ptr<Window> window;
+		void Close();
+
+		static Application& Get() { return *Instance;  }
+
+		std::shared_ptr<Window> window;
 
 		SDL_Event sdlEvent{};
 		std::shared_ptr<Event> event = nullptr; 
@@ -36,6 +40,7 @@ namespace EpicGameEngine
 		void PollEvents(SDL_Event e);	
 
 	private:
+		static Application* Instance;
 		float lastFrameTime = 0.0f;
 	};
 
