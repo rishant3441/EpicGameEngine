@@ -3,17 +3,11 @@
 
 namespace EpicGameEngine
 {
-    struct EPICGAMEENGINE_API Vector2
-    {
-        double x, y;
-    };
     class EPICGAMEENGINE_API GameObject
     {
     public:
         GameObject() = default;
         virtual ~GameObject() = default;
-
-        Vector2 position;
 
         virtual void Render() = 0;
         virtual void Shutdown() = 0;
