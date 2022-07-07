@@ -39,4 +39,7 @@ bin-int/
 out/
 build/
 
+# CLion
+.idea/
+
 CMakeSettings.json
