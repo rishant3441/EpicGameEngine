@@ -29,6 +29,8 @@ target_include_directories(
 	${OPENGL_INCLUDE_DIRS}
 	PUBLIC
 	dependencies/imgui/include/
+	PUBLIC
+	dependencies/glm/
 )
 
 include_directories(

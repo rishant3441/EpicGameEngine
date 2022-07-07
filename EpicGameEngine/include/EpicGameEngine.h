@@ -5,6 +5,7 @@
 #include <EpicGameEngine/Application.h>
 #include "SDL.h"
 #include <SDL_gpu.h>
+#include <glm/glm.hpp>
 
 // WINDOW:
 #include <EpicGameEngine/Window/Window.h>
