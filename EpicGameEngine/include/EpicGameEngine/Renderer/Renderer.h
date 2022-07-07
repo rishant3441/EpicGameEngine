@@ -12,6 +12,10 @@ namespace EpicGameEngine
         static void Shutdown();
         static auto GetTarget() -> GPU_Target*;
 
+        static void DrawRect(double x, double y, double w, double h, double rot = 0, SDL_Color color = { 255, 0, 0, 255 });
+        static void DrawTexturedRect(double x, double y, double w, double h, GPU_Image* texture, double rot = 0, SDL_Color color = { 255, 0, 0, 255 });
+        static void DrawFilledRect(double x, double y, double w, double h, double rot = 0, SDL_Color color = { 255, 0, 0, 255 });
+
         inline static GPU_Target* target;
     };
 }
