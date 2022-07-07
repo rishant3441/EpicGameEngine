@@ -10,9 +10,9 @@ target_link_directories(Demo PRIVATE ${EGE_LIB_DIR})
 target_link_libraries(Demo PRIVATE EpicGameEngine)
 target_link_libraries(Demo PUBLIC ${SDL2_LIBRARIES})
 
-if (MSVC)
-	add_custom_command(
-		TARGET Demo POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:EpicGameEngine>" "$<TARGET_FILE_DIR:Demo>"
-	)
-endif()
+#if (MSVC)
+#	add_custom_command(
+#		TARGET Demo POST_BUILD
+#		COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:EpicGameEngine>" "$<TARGET_FILE_DIR:Demo>"
+#	)
+#endif()

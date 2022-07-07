@@ -4,7 +4,7 @@
 	#ifdef EGE_BUILD_DLL
 		#define EPICGAMEENGINE_API __declspec(dllexport)
 	#else
-		#define EPICGAMEENGINE_API __declspec(dllimport)
+		#define EPICGAMEENGINE_API
 	#endif
 #else
 	#error Epic Game Engine only supports Windows!
