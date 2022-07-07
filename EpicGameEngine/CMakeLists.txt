@@ -31,6 +31,8 @@ target_include_directories(
 	dependencies/imgui/include/
 	PUBLIC
 	dependencies/glm/
+	PUBLIC
+	dependencies/entt/include
 )
 
 include_directories(
