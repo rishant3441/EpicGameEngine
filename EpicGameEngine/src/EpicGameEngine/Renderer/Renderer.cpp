@@ -8,6 +8,7 @@ namespace EpicGameEngine
 {
     void Renderer::Init(const WindowData& data)
     {
+        unitSize = 50; /// Default size for scaling shapes
         Renderer::target = GPU_Init(data.width, data.height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
     }
 
