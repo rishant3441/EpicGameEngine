@@ -9,12 +9,17 @@
 
 namespace EpicGameEngine
 {
+    class GameObject;
+
     class Scene
     {
     public:
         Scene() = default;
         ~Scene() = default;
+
+        GameObject CreateGameObject(const std::string& name = std::string());
     private:
         entt::registry registry;
+        friend class GameObject;
     };
 }
