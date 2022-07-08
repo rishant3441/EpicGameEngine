@@ -8,7 +8,8 @@ namespace EpicGameEngine
     {
         for (int i = 0; i < Layer::gameObjects.size(); i++)
         {
-            gameObjects[i]->Render();
+            // WIL BE SWITCHED TO ECS WHEN SETUP
+            //gameObjects[i]->Render();
         }
     }
 

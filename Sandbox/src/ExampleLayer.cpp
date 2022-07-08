@@ -8,8 +8,8 @@ void ExampleLayer::OnAttach()
     color.r = 255;
     color.g = 0;
     color.b = 0;
-    auto* rect = new EpicGameEngine::Rectangle(600, 350, 50, 50, "Rectangle", color);
-    gameObjects.push_back(rect);
+    //auto* rect = new EpicGameEngine::Rectangle(600, 350, 50, 50, "Rectangle", color);
+    //gameObjects.push_back(rect);
     EpicGameEngine::CameraController::CreateCamera();
 }
 
