@@ -12,6 +12,8 @@ void ExampleLayer::OnAttach()
     color.b = 0;
     auto rect = activeScene->CreateGameObject("Rectangle");
     rect.AddComponent<EpicGameEngine::SpriteRendererComponent>(color);
+    rect.GetComponent<EpicGameEngine::TransformComponent>().Position.x = 590;
+    rect.GetComponent<EpicGameEngine::TransformComponent>().Position.y = 310;
 
     EpicGameEngine::CameraController::CreateCamera();
 }
