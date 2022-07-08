@@ -11,6 +11,12 @@
 
 namespace EpicGameEngine
 {
+    /// Holds name of the Game Object
+    /**
+     *
+     *  Holds the name of the GameObject with an std::string, passed in with move semantics.
+     *
+     * */
     struct NameComponent
     {
         std::string name;

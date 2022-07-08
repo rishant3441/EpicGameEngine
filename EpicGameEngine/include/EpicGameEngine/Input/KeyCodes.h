@@ -1,6 +1,9 @@
 #pragma once
 #include <EpicGameEngine/ege_pch.h>
 
+/**
+ * Stores ASCII Keycodes in an enum
+ */
 
 namespace EpicGameEngine
 {
