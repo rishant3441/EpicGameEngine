@@ -7,9 +7,21 @@
 
 #pragma once
 #include <EpicGameEngine/ege_pch.h>
+#include <EpicGameEngine/Renderer/Texture.h>
 
 namespace EpicGameEngine
 {
+    struct NameComponent
+    {
+        std::string name;
+
+        NameComponent() = default;
+        NameComponent(const NameComponent&) = default;
+        NameComponent(const std::string& name)
+            : name(name)
+        {}
+    };
+
     struct TransformComponent
     {
         glm::vec2 Position = { 0.0f, 0.0f };
