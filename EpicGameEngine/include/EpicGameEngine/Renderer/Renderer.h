@@ -18,5 +18,7 @@ namespace EpicGameEngine
         static void DrawFilledRect(double x, double y, double w, double h, double rot = 0, SDL_Color color = { 255, 0, 0, 255 });
 
         inline static GPU_Target* target;
+
+        inline static int unitSize;
     };
 }

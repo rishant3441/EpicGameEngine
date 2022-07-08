@@ -31,6 +31,8 @@
 
 // GAMEOBJECTS:
 #include <EpicGameEngine/GameObjects/GameObject.h>
+#include <EpicGameEngine/GameObjects/Scene.h>
+#include <EpicGameEngine/GameObjects/Components.h>
 
 // RENDERING:
 #include <EpicGameEngine/Renderer/Renderer.h>

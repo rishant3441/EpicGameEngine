@@ -6,6 +6,7 @@
 
 #include <entt.hpp>
 #include <EpicGameEngine/ege_pch.h>
+#include <EpicGameEngine/Timestep.h>
 
 namespace EpicGameEngine
 {
@@ -18,8 +19,11 @@ namespace EpicGameEngine
         ~Scene() = default;
 
         GameObject CreateGameObject(const std::string& name = std::string());
-    private:
+
+        void OnRender();
+
         entt::registry registry;
+    private:
         friend class GameObject;
     };
 }

@@ -12,7 +12,10 @@ namespace EpicGameEngine
     class Texture
     {
     public:
-        Texture() = default;
+        Texture()
+        {
+            texture = nullptr;
+        }
         ~Texture() = default;
 
         int LoadImage(const std::string& filePath);
@@ -22,7 +25,7 @@ namespace EpicGameEngine
         operator GPU_Image*() const { return texture; }
 
     private:
-        GPU_Image* texture;
+        GPU_Image* texture = nullptr;
     };
 }
 
