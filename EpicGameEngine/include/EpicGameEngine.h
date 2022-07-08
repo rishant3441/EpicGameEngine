@@ -31,7 +31,6 @@
 
 // GAMEOBJECTS:
 #include <EpicGameEngine/GameObjects/GameObject.h>
-#include <EpicGameEngine/GameObjects/Rectangle.h>
 
 // RENDERING:
 #include <EpicGameEngine/Renderer/Renderer.h>
