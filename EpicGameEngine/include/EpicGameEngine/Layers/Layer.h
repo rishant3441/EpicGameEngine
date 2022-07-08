@@ -3,14 +3,17 @@
 #include <EpicGameEngine/Events/Event.h>
 #include <EpicGameEngine/GameObjects/GameObject.h>
 #include <EpicGameEngine/Timestep.h>
+#include <EpicGameEngine/GameObjects/Scene.h>
+
+#include <utility>
 
 namespace EpicGameEngine
 {
     class EPICGAMEENGINE_API Layer
     {
     public:
-        Layer(const std::string& name = "Layer")
-        : name(name)
+        Layer(std::string name = "Layer")
+        : name(std::move(name))
         {
 
         }
@@ -24,7 +27,7 @@ namespace EpicGameEngine
         
         void OnRender();
 
-        const std::string& GetName() const { return name; }
+        [[nodiscard]] const std::string& GetName() const { return name; }
 
         std::vector<GameObject*> gameObjects{};
     private:
