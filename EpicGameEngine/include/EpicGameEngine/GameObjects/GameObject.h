@@ -46,6 +46,7 @@ namespace EpicGameEngine
             scene->registry.remove<T>(entityHandle);
         }
 
+        operator entt::entity() { return entityHandle; }
         operator bool() const { return entityHandle != entt::null; }
 
     private:
