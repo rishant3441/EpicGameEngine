@@ -13,8 +13,6 @@ namespace EpicGameEngine
 		color.r = 255;
 		color.g = 0;
 		color.b = 0;
-		auto* rect = new EpicGameEngine::Rectangle(100, 100, 50, 50, "Rectangle", color);
-		gameObjects.push_back(rect);
 		EpicGameEngine::CameraController::CreateCamera();
 	}
 
@@ -33,7 +31,7 @@ namespace EpicGameEngine
 		if (dockingEnabled)
 		{
 			static bool dockspaceOpen = true;
-			static bool opt_fullscreen_persistant = false;
+			static bool opt_fullscreen_persistant = true;
 			bool opt_fullscreen = opt_fullscreen_persistant;
 			static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
 
@@ -93,22 +91,8 @@ namespace EpicGameEngine
 			}
 			
 
-			ImGui::Begin("Settings");
-			ImGui::Text("Renderer Stats:");
-
-			/*auto stats = Hazel::Renderer2D::GetStats();
-			ImGui::Text("Renderer2D Stats:");
-			ImGui::Text("Draw Calls: %d", stats.DrawCalls);
-			ImGui::Text("Quads: %d", stats.QuadCount);
-			ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
-			ImGui::Text("Indices: %d", stats.GetTotalIndexCount());*/
-
-			//ImGui::ColorEdit4("Square Color", glm::value_ptr(m_SquareColor));
-
-			//uint32_t textureID = m_CheckerboardTexture->GetRendererID();
-			//ImGui::Image((void*)textureID, ImVec2{ 256.0f, 256.0f });
+			ImGui::Begin("Viewport");
 			ImVec2 viewportSize = ImGui::GetContentRegionAvail();
-			//assert((void*) GPU_GetTextureHandle(Renderer::texture) != nullptr && "YOOO");
 			void* textureID = (void*) GPU_GetTextureHandle(Renderer::texture);
 			ImGui::Image(textureID, ImVec2{ viewportSize.x, viewportSize.y });
 			ImGui::End();

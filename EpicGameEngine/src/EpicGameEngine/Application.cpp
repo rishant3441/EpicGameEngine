@@ -52,10 +52,10 @@ namespace EpicGameEngine
 
 			Application::PollEvents(sdlEvent);
 			window->OnUpdate();
-			GPU_ClearRGBA(Renderer::GetTarget(), 0, 0, 255, 255);
+			GPU_ClearRGBA(Renderer::GetTarget(), 0, 0, 0, 255);
 			if (Renderer::enableDrawingToTexture)
 			{
-				GPU_ClearRGBA(Renderer::window, 0, 255, 0, 255);
+				GPU_ClearRGBA(Renderer::window, 0, 0, 0, 255);
 			}
 			for (auto l : layers.layers)
 			{
