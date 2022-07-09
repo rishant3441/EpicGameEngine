@@ -5,6 +5,10 @@
 #include <EpicGameEngine/Input/MouseCodes.h>
 #include <EpicGameEngine/Input/KeyCodes.h>
 
+/**
+ *  Interface to check for mouse and keyboard inputs
+ */
+
 namespace EpicGameEngine
 {
 	class EPICGAMEENGINE_API Input
