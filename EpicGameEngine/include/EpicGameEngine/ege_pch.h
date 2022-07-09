@@ -13,4 +13,5 @@
 #include <vector>
 #include <SDL.h>
 #include <SDL_gpu.h>
+#include <glm/glm.hpp>
 #include "Core.h"

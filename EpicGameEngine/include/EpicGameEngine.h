@@ -5,6 +5,7 @@
 #include <EpicGameEngine/Application.h>
 #include "SDL.h"
 #include <SDL_gpu.h>
+#include <glm/glm.hpp>
 
 // WINDOW:
 #include <EpicGameEngine/Window/Window.h>
@@ -30,7 +31,8 @@
 
 // GAMEOBJECTS:
 #include <EpicGameEngine/GameObjects/GameObject.h>
-#include <EpicGameEngine/GameObjects/Rectangle.h>
+#include <EpicGameEngine/GameObjects/Scene.h>
+#include <EpicGameEngine/GameObjects/Components.h>
 
 // RENDERING:
 #include <EpicGameEngine/Renderer/Renderer.h>

@@ -2,6 +2,7 @@
 #include <EpicGameEngine/Window/Window.h>
 #include <EpicGameEngine/Window/WindowsWindow.h>
 #include <cassert>
+#include <EpicGameEngine/Renderer/Texture.h>
 #include <EpicGameEngine/ege_pch.h>
 #include <spdlog/spdlog.h>
 
@@ -13,11 +14,11 @@ namespace EpicGameEngine
         if (!enableDrawingToTexture)
         {
             GPU_SetInitWindow(SDL_GetWindowID(WindowsWindow::window));
-			Renderer::target = GPU_Init(data.width, data.height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+			      Renderer::target = GPU_Init(data.width, data.height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
         }
         else
         {
-		    GPU_SetInitWindow(SDL_GetWindowID(WindowsWindow::window));
+		        GPU_SetInitWindow(SDL_GetWindowID(WindowsWindow::window));
             Renderer::window = GPU_Init(data.width, data.height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 
             Renderer::texture = GPU_CreateImage(800, 600, GPU_FORMAT_RGB);
@@ -25,6 +26,7 @@ namespace EpicGameEngine
             Renderer::target = Renderer::texture->target;
             GPU_MakeCurrent(Renderer::window, SDL_GetWindowID(WindowsWindow::window));
         }
+        unitSize = 50; /// Default size for scaling shapes
     }
 
     void Renderer::Shutdown()
@@ -49,7 +51,22 @@ namespace EpicGameEngine
         {
             GPU_Flip(Renderer::window);
             GPU_Flip(Renderer::GetTarget());
-            //texture = GPU_CopyImageFromTarget(Renderer::target);
         }
+    }
+    
+    void Renderer::DrawRect(double x, double y, double w, double h, double rot, SDL_Color color)
+    {
+        GPU_Rectangle2(Renderer::GetTarget(), { static_cast<float>(x), static_cast<float>(y), static_cast<float>(w), static_cast<float>(h) }, color);
+    }
+
+    void Renderer::DrawTexturedRect(double x, double y, double w, double h, const Texture& texture, double rot, SDL_Color color)
+    {
+        GPU_Rect rect = { static_cast<float>(x), static_cast<float>(y), static_cast<float>(w), static_cast<float>(h) };
+        GPU_BlitRectX(texture, nullptr, Renderer::GetTarget(), &rect, rot, 0, 0, GPU_FLIP_VERTICAL);
+    }
+
+    void Renderer::DrawFilledRect(double x, double y, double w, double h, double rot, SDL_Color color)
+    {
+        GPU_RectangleFilled2(Renderer::GetTarget(), { static_cast<float>(x), static_cast<float>(y), static_cast<float>(w), static_cast<float>(h) }, color);
     }
 }

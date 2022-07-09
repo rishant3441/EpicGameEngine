@@ -4,17 +4,28 @@
 void ExampleLayer::OnAttach()
 {
     EpicGameEngine::Renderer::enableDrawingToTexture = false;
+    activeScene = std::make_shared<EpicGameEngine::Scene>();
+
     SDL_Color color;
     color.a = 255;
     color.r = 255;
     color.g = 0;
     color.b = 0;
-    auto* rect = new EpicGameEngine::Rectangle(600, 350, 50, 50, "Rectangle", color);
-    gameObjects.push_back(rect);
+    
+    auto rect = activeScene->CreateGameObject("Rectangle");
+    rect.AddComponent<EpicGameEngine::SpriteRendererComponent>(color);
+    rect.GetComponent<EpicGameEngine::TransformComponent>().Position.x = 590;
+    rect.GetComponent<EpicGameEngine::TransformComponent>().Position.y = 310;
+
     EpicGameEngine::CameraController::CreateCamera();
 }
 
 using namespace EpicGameEngine;
+
+void ExampleLayer::OnRender()
+{
+    activeScene->OnRender();
+}
 
 void ExampleLayer::OnUpdate(Timestep time)
 {
