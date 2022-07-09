@@ -1,6 +1,4 @@
 #pragma once
-#include <utility>
-
 #include "EpicGameEngine/Core.h"
 #include "EpicGameEngine/ege_pch.h"
 #include "EpicGameEngine/Events/Event.h"

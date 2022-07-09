@@ -3,6 +3,7 @@
 
 void ExampleLayer::OnAttach()
 {
+    EpicGameEngine::Renderer::enableDrawingToTexture = false;
     activeScene = std::make_shared<EpicGameEngine::Scene>();
 
     SDL_Color color;
@@ -10,6 +11,7 @@ void ExampleLayer::OnAttach()
     color.r = 255;
     color.g = 0;
     color.b = 0;
+    
     auto rect = activeScene->CreateGameObject("Rectangle");
     rect.AddComponent<EpicGameEngine::SpriteRendererComponent>(color);
     rect.GetComponent<EpicGameEngine::TransformComponent>().Position.x = 590;

@@ -16,8 +16,12 @@
 
 namespace EpicGameEngine
 {
+	Application* Application::Instance = nullptr;
+
 	Application::Application()
-	= default;
+	{
+		Instance = this;
+	}
 	Application::~Application()
 	{
 		delete m_ImGuiLayer;
@@ -26,7 +30,7 @@ namespace EpicGameEngine
 	// TODO: Rewrite this to use our new event system when it is complete.
 	void Application::Run()
 	{
-		window = std::unique_ptr<Window>(Window::CreateWindow());
+		window = std::shared_ptr<Window>(Window::CreateWindow());
 
 		m_ImGuiLayer = new ImGuiLayer();
 		m_ImGuiLayer->OnAttach();
@@ -36,6 +40,10 @@ namespace EpicGameEngine
 		spdlog::info("EpicGameEngine Initialized");
 
 		SDL_Event event{};
+
+
+		window->OnRender();
+
 		while (window->running)
 		{
 			float time = (float) SDL_GetTicks() / 1000;
@@ -45,6 +53,10 @@ namespace EpicGameEngine
 			Application::PollEvents(sdlEvent);
 			window->OnUpdate();
 			GPU_ClearRGBA(Renderer::GetTarget(), 0, 0, 0, 255);
+			if (Renderer::enableDrawingToTexture)
+			{
+				GPU_ClearRGBA(Renderer::window, 0, 0, 0, 255);
+			}
 			for (auto l : layers.layers)
 			{
 				l->OnUpdate(timestep);
@@ -97,5 +109,11 @@ namespace EpicGameEngine
 		{
 			InputSystem.OnEvent(e);
 		}
+	}
+
+	void Application::Close()
+	{
+		window->running = false;
+		Renderer::Shutdown();
 	}
 }
