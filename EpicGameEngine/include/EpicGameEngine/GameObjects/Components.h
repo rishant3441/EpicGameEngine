@@ -8,6 +8,7 @@
 #pragma once
 #include <EpicGameEngine/ege_pch.h>
 #include <EpicGameEngine/Renderer/Texture.h>
+#include <EpicGameEngine/GameObjects/GameObject.h>
 
 namespace EpicGameEngine
 {
@@ -51,5 +52,21 @@ namespace EpicGameEngine
         SpriteRendererComponent(const SDL_Color& color)
             : Color(color)
         {}
+    };
+
+    struct NativeScriptComponent
+    {
+        ScriptableGameObject* Instance = nullptr;
+
+        ScriptableGameObject*(*InstantiateScript)();
+        void (*DeleteScript)(NativeScriptComponent*);
+
+        template<typename T>
+        void Bind()
+        {
+            InstantiateScript = []() { return static_cast<ScriptableGameObject*>(new T()); };
+            DeleteScript = [](NativeScriptComponent* script) { delete script->Instance; script->Instance = nullptr; };
+        }
+
     };
 }

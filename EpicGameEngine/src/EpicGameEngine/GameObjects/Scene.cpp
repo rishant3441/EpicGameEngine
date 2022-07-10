@@ -18,8 +18,20 @@ namespace EpicGameEngine
        return gameObject;
     }
 
-    void Scene::OnRender()
+    void Scene::OnUpdate(Timestep ts)
     {
+        registry.view<NativeScriptComponent>().each([=](auto gameObject, auto& script)
+        {
+            if (!script.Instance)
+            {
+                script.Instance = script.InstantiateScript();
+                script.Instance->gameObject = {gameObject, this };
+                script.Instance->OnStart();
+            }
+
+            script.Instance->OnUpdate(ts);
+        });
+
         auto group = registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
         for (auto gameobject : group)
         {

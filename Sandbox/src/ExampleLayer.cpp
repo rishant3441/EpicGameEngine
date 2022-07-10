@@ -24,7 +24,7 @@ using namespace EpicGameEngine;
 
 void ExampleLayer::OnRender()
 {
-    activeScene->OnRender();
+    activeScene->OnUpdate();
 }
 
 void ExampleLayer::OnUpdate(Timestep time)

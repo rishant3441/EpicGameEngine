@@ -21,7 +21,7 @@ namespace EpicGameEngine
 		        GPU_SetInitWindow(SDL_GetWindowID(WindowsWindow::window));
             Renderer::window = GPU_Init(data.width, data.height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 
-            Renderer::texture = GPU_CreateImage(800, 600, GPU_FORMAT_RGB);
+            Renderer::texture = GPU_CreateImage(1024, 576, GPU_FORMAT_RGB);
             GPU_LoadTarget(Renderer::texture);
             Renderer::target = Renderer::texture->target;
             GPU_MakeCurrent(Renderer::window, SDL_GetWindowID(WindowsWindow::window));

@@ -20,7 +20,7 @@ namespace EpicGameEngine
 
         GameObject CreateGameObject(const std::string& name = std::string());
 
-        void OnRender();
+        void OnUpdate(Timestep ts);
 
         entt::registry registry;
     private:

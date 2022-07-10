@@ -8,8 +8,11 @@ namespace EpicGameEngine
 	public:
 		~EditorLayer();
 
-		void OnAttach();
-		void OnUpdate(Timestep time);
-		void OnImGuiRender();
+		void OnAttach() override;
+		void OnUpdate(Timestep time) override;
+		void OnRender() override;
+		void OnImGuiRender() override;
+
+        std::shared_ptr<EpicGameEngine::Scene> activeScene;
 	};
 }

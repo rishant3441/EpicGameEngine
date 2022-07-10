@@ -7,12 +7,40 @@ namespace EpicGameEngine
 {
 	void EditorLayer::OnAttach()
 	{
+        activeScene = std::make_shared<EpicGameEngine::Scene>();
 		Renderer::ToggleDrawingToTexture();
 		SDL_Color color;
 		color.a = 255;
 		color.r = 255;
 		color.g = 0;
 		color.b = 0;
+
+        auto rect = activeScene->CreateGameObject("Rectangle");
+        rect.AddComponent<EpicGameEngine::SpriteRendererComponent>(color);
+        rect.GetComponent<EpicGameEngine::TransformComponent>().Position.x = 462;
+        rect.GetComponent<EpicGameEngine::TransformComponent>().Position.y = 238;
+
+        class Rectangle : public EpicGameEngine::ScriptableGameObject
+        {
+        public:
+            void OnCreate()
+            {
+
+            }
+
+            void OnDestroy()
+            {
+
+            }
+
+            void OnUpdate(Timestep ts)
+            {
+               spdlog::info("Timestep: {}", ts.GetSeconds());
+            }
+        };
+
+        rect.AddComponent<EpicGameEngine::NativeScriptComponent>().Bind<Rectangle>();
+
 		EpicGameEngine::CameraController::CreateCamera();
 	}
 
@@ -22,8 +50,40 @@ namespace EpicGameEngine
 	}
 
 	void EditorLayer::OnUpdate(Timestep time)
-	{
+    {
 
+        if (Input::isKeyPressed(Keyboard::W))
+        {
+            CameraController::camera->y -= 300 * time.GetSeconds();
+        }
+
+        if (Input::isKeyPressed(Keyboard::A))
+        {
+            CameraController::camera->x -= 300 * time.GetSeconds();
+        }
+
+        if (Input::isKeyPressed(Keyboard::S))
+        {
+            CameraController::camera->y += 300 * time.GetSeconds();
+        }
+
+        if (Input::isKeyPressed(Keyboard::D))
+        {
+            CameraController::camera->x += 300 * time.GetSeconds();
+        }
+
+        if (Input::isKeyPressed(Keyboard::E))
+        {
+            CameraController::camera->zoom_x += 0.1;
+            CameraController::camera->zoom_y += 0.1;
+        }
+
+        if (Input::isKeyPressed(Keyboard::R))
+        {
+            CameraController::camera->zoom_x -= 0.1;
+            CameraController::camera->zoom_y -= 0.1;
+        }
+        activeScene->OnUpdate(time);
 	}
 	void EditorLayer::OnImGuiRender()
 	{
@@ -33,7 +93,8 @@ namespace EpicGameEngine
 			static bool dockspaceOpen = true;
 			static bool opt_fullscreen_persistant = true;
 			bool opt_fullscreen = opt_fullscreen_persistant;
-			static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
+			static ImGuiDockNodeFlags dockspace_flags;
+			dockspace_flags |= ImGuiDockNodeFlags_NoResize;
 
 			
 			// We are using the ImGuiWindowFlags_NoDocking flag to make the parent window not dockable into,
@@ -69,6 +130,7 @@ namespace EpicGameEngine
 
 			// DockSpace
 			ImGuiIO& io = ImGui::GetIO();
+			io.ConfigFlags ^= ImGuiConfigFlags_ViewportsEnable;
 			if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
 			{
 				ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
@@ -76,28 +138,40 @@ namespace EpicGameEngine
 			}
 
 			if (ImGui::BeginMenuBar())
-			{
-				if (ImGui::BeginMenu("File"))
-				{
-					// Disabling fullscreen would allow the window to be moved to the front of other windows, 
-					// which we can't undo at the moment without finer window depth/z control.
-					//ImGui::MenuItem("Fullscreen", NULL, &opt_fullscreen_persistant);
+            {
+                if (ImGui::BeginMenu("File"))
+                {
+                    // Disabling fullscreen would allow the window to be moved to the front of other windows,
+                    // which we can't undo at the moment without finer window depth/z control.
+                    //ImGui::MenuItem("Fullscreen", NULL, &opt_fullscreen_persistant);
 
-					if (ImGui::MenuItem("Exit")) Application::Get().Close();
-					ImGui::EndMenu();
-				}
+                    if (ImGui::MenuItem("Exit")) Application::Get().Close();
+                    ImGui::EndMenu();
+                }
 
-				ImGui::EndMenuBar();
-			}
+                ImGui::EndMenuBar();
+            }
 			
 
 			ImGui::Begin("Viewport");
-			ImVec2 viewportSize = ImGui::GetContentRegionAvail();
 			void* textureID = (void*) GPU_GetTextureHandle(Renderer::texture);
-			ImGui::Image(textureID, ImVec2{ viewportSize.x, viewportSize.y });
+			ImGui::Image(textureID, ImVec2{ static_cast<float>(Renderer::target->w), static_cast<float>(Renderer::target->h) });
 			ImGui::End();
+
+			ImGui::Begin("Game Objects");
+            ImGui::End();
+
+            ImGui::Begin("Inspector");
+            ImGui::End();
+
+            ImGui::Begin("Debug Log");
+            ImGui::End();
 
 			ImGui::End();
 		}
 	}
+
+    void EditorLayer::OnRender()
+    {
+    }
 }

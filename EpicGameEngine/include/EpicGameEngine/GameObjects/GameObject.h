@@ -12,13 +12,6 @@ namespace EpicGameEngine
         GameObject(entt::entity handle, Scene* scene);
         GameObject(const GameObject&) = default;
 
-        virtual void Shutdown() {}
-        [[nodiscard]] auto GetName() const -> std::string { return name; }
-         
-
-        // doesn't actually delete class
-        static void Destroy(GameObject& gameObject) { gameObject.Shutdown(); }
-
         template<typename T, typename... Args>
         T& AddComponent(Args&&... args)
         {
@@ -50,8 +43,26 @@ namespace EpicGameEngine
         operator bool() const { return entityHandle != entt::null; }
 
     private:
-        std::string name;
         entt::entity entityHandle{ entt::null };
         Scene* scene = nullptr;
+    };
+
+    class ScriptableGameObject
+    {
+    public:
+        virtual ~ScriptableGameObject() {}
+
+        template <typename T>
+        T& GetComponent()
+        {
+            return gameObject.GetComponent<T>();
+        }
+    protected:
+        virtual void OnStart() {}
+        virtual void OnUpdate(Timestep ts) {}
+        virtual void OnDestroy() {}
+    private:
+        GameObject gameObject;
+        friend class Scene;
     };
 }

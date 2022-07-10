@@ -60,7 +60,6 @@ namespace EpicGameEngine
 			for (auto l : layers.layers)
 			{
 				l->OnUpdate(timestep);
-				l->OnRender();
 			}
 			GPU_FlushBlitBuffer();
 			m_ImGuiLayer->BeginFrame();
