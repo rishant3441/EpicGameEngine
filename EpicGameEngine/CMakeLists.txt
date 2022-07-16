@@ -1,6 +1,7 @@
 set(EGE_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include CACHE INTERNAL "Directory of EGE Header Files")
 set(EGE_LIB_DIR ${PROJECT_BINARY_DIR} CACHE INTERNAL "Directory of Epic Games Engine Library Files")
 set(EGE_LIB EpicGameEngine CACHE INTERNAL "Library File")
+set(mono_DIR dependencies/mono)
 
 add_subdirectory(dependencies)
 
@@ -12,6 +13,8 @@ find_package (SDL_gpu REQUIRED)
 find_package(OpenGL REQUIRED)
 
 find_package(glew REQUIRED)
+
+find_package(mono REQUIRED)
 
 add_library(
 	EpicGameEngine STATIC 
@@ -37,6 +40,8 @@ target_include_directories(
 	dependencies/glm/
 	PUBLIC
 	dependencies/entt/include
+    PUBLIC
+    ${MONO_INCLUDE_DIR}
 )
 
 include_directories(
@@ -59,6 +64,7 @@ target_link_libraries(EpicGameEngine PUBLIC ${SDL2_GPU_LIBRARY_PATH})
 target_link_directories(EpicGameEngine PUBLIC opengl32)
 target_link_libraries(EpicGameEngine PUBLIC IMGUI)
 target_link_libraries(EpicGameEngine PUBLIC ${GLEW_GPU_LIBRARY_PATH})
+target_link_libraries(EpicGameEngine PUBLIC ${MONO_LIBRARY})
 
 if (MSVC)
 	target_compile_definitions(

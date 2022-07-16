@@ -24,11 +24,11 @@ using namespace EpicGameEngine;
 
 void ExampleLayer::OnRender()
 {
-    activeScene->OnUpdate();
 }
 
 void ExampleLayer::OnUpdate(Timestep time)
 {
+    activeScene->OnUpdate(time);
     if (Input::isKeyPressed(Keyboard::W))
     {
         CameraController::camera->y -= 300 * time.GetSeconds();
