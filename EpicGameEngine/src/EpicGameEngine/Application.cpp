@@ -13,6 +13,7 @@
 #include <imgui.h>
 #include <imgui_impl_sdl.h>
 #include <sdl_gpu.h>
+#include <EpicGameEngine/Scripting/ScriptingEngine.h>
 
 namespace EpicGameEngine
 {
@@ -36,11 +37,12 @@ namespace EpicGameEngine
 		m_ImGuiLayer->OnAttach();
 
 		CameraController::UpdateCamera();
+
+	    ScriptingEngine::Init();
 		
 		spdlog::info("EpicGameEngine Initialized");
 
 		SDL_Event event{};
-
 
 		window->OnRender();
 
