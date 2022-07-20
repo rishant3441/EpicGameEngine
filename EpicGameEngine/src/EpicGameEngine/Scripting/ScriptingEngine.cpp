@@ -43,7 +43,7 @@ namespace EpicGameEngine
         MonoDomain* rootDomain = mono_jit_init("EGEScriptingRuntime");
         if (rootDomain == nullptr)
         {
-            spdlog::info("LARGE ERROR OCCURRED");
+            spdlog::info("SCRIPTING ENGINE: LARGE ERROR OCCURRED");
             exit(1);
         }
 
@@ -53,23 +53,7 @@ namespace EpicGameEngine
         mono_domain_set(data->AppDomain, true);
 
         MonoAssembly* assembly = LoadCSharpAssembly("EpicGameEngine-Scripting.dll");
-        PrintAssemblyTypes(assembly);
         data->CoreAssembly = assembly;
-        MonoObject* classObject = InstantiateClass("", "EpicGameEngineScripting");
-        MonoClass* testingClass = mono_object_get_class(classObject);
-
-        MonoClassField* floatField = mono_class_get_field_from_name(testingClass, "PublicFloatVar");
-        MonoClassField* nameField = mono_class_get_field_from_name(testingClass, "m_Name");
-        MonoProperty* nameProperty = mono_class_get_property_from_name(testingClass, "Name");
-
-        float value = 1;
-        void* params[] =
-        {
-            &value
-        };
-
-        CallMonoFunction(classObject, "IncrementFloatVar", 1, params);
-        CallMonoFunction(classObject, "PrintFloatVar", 0, nullptr);
     }
 
     void EpicGameEngine::ScriptingEngine::ShutdownMono()

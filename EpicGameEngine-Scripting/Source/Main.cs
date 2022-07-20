@@ -1,27 +1,10 @@
 using System;
 
-public class EpicGameEngineScripting
+namespace EpicGameEngine
 {
-    public float PublicFloatVar = 5.0f;
-
-    private string m_Name = "Hello";
-    public String Name
+    public static class InternalCalls
     {
-        get => m_Name;
-        set
-        {
-            m_Name = value;
-            PublicFloatVar += 5.0f;
-        }
-    }
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
 
-    public void PrintFloatVar()
-    {
-        Console.WriteLine("PublicFloatVar = {0:F}", PublicFloatVar);
-    }
-
-    private void IncrementFloatVar(float value)
-    {
-        PublicFloatVar += value;
     }
 }
