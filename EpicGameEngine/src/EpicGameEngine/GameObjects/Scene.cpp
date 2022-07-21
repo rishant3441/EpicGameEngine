@@ -57,10 +57,11 @@ namespace EpicGameEngine
                         GPU_MatrixMode(Renderer::target, GPU_MODEL);
                         GPU_SetCamera(Renderer::target, nullptr);*/
 
+                        GPU_SetActiveTarget(Renderer::target);
                         GPU_MatrixMode(Renderer::target, GPU_PROJECTION);
                         GPU_LoadIdentity();
                         GPU_Ortho(mainCamera->GetLeft(), mainCamera->GetRight(), mainCamera->GetBottom(), mainCamera->GetTop(), mainCamera->orthographicNear, mainCamera->orthographicFar);
-                        GPU_Translate(-cameraTransform->Position.x, -cameraTransform->Position.y, -cameraTransform->Position.z);
+                        GPU_Translate(-cameraTransform->Position.x, cameraTransform->Position.y, 1);
                         // TODO: Implement Rotation
                         GPU_Scale(cameraTransform->Scale.x, cameraTransform->Scale.y, 1);
                         GPU_MatrixCopy(GPU_GetProjection(), GPU_GetCurrentMatrix());
@@ -80,6 +81,22 @@ namespace EpicGameEngine
                 Renderer::DrawTexturedRect(transform.Position.x, transform.Position.y, (float) transform.Scale.x * Renderer::unitSize, (float) transform.Scale.y * Renderer::unitSize, *sprite.Texture, 0, sprite.Color);
             else
                 Renderer::DrawFilledRect(transform.Position.x, transform.Position.y, (float) transform.Scale.x * Renderer::unitSize, (float) transform.Scale.y * Renderer::unitSize, 0, sprite.Color);
+        }
+    }
+
+    void Scene::OnViewportResize(uint32_t width, uint32_t height)
+    {
+        viewportSize.x = width;
+        viewportSize.y = height;
+
+        auto view = registry.view<CameraComponent>();
+        for (auto gameObject : view)
+        {
+            auto& cameraComponent = view.get<CameraComponent>(gameObject);
+            if (!cameraComponent.fixedAspectRatio)
+            {
+                cameraComponent.Camera.SetViewportSize(width, height);
+            }
         }
     }
 }

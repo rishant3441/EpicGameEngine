@@ -47,6 +47,7 @@ namespace EpicGameEngine
         Scene* scene = nullptr;
     };
 
+
     class ScriptableGameObject
     {
     public:

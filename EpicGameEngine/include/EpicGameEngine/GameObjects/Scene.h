@@ -21,8 +21,11 @@ namespace EpicGameEngine
         GameObject CreateGameObject(const std::string& name = std::string());
 
         void OnUpdate(Timestep ts);
+        void OnViewportResize(uint32_t width, uint32_t height);
 
         entt::registry registry;
+
+        glm::vec2 viewportSize;
     private:
         friend class GameObject;
     };
