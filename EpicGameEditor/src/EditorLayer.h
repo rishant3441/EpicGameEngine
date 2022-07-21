@@ -14,5 +14,6 @@ namespace EpicGameEngine
 		void OnImGuiRender() override;
 
         std::shared_ptr<EpicGameEngine::Scene> activeScene;
+        static inline GameObject camera;
 	};
 }

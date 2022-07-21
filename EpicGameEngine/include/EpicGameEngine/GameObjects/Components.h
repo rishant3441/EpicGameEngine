@@ -9,6 +9,13 @@
 #include <EpicGameEngine/ege_pch.h>
 #include <EpicGameEngine/Renderer/Texture.h>
 #include <EpicGameEngine/GameObjects/GameObject.h>
+#include <EpicGameEngine/Renderer/Camera/Camera.h>
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/quaternion.hpp>
 
 namespace EpicGameEngine
 {
@@ -31,15 +38,24 @@ namespace EpicGameEngine
 
     struct TransformComponent
     {
-        glm::vec2 Position = { 0.0f, 0.0f };
-        glm::vec2 Rotation = { 0.0f, 0.0f };
-        glm::vec2 Scale = { 1.0f, 1.0f };
+        glm::vec3 Position = { 0.0f, 0.0f, 0.0f };
+        glm::vec3 Rotation = { 0.0f, 0.0f, 0.0f };
+        glm::vec3 Scale = { 1.0f, 1.0f, 1.0f };
 
         TransformComponent() = default;
         TransformComponent(const TransformComponent&) = default;
-        TransformComponent(const glm::vec2& position)
+        TransformComponent(const glm::vec3& position)
             : Position(position)
         {}
+
+        [[nodiscard]] glm::mat4 GetTransform() const
+        {
+            glm::mat4 rotation = glm::toMat4(glm::quat(Rotation));
+
+            return glm::translate(glm::mat4(1.0f), Position)
+            * rotation
+            * glm::scale(glm::mat4(1.0f), Scale);
+        }
     };
 
     struct SpriteRendererComponent
@@ -52,6 +68,16 @@ namespace EpicGameEngine
         SpriteRendererComponent(const SDL_Color& color)
             : Color(color)
         {}
+    };
+
+    struct CameraComponent
+    {
+        SceneCamera Camera;
+        bool Primary = true;
+        bool fixedAspectRatio = false;
+
+        CameraComponent() = default;
+        CameraComponent(const CameraComponent&) = default;
     };
 
     struct NativeScriptComponent

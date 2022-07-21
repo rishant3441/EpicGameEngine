@@ -8,6 +8,8 @@ namespace EpicGameEngine
 	void EditorLayer::OnAttach()
 	{
         activeScene = std::make_shared<EpicGameEngine::Scene>();
+        activeScene->viewportSize.x = 1024;
+        activeScene->viewportSize.y = 576;
 		Renderer::ToggleDrawingToTexture();
 		SDL_Color color;
 		color.a = 255;
@@ -41,7 +43,46 @@ namespace EpicGameEngine
 
         rect.AddComponent<EpicGameEngine::NativeScriptComponent>().Bind<Rectangle>();
 
-		EpicGameEngine::CameraController::CreateCamera();
+        camera = activeScene->CreateGameObject();
+        camera.AddComponent<EpicGameEngine::CameraComponent>();
+        auto& cameraTransform = camera.GetComponent<EpicGameEngine::TransformComponent>();
+        auto& cc = camera.GetComponent<EpicGameEngine::CameraComponent>();
+        cameraTransform.Position.z = -1;
+        camera.GetComponent<EpicGameEngine::CameraComponent>().Camera.SetViewportSize(1024, 576);
+        class CameraContrller : public ScriptableGameObject
+        {
+
+            void OnUpdate(Timestep time)
+            {
+                auto& cameraTransform = camera.GetComponent<TransformComponent>();
+
+                if (Input::isKeyPressed(Keyboard::W))
+                {
+                    cameraTransform.Position.y -= 300 * time.GetSeconds();
+                }
+
+                if (Input::isKeyPressed(Keyboard::A))
+                {
+                    cameraTransform.Position.x -= 300 * time.GetSeconds();
+                }
+
+                if (Input::isKeyPressed(Keyboard::S))
+                {
+                    cameraTransform.Position.y += 300 * time.GetSeconds();
+                }
+
+                if (Input::isKeyPressed(Keyboard::D))
+                {
+                    cameraTransform.Position.x += 300 * time.GetSeconds();
+                }
+            }
+
+            void OnStart()
+            {
+
+            }
+        };
+        camera.AddComponent<NativeScriptComponent>().Bind<CameraContrller>();
 	}
 
 	EditorLayer::~EditorLayer()
@@ -52,38 +93,12 @@ namespace EpicGameEngine
 	void EditorLayer::OnUpdate(Timestep time)
     {
 
-        if (Input::isKeyPressed(Keyboard::W))
-        {
-            CameraController::camera->y -= 300 * time.GetSeconds();
-        }
-
-        if (Input::isKeyPressed(Keyboard::A))
-        {
-            CameraController::camera->x -= 300 * time.GetSeconds();
-        }
-
-        if (Input::isKeyPressed(Keyboard::S))
-        {
-            CameraController::camera->y += 300 * time.GetSeconds();
-        }
-
-        if (Input::isKeyPressed(Keyboard::D))
-        {
-            CameraController::camera->x += 300 * time.GetSeconds();
-        }
-
-        if (Input::isKeyPressed(Keyboard::E))
-        {
-            CameraController::camera->zoom_x += 0.1;
-            CameraController::camera->zoom_y += 0.1;
-        }
-
-        if (Input::isKeyPressed(Keyboard::R))
-        {
-            CameraController::camera->zoom_x -= 0.1;
-            CameraController::camera->zoom_y -= 0.1;
-        }
         activeScene->OnUpdate(time);
+
+        if (activeScene->viewportSize.x != Renderer::target->w || activeScene->viewportSize.y != Renderer::target->h)
+        {
+            //activeScene->OnViewportResize(Renderer::target->w, Renderer::target->h);
+        }
 	}
 	void EditorLayer::OnImGuiRender()
 	{
