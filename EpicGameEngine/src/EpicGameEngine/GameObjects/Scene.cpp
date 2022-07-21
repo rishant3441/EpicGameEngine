@@ -7,6 +7,10 @@
 #include <EpicGameEngine/GameObjects/GameObject.h>
 #include <EpicGameEngine/GameObjects/Components.h>
 #include <EpicGameEngine/Renderer/Renderer.h>
+#include <spdlog/spdlog.h>
+
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 namespace EpicGameEngine
 {
@@ -31,6 +35,41 @@ namespace EpicGameEngine
 
             script.Instance->OnUpdate(ts);
         });
+
+        Camera* mainCamera = nullptr;
+        TransformComponent* cameraTransform;
+        {
+            auto view = registry.view<TransformComponent, CameraComponent>();
+            for (auto gameObject : view)
+            {
+                auto [transform, camera] = view.get<TransformComponent, CameraComponent>(gameObject);
+
+                if (camera.Primary)
+                {
+                    mainCamera = &camera.Camera;
+                    cameraTransform = &transform;
+
+                    if (mainCamera != nullptr)
+                    {
+                        /*GPU_MatrixMode(Renderer::target, GPU_PROJECTION);
+                        GPU_LoadIdentity();
+                        GPU_Ortho(mainCamera->GetLeft(), mainCamera->GetRight(), mainCamera->GetBottom(), mainCamera->GetTop(), mainCamera->orthographicNear, mainCamera->orthographicFar);
+                        GPU_MatrixMode(Renderer::target, GPU_MODEL);
+                        GPU_SetCamera(Renderer::target, nullptr);*/
+
+                        GPU_MatrixMode(Renderer::target, GPU_PROJECTION);
+                        GPU_LoadIdentity();
+                        GPU_Ortho(mainCamera->GetLeft(), mainCamera->GetRight(), mainCamera->GetBottom(), mainCamera->GetTop(), mainCamera->orthographicNear, mainCamera->orthographicFar);
+                        GPU_Translate(-cameraTransform->Position.x, -cameraTransform->Position.y, -cameraTransform->Position.z);
+                        // TODO: Implement Rotation
+                        GPU_Scale(cameraTransform->Scale.x, cameraTransform->Scale.y, 1);
+                        GPU_MatrixCopy(GPU_GetProjection(), GPU_GetCurrentMatrix());
+                        GPU_MatrixMode(Renderer::target, GPU_MODEL);
+                    }
+
+                }
+            }
+        }
 
         auto group = registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
         for (auto gameobject : group)

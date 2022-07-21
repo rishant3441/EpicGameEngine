@@ -44,7 +44,9 @@ namespace EpicGameEngine
 
 		window->OnRender();
 
-		while (window->running)
+        Renderer::target->matrix_mode = GPU_PROJECTION;
+
+        while (window->running)
 		{
 			float time = (float) SDL_GetTicks() / 1000;
 			Timestep timestep = time - lastFrameTime;

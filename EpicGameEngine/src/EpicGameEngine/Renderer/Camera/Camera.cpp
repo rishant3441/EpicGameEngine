@@ -5,4 +5,66 @@
 // SPDX-License-Identifier: MIT
 //
 
-#include "Camera.h"
+#include "EpicGameEngine/Renderer/Camera/Camera.h"
+
+#include <glm/gtc/matrix_transform.hpp>
+#include <EpicGameEngine/Renderer/Renderer.h>
+
+#include <spdlog/spdlog.h>
+
+namespace EpicGameEngine
+{
+    OrthographicCamera::OrthographicCamera(float left, float right, float bottom, float top)
+        : projectionMatrix(glm::ortho(left, right, bottom, top, -1.0f, 1.0f))
+    {
+        viewProjectionMatrix = projectionMatrix * viewMatrix;
+    }
+
+    void OrthographicCamera::SetProjection(float left, float right, float bottom, float top)
+    {
+        projectionMatrix = glm::ortho(left, right, top, bottom, -1.0f, 1.0f);
+        viewProjectionMatrix = projectionMatrix * viewMatrix;
+    }
+
+    void OrthographicCamera::recalculateViewMatrix()
+    {
+        glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) *
+                glm::rotate(glm::mat4(1.0f), glm::radians(rotation), glm::vec3(0, 0, 1));
+
+        viewMatrix = glm::inverse(transform);
+        viewProjectionMatrix = projectionMatrix * viewMatrix;
+    }
+
+    SceneCamera::SceneCamera()
+    {
+        recalculateProjection();
+    }
+
+    void SceneCamera::SetOrthographic(float size, float nearClip, float farClip)
+    {
+        orthographicSize = size;
+        orthographicNear = nearClip;
+        orthographicFar = farClip;
+        recalculateProjection();
+    }
+
+    void SceneCamera::SetViewportSize(uint32_t newWidth, uint32_t newHeight)
+    {
+        aspectRatio = (float) newWidth / (float) newHeight;
+        width = newWidth;
+        height = newHeight;
+
+        recalculateProjection();
+    }
+
+    void SceneCamera::recalculateProjection()
+    {
+        left = 0;
+        right = width;
+        top = 0;
+        bottom = height;
+
+        projection = glm::ortho(left, right,
+                                  bottom, top, orthographicNear, orthographicFar);
+    }
+}
