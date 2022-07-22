@@ -1,5 +1,6 @@
 #pragma once
 #include <EpicGameEngine.h>
+#include "GameObjectsPanel.h"
 
 namespace EpicGameEngine
 {
@@ -15,5 +16,8 @@ namespace EpicGameEngine
 
         std::shared_ptr<EpicGameEngine::Scene> activeScene;
         static inline GameObject camera;
+        static inline GameObject rect;
+
+        GameObjectsPanel gameObjectsPanel;
 	};
 }

@@ -9,7 +9,7 @@ namespace EpicGameEngine
     {
     public:
         GameObject() = default;
-        GameObject(entt::entity handle, Scene* scene);
+        GameObject(entt::entity handle, Scene* newScene);
         GameObject(const GameObject&) = default;
 
         template<typename T, typename... Args>
@@ -40,11 +40,15 @@ namespace EpicGameEngine
         }
 
         operator entt::entity() { return entityHandle; }
-        operator bool() const { return entityHandle != entt::null; }
+        explicit operator bool() const { return entityHandle != entt::null; }
+        operator uint32_t() { return (uint32_t) entityHandle; }
 
+        bool operator ==(const GameObject& other) const { return entityHandle == other.entityHandle && scene == other.scene; }
+        bool operator !=(const GameObject& other) const { return !(*this == other); }
+
+        Scene* scene = nullptr;
     private:
         entt::entity entityHandle{ entt::null };
-        Scene* scene = nullptr;
     };
 
 

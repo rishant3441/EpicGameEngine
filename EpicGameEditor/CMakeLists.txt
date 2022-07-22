@@ -4,7 +4,7 @@ project(EpicGameEditor)
 find_package(SDL2 REQUIRED)
 include_directories(${SDL2_INCLUDE_DIRS})
 
-add_executable(EpicGameEditor src/EpicGameEditor.cpp "src/EditorLayer.h" "src/EditorLayer.cpp")
+add_executable(EpicGameEditor src/EpicGameEditor.cpp "src/EditorLayer.h" "src/EditorLayer.cpp" src/GameObjectsPanel.cpp src/GameObjectsPanel.h)
 target_include_directories(EpicGameEditor PUBLIC ${EGE_INCLUDE_DIR})
 target_link_directories(EpicGameEditor PRIVATE ${EGE_LIB_DIR})
 target_link_libraries(EpicGameEditor PRIVATE EpicGameEngine)

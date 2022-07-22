@@ -11,8 +11,9 @@
 
 namespace EpicGameEngine
 {
-    GameObject::GameObject(entt::entity handle, Scene* scene)
-        : entityHandle(handle), scene(scene)
+    GameObject::GameObject(entt::entity handle, Scene* newScene)
+
+            : entityHandle(handle), scene(newScene)
     {
 
     }

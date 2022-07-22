@@ -17,7 +17,7 @@ namespace EpicGameEngine
 		color.g = 0;
 		color.b = 0;
 
-        auto rect = activeScene->CreateGameObject("Rectangle");
+        rect = activeScene->CreateGameObject("Rectangle");
         rect.AddComponent<EpicGameEngine::SpriteRendererComponent>(color);
         rect.GetComponent<EpicGameEngine::TransformComponent>().Position.x = 462;
         rect.GetComponent<EpicGameEngine::TransformComponent>().Position.y = 238;
@@ -37,7 +37,7 @@ namespace EpicGameEngine
 
             void OnUpdate(Timestep ts)
             {
-               spdlog::info("Timestep: {}", ts.GetSeconds());
+               //spdlog::info("Timestep: {}", ts.GetSeconds());
             }
         };
 
@@ -83,6 +83,9 @@ namespace EpicGameEngine
             }
         };
         camera.AddComponent<NativeScriptComponent>().Bind<CameraContrller>();
+
+        // Panels
+        gameObjectsPanel.SetContext(activeScene);
 	}
 
 	EditorLayer::~EditorLayer()
@@ -109,9 +112,9 @@ namespace EpicGameEngine
 			static bool opt_fullscreen_persistant = true;
 			bool opt_fullscreen = opt_fullscreen_persistant;
 			static ImGuiDockNodeFlags dockspace_flags;
-			dockspace_flags |= ImGuiDockNodeFlags_NoResize;
+			//dockspace_flags |= ImGuiDockNodeFlags_NoResize;
 
-			
+
 			// We are using the ImGuiWindowFlags_NoDocking flag to make the parent window not dockable into,
 			// because it would be confusing to have two docking targets within each others.
 			ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
@@ -123,7 +126,7 @@ namespace EpicGameEngine
 				ImGui::SetNextWindowViewport(viewport->ID);
 				ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 				ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-				window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+				window_flags |= ImGuiWindowFlags_NoTitleBar; // ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
 				window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 			}
 
@@ -132,9 +135,9 @@ namespace EpicGameEngine
 				window_flags |= ImGuiWindowFlags_NoBackground;
 
 			// Important: note that we proceed even if Begin() returns false (aka window is collapsed).
-			// This is because we want to keep our DockSpace() active. If a DockSpace() is inactive, 
+			// This is because we want to keep our DockSpace() active. If a DockSpace() is inactive,
 			// all active windows docked into it will lose their parent and become undocked.
-			// We cannot preserve the docking relationship between an active window and an inactive docking, otherwise 
+			// We cannot preserve the docking relationship between an active window and an inactive docking, otherwise
 			// any change of dockspace/settings would lead to windows being stuck in limbo and never being visible.
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 			ImGui::Begin("DockSpace Demo", &dockspaceOpen, window_flags);
@@ -145,7 +148,7 @@ namespace EpicGameEngine
 
 			// DockSpace
 			ImGuiIO& io = ImGui::GetIO();
-			io.ConfigFlags ^= ImGuiConfigFlags_ViewportsEnable;
+			//io.ConfigFlags ^= ImGuiConfigFlags_ViewportsEnable;
 			if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
 			{
 				ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
@@ -173,11 +176,7 @@ namespace EpicGameEngine
 			ImGui::Image(textureID, ImVec2{ static_cast<float>(Renderer::target->w), static_cast<float>(Renderer::target->h) });
 			ImGui::End();
 
-			ImGui::Begin("Game Objects");
-            ImGui::End();
-
-            ImGui::Begin("Inspector");
-            ImGui::End();
+			gameObjectsPanel.OnImGuiRender();
 
             ImGui::Begin("Debug Log");
             ImGui::End();

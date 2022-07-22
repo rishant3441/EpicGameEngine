@@ -28,5 +28,6 @@ namespace EpicGameEngine
         glm::vec2 viewportSize;
     private:
         friend class GameObject;
+        friend class GameObjectsPanel;
     };
 }

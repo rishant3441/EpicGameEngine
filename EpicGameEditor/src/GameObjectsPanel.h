@@ -7,9 +7,27 @@
 
 #pragma once
 
+#include <EpicGameEngine.h>
+#include <EpicGameEngine/GameObjects/Scene.h>
 
-class GameObjectsPanel
+namespace EpicGameEngine
 {
+    class GameObjectsPanel
+    {
+    public:
+        GameObjectsPanel() = default;
+        GameObjectsPanel(const Ref<Scene>& scene);
 
-};
+        void SetContext(const Ref<Scene>& scene);
+
+        void OnImGuiRender();
+
+    private:
+        void DrawGameObjectNode(GameObject gameObject);
+        void DrawComponents(GameObject selection);
+
+        Ref<Scene> context;
+        GameObject selectionContext;
+    };
+}
 
