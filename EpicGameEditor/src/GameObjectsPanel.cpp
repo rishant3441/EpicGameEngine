@@ -35,7 +35,13 @@ namespace EpicGameEngine
             DrawGameObjectNode(gameObject);
         });
 
+        if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
+        {
+            selectionContext = {};
+        }
+
         ImGui::End();
+
         ImGui::Begin("Inspector");
         // Why? (in reference to the operator bool call)
         if (selectionContext.operator bool())
@@ -56,7 +62,7 @@ namespace EpicGameEngine
             selectionContext = gameObject;
         }
 
-        if (opened )
+        if (opened)
         {
             ImGui::TreePop();
         }
@@ -92,8 +98,55 @@ namespace EpicGameEngine
 
                 ImGui::TreePop();
             }
+        }
 
+        if (selection.HasComponent<CameraComponent>())
+        {
+            if (ImGui::TreeNodeEx((void*) typeid(CameraComponent).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "Camera Component"))
+            {
+                auto& cameraComponent = selection.GetComponent<CameraComponent>();
 
+                const char* projectionTypeStrings[] = { "Perspective", "Orthographic" };
+                const char* currentProjectionString = projectionTypeStrings[(int) cameraComponent.Camera.projectionType];
+
+                if (ImGui::BeginCombo("Projection Type", currentProjectionString))
+                {
+                    for (int i = 0; i < 2; i++)
+                    {
+                        bool isSelected = currentProjectionString == projectionTypeStrings[i];
+                        if (ImGui::Selectable(projectionTypeStrings[i], isSelected))
+                        {
+                            currentProjectionString = projectionTypeStrings[i];
+                            cameraComponent.Camera.projectionType = static_cast<SceneCamera::ProjectionType>(i);
+                        }
+
+                        if (isSelected)
+                        {
+                            ImGui::SetItemDefaultFocus();
+                        }
+                    }
+
+                    ImGui::EndCombo();
+                }
+
+                if (cameraComponent.Camera.projectionType == SceneCamera::ProjectionType::Orthographic)
+                {
+                    // TODO: Implement setting orthographic data that isn't based on the window viewport
+                    float orthoNear = cameraComponent.Camera.GetNearClip();
+                    if (ImGui::DragFloat("Near Clip", &orthoNear, 0.1f))
+                        cameraComponent.Camera.SetNearClip(orthoNear);
+
+                    float orthoFar = cameraComponent.Camera.GetFarClip();
+                    if (ImGui::DragFloat("Far Clip", &orthoFar, 0.1f))
+                        cameraComponent.Camera.SetFarClip(orthoFar);
+                }
+                if (cameraComponent.Camera.projectionType == SceneCamera::ProjectionType::Perspective)
+                {
+                    // TODO: Implement Perspective
+                }
+
+                ImGui::TreePop();
+            }
         }
     }
 }

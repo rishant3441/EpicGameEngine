@@ -70,20 +70,22 @@ namespace EpicGameEngine
         SceneCamera();
         ~SceneCamera() override = default;
 
-        void SetOrthographic(float size, float nearClip, float farClip);
+        enum class ProjectionType { Perspective = 0, Orthographic = 1}; // TODO: Perhaps implement Perspective in the future even if it is for 3D
 
+        float GetNearClip() { return orthographicNear; }
+        float GetFarClip() { return orthographicFar; }
+
+        void SetOrthographic(float nearClip, float farClip);
         void SetViewportSize(uint32_t width, uint32_t height);
 
-        [[nodiscard]] float GetOrthographicSize() const { return orthographicSize; }
-        void SetOrthographicSize(float size) { orthographicSize = size; recalculateProjection(); }
+        void SetNearClip(float nearClip);
+        void SetFarClip(float farClip);
 
         float width, height;
 
+        ProjectionType projectionType = ProjectionType::Orthographic; /// \brief Sets the projection type
     private:
         void recalculateProjection();
-
-        float orthographicSize = 10.0f;
-        float aspectRatio;
 
     };
 }

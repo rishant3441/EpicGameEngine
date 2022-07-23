@@ -40,9 +40,18 @@ namespace EpicGameEngine
         recalculateProjection();
     }
 
-    void SceneCamera::SetOrthographic(float size, float nearClip, float farClip)
+    void SceneCamera::SetNearClip(float nearClip)
     {
-        orthographicSize = size;
+        orthographicNear = nearClip;
+    }
+
+    void SceneCamera::SetFarClip(float farClip)
+    {
+        orthographicFar = farClip;
+    }
+
+    void SceneCamera::SetOrthographic(float nearClip, float farClip)
+    {
         orthographicNear = nearClip;
         orthographicFar = farClip;
         recalculateProjection();
@@ -50,7 +59,6 @@ namespace EpicGameEngine
 
     void SceneCamera::SetViewportSize(uint32_t newWidth, uint32_t newHeight)
     {
-        aspectRatio = (float) newWidth / (float) newHeight;
         width = newWidth;
         height = newHeight;
 
