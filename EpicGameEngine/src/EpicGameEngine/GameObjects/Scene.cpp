@@ -56,16 +56,34 @@ namespace EpicGameEngine
                         GPU_Ortho(mainCamera->GetLeft(), mainCamera->GetRight(), mainCamera->GetBottom(), mainCamera->GetTop(), mainCamera->orthographicNear, mainCamera->orthographicFar);
                         GPU_MatrixMode(Renderer::target, GPU_MODEL);
                         GPU_SetCamera(Renderer::target, nullptr);*/
-
-                        GPU_SetActiveTarget(Renderer::target);
-                        GPU_MatrixMode(Renderer::target, GPU_PROJECTION);
-                        GPU_LoadIdentity();
-                        GPU_Ortho(mainCamera->GetLeft(), mainCamera->GetRight(), mainCamera->GetBottom(), mainCamera->GetTop(), mainCamera->orthographicNear, mainCamera->orthographicFar);
-                        GPU_Translate(-cameraTransform->Position.x, cameraTransform->Position.y, 1);
-                        // TODO: Implement Rotation
-                        GPU_Scale(cameraTransform->Scale.x, cameraTransform->Scale.y, 1);
-                        GPU_MatrixCopy(GPU_GetProjection(), GPU_GetCurrentMatrix());
-                        GPU_MatrixMode(Renderer::target, GPU_MODEL);
+                        if (mainCamera->projectionType == SceneCamera::ProjectionType::Orthographic)
+                        {
+                            GPU_SetActiveTarget(Renderer::target);
+                            GPU_MatrixMode(Renderer::target, GPU_PROJECTION);
+                            GPU_LoadIdentity();
+                            GPU_Ortho(mainCamera->GetLeft(), mainCamera->GetRight(), mainCamera->GetBottom(), mainCamera->GetTop(), mainCamera->orthographicNear, mainCamera->orthographicFar);
+                            GPU_Translate(-cameraTransform->Position.x, cameraTransform->Position.y, cameraTransform->Position.z);
+                            // TODO: Implement Rotation
+                            GPU_Scale(cameraTransform->Scale.x, cameraTransform->Scale.y, 1);
+                            GPU_MatrixCopy(GPU_GetProjection(), GPU_GetCurrentMatrix());
+                            GPU_MatrixMode(Renderer::target, GPU_MODEL);
+                        }
+                        if (mainCamera->projectionType == SceneCamera::ProjectionType::Perspective)
+                        {
+                            GPU_SetActiveTarget(Renderer::target);
+                            GPU_MatrixMode(Renderer::target, GPU_PROJECTION);
+                            GPU_LoadIdentity();
+                            //GPU_Perspective(mainCamera->perspectiveVerticalFOV, mainCamera->aspectRatio, mainCamera->perspectiveNear, mainCamera->perspectiveFar);
+                            GPU_Frustum(mainCamera->GetLeft(), mainCamera->GetRight(), mainCamera->GetBottom(), mainCamera->GetTop(), mainCamera->perspectiveNear, mainCamera->perspectiveFar);
+                            //float fH = tanf((mainCamera->perspectiveVerticalFOV / 360) * 3.14159265359) * mainCamera->perspectiveNear;
+                            //float fW = fH * mainCamera->aspectRatio;
+                            //spdlog::info("PH: {}, PW: {}, OH: {}, OW: {}", fH, fW, mainCamera->orthographicNear, mainCamera->orthographicFar);
+                            GPU_Translate(-cameraTransform->Position.x, cameraTransform->Position.y, transform.Position.z);
+                            // TODO: Implement Rotation
+                            GPU_Scale(cameraTransform->Scale.x, cameraTransform->Scale.y, 1);
+                            GPU_MatrixCopy(GPU_GetProjection(), GPU_GetCurrentMatrix());
+                            GPU_MatrixMode(Renderer::target, GPU_MODEL);
+                        }
                     }
 
                 }

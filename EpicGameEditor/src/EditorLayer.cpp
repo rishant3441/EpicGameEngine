@@ -98,9 +98,11 @@ namespace EpicGameEngine
 
         activeScene->OnUpdate(time);
 
-        if (activeScene->viewportSize.x != Renderer::target->w || activeScene->viewportSize.y != Renderer::target->h)
+        if (Renderer::target->w != viewportSize.x || Renderer::target->h != viewportSize.y)
         {
-            //activeScene->OnViewportResize(Renderer::target->w, Renderer::target->h);
+            Renderer::target->w = viewportSize.x;
+            Renderer::target->h = viewportSize.y;
+            activeScene->OnViewportResize(viewportSize.x, viewportSize.y);
         }
 	}
 	void EditorLayer::OnImGuiRender()
@@ -173,7 +175,9 @@ namespace EpicGameEngine
 
 			ImGui::Begin("Viewport");
 			void* textureID = (void*) GPU_GetTextureHandle(Renderer::texture);
-			ImGui::Image(textureID, ImVec2{ static_cast<float>(Renderer::target->w), static_cast<float>(Renderer::target->h) });
+			ImVec2 imGuiViewportSize = ImGui::GetContentRegionAvail();
+			viewportSize = { imGuiViewportSize.x, imGuiViewportSize.y };
+			ImGui::Image(textureID, ImVec2{ static_cast<float>(viewportSize.x), static_cast<float>(viewportSize.y) });
 			ImGui::End();
 
 			gameObjectsPanel.OnImGuiRender();

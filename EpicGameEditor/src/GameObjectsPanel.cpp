@@ -142,7 +142,19 @@ namespace EpicGameEngine
                 }
                 if (cameraComponent.Camera.projectionType == SceneCamera::ProjectionType::Perspective)
                 {
-                    // TODO: Implement Perspective
+                    float verticalFOV = cameraComponent.Camera.perspectiveVerticalFOV;
+                    if (ImGui::DragFloat("Vertical FOV", &verticalFOV, 0.1f))
+                    {
+                       cameraComponent.Camera.SetPerspectiveFOV(verticalFOV);
+                    }
+                    float perspectiveNear = cameraComponent.Camera.GetNearClip();
+                    spdlog::info("{}", perspectiveNear);
+                    if (ImGui::DragFloat("Near Clip", &perspectiveNear, 0.1f))
+                        cameraComponent.Camera.SetNearClip(perspectiveNear);
+
+                    float perspectiveFar = cameraComponent.Camera.GetFarClip();
+                    if (ImGui::DragFloat("Far Clip", &perspectiveFar, 0.1f))
+                        cameraComponent.Camera.SetFarClip(perspectiveFar);
                 }
 
                 ImGui::TreePop();

@@ -29,6 +29,12 @@ namespace EpicGameEngine
         float GetBottom() const { return bottom; }
 
         float orthographicNear = -1.0f, orthographicFar = 1.0f;
+        float perspectiveNear = 1.0f, perspectiveFar = 1000.0f;
+        float perspectiveVerticalFOV = glm::radians(45.0f);
+        float aspectRatio;
+
+        enum class ProjectionType { Perspective = 0, Orthographic = 1};
+        ProjectionType projectionType = ProjectionType::Orthographic; /// \brief Sets the projection type
 
     protected:
         float left, right, top, bottom;
@@ -70,7 +76,6 @@ namespace EpicGameEngine
         SceneCamera();
         ~SceneCamera() override = default;
 
-        enum class ProjectionType { Perspective = 0, Orthographic = 1}; // TODO: Perhaps implement Perspective in the future even if it is for 3D
 
         float GetNearClip() { return orthographicNear; }
         float GetFarClip() { return orthographicFar; }
@@ -80,13 +85,12 @@ namespace EpicGameEngine
 
         void SetNearClip(float nearClip);
         void SetFarClip(float farClip);
+        void SetPerspectiveFOV(float fov);
 
         float width, height;
 
-        ProjectionType projectionType = ProjectionType::Orthographic; /// \brief Sets the projection type
     private:
         void recalculateProjection();
-
     };
 }
 

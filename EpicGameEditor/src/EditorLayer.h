@@ -15,6 +15,7 @@ namespace EpicGameEngine
 		void OnImGuiRender() override;
 
         std::shared_ptr<EpicGameEngine::Scene> activeScene;
+        glm::vec2 viewportSize{0, 0};
         static inline GameObject camera;
         static inline GameObject rect;
 

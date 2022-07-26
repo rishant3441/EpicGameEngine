@@ -42,12 +42,18 @@ namespace EpicGameEngine
 
     void SceneCamera::SetNearClip(float nearClip)
     {
-        orthographicNear = nearClip;
+        if (projectionType == SceneCamera::ProjectionType::Orthographic)
+            orthographicNear = nearClip;
+        else
+            perspectiveNear = nearClip;
     }
 
     void SceneCamera::SetFarClip(float farClip)
     {
-        orthographicFar = farClip;
+        if (projectionType == SceneCamera::ProjectionType::Orthographic)
+            orthographicFar = farClip;
+        else
+            perspectiveFar = farClip;
     }
 
     void SceneCamera::SetOrthographic(float nearClip, float farClip)
@@ -61,6 +67,7 @@ namespace EpicGameEngine
     {
         width = newWidth;
         height = newHeight;
+        aspectRatio = (float) width / height;
 
         recalculateProjection();
     }
@@ -71,8 +78,10 @@ namespace EpicGameEngine
         right = width;
         top = 0;
         bottom = height;
+    }
 
-        projection = glm::ortho(left, right,
-                                  bottom, top, orthographicNear, orthographicFar);
+    void SceneCamera::SetPerspectiveFOV(float fov)
+    {
+        perspectiveVerticalFOV = fov;
     }
 }
