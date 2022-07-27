@@ -160,5 +160,23 @@ namespace EpicGameEngine
                 ImGui::TreePop();
             }
         }
+        if (selection.HasComponent<SpriteRendererComponent>())
+        {
+            if (ImGui::TreeNodeEx((void*) typeid(SpriteRendererComponent).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "Sprite Renderer"))
+            {
+                auto& src = selection.GetComponent<SpriteRendererComponent>();
+
+                // TODO: Make this cleaner (probably just remove some casts)
+                float color[4] = { static_cast<float>((float) src.Color.r / 255.0f), static_cast<float>((float) src.Color.g / 255.0f), static_cast<float>((float) src.Color.b / 255.0f), static_cast<float>((float) src.Color.a / 255.0f)};
+                ImGui::ColorEdit4("Color", color);
+
+                src.Color.r = color[0] * 255.0;
+                src.Color.g = color[1] * 255.0;
+                src.Color.b = color[2] * 255.0;
+                src.Color.a = color[3] * 255.0;
+
+                ImGui::TreePop();
+            }
+        }
     }
 }

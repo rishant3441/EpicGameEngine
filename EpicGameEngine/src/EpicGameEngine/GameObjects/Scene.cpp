@@ -49,6 +49,7 @@ namespace EpicGameEngine
                     mainCamera = &camera.Camera;
                     cameraTransform = &transform;
 
+                    // TODO: Use "Primary" Camera Property to allow for multiple cameras
                     if (mainCamera != nullptr)
                     {
                         /*GPU_MatrixMode(Renderer::target, GPU_PROJECTION);
