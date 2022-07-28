@@ -24,6 +24,7 @@ namespace EpicGameEngine
 
     private:
         void DrawGameObjectNode(GameObject gameObject);
+        void DrawVec3Control(const std::string& label, glm::vec3& values, float resetValue = 0.0f, float columnWidth = 75.0f);
         void DrawComponents(GameObject selection);
 
         Ref<Scene> context;
