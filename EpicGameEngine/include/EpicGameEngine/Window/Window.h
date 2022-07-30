@@ -28,7 +28,7 @@ namespace EpicGameEngine
 
 		virtual void OnEvent(std::shared_ptr<Event> e) = 0;
 
-		static auto CreateWindow(const WindowData& data = WindowData()) -> Window*;
+		static Window* CreateWindow(const WindowData& data = WindowData());
 
 		SDL_Renderer* renderer; 
 

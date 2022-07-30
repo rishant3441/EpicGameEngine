@@ -1,6 +1,7 @@
 #pragma once
 #include <EpicGameEngine.h>
 #include "GameObjectsPanel.h"
+#include <dear_sink.h>
 
 namespace EpicGameEngine
 {
@@ -20,5 +21,7 @@ namespace EpicGameEngine
         static inline GameObject rect;
 
         GameObjectsPanel gameObjectsPanel;
+
+        inline static dear_sink_mt_t ssink;
 	};
 }

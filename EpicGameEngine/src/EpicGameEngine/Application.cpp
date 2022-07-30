@@ -12,7 +12,8 @@
 #include <EpicGameEngine/Renderer/Camera/CameraController.h>
 #include <imgui.h>
 #include <imgui_impl_sdl.h>
-#include <sdl_gpu.h>
+#include <SDL_gpu.h>
+#include <EpicGameEngine/Debug.h>
 
 namespace EpicGameEngine
 {
@@ -36,8 +37,8 @@ namespace EpicGameEngine
 		m_ImGuiLayer->OnAttach();
 
 		CameraController::UpdateCamera();
-		
-		spdlog::info("EpicGameEngine Initialized");
+
+		Debug::Log::LogInfo("EpicGameEngine Initialized");
 
 		SDL_Event event{};
 
@@ -45,6 +46,8 @@ namespace EpicGameEngine
 		window->OnRender();
 
         Renderer::target->matrix_mode = GPU_PROJECTION;
+
+        Debug::Log::Init();
 
         while (window->running)
 		{

@@ -7,6 +7,8 @@ namespace EpicGameEngine
 {
 	void EditorLayer::OnAttach()
 	{
+	    ssink = dear_sink_mt();
+
         activeScene = std::make_shared<EpicGameEngine::Scene>();
         activeScene->viewportSize.x = 1024;
         activeScene->viewportSize.y = 576;
@@ -37,13 +39,13 @@ namespace EpicGameEngine
 
             void OnUpdate(Timestep ts)
             {
-               //spdlog::info("Timestep: {}", ts.GetSeconds());
+               spdlog::info("Timestep: {}", ts.GetSeconds());
             }
         };
 
         rect.AddComponent<EpicGameEngine::NativeScriptComponent>().Bind<Rectangle>();
 
-        camera = activeScene->CreateGameObject();
+        camera = activeScene->CreateGameObject("Camera");
         camera.AddComponent<EpicGameEngine::CameraComponent>();
         auto& cameraTransform = camera.GetComponent<EpicGameEngine::TransformComponent>();
         auto& cc = camera.GetComponent<EpicGameEngine::CameraComponent>();
@@ -182,8 +184,7 @@ namespace EpicGameEngine
 
 			gameObjectsPanel.OnImGuiRender();
 
-            ImGui::Begin("Debug Log");
-            ImGui::End();
+            ssink->draw_imgui();
 
 			ImGui::End();
 		}
