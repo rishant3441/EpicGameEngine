@@ -1,6 +1,6 @@
 [submodule "EpicGameEngine/dependencies/spdlog"]
 	path = EpicGameEngine/dependencies/spdlog
-	url = https://github.com/gabime/spdlog
+	url = https://github.com/rishant3441/spdlog
 [submodule "EpicGameEngine/dependencies/imgui"]
 	path = EpicGameEngine/dependencies/imgui
 	url = https://github.com/ocornut/imgui.git
