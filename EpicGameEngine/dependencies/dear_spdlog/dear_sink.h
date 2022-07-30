@@ -45,13 +45,15 @@ namespace dear_spdlog {
 					ImGui::Text("|");
 					ImGui::SameLine();
 					ImGui::TextColored(LVL_DBG_CLR, "%s", msg.message.c_str());
-					break;
-				case spdlog::level::warn:
+                    ImGui::SetScrollHereY(1.0f);
+                    break;
+                    case spdlog::level::warn:
 					ImGui::TextColored(LVL_WRN_CLR, "WRN");
 					ImGui::SameLine();
 					ImGui::Text("|");
 					ImGui::SameLine();
 					ImGui::Text("%s", msg.message);
+                    ImGui::SetScrollHereY(1.0f);
 					break;
 				case spdlog::level::err:
 					ImGui::TextColored(LVL_ERR_CLR, "ERR");
@@ -59,6 +61,7 @@ namespace dear_spdlog {
 					ImGui::Text("|");
 					ImGui::SameLine();
 					ImGui::Text("%s", msg.message);
+                    ImGui::SetScrollHereY(1.0f);
 					break;
 				default:
 					ImGui::TextColored(LVL_LOG_CLR, "LOG");
@@ -66,6 +69,7 @@ namespace dear_spdlog {
 					ImGui::Text("|");
 					ImGui::SameLine();
 					ImGui::TextUnformatted(msg.message.c_str());
+					ImGui::SetScrollHereY(1.0f);
 					break;
 				}
 			}
