@@ -41,6 +41,17 @@ namespace EpicGameEngine
             selectionContext = {};
         }
 
+        // blank space
+        if (ImGui::BeginPopupContextWindow(0, 1, false))
+        {
+            if (ImGui::MenuItem("Create Empty GameObject"))
+            {
+                context->CreateGameObject("Empty Game Object");
+            }
+
+            ImGui::EndPopup();
+        }
+
         ImGui::End();
 
         ImGui::Begin("Inspector");
@@ -48,6 +59,7 @@ namespace EpicGameEngine
         if (selectionContext.operator bool())
         {
             DrawComponents(selectionContext);
+
         }
         ImGui::End();
     }
@@ -57,20 +69,82 @@ namespace EpicGameEngine
         auto& name = context->registry.get<NameComponent>(gameObject).name;
 
         ImGuiTreeNodeFlags flags = ((selectionContext == gameObject) ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
+        flags |= ImGuiTreeNodeFlags_SpanAvailWidth;
+
         bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)gameObject, flags, name.c_str());
         if (ImGui::IsItemClicked())
         {
             selectionContext = gameObject;
         }
 
+        bool gameObjectDeleted = false;
+        if (ImGui::BeginPopupContextItem())
+        {
+            if (ImGui::MenuItem("Delete Game Object"))
+            {
+                gameObjectDeleted = true;
+            }
+
+            ImGui::EndPopup();
+        }
+
         if (opened)
         {
             ImGui::TreePop();
+        }
+
+        if (gameObjectDeleted)
+        {
+            context->DeleteGameObject(gameObject);
+            if (selectionContext == gameObject)
+                selectionContext = {};
+        }
+    }
+
+    template <typename componentType, typename UIFunction>
+    static void DrawComponent(const std::string& name, GameObject gameObject, UIFunction uiFunction)
+    {
+        const ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_FramePadding;
+        if (gameObject.HasComponent<componentType>())
+        {
+            auto& component = gameObject.GetComponent<componentType>();
+            ImVec2 contentRegionAvailable = ImGui::GetContentRegionAvail();
+
+            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2{ 4, 4 });
+            float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
+            ImGui::Separator();
+            bool open = ImGui::TreeNodeEx((void*)typeid(componentType).hash_code(), treeNodeFlags, name.c_str());
+            ImGui::PopStyleVar();
+            ImGui::SameLine(contentRegionAvailable.x - lineHeight * 0.5f);
+            if (ImGui::Button("+", ImVec2{ lineHeight, lineHeight }))
+            {
+                ImGui::OpenPopup("ComponentSettings");
+            }
+
+            bool removeComponent = false;
+            if (ImGui::BeginPopup("ComponentSettings"))
+            {
+                if (ImGui::MenuItem("Remove component"))
+                    removeComponent = true;
+
+                ImGui::EndPopup();
+            }
+
+            if (open)
+            {
+                uiFunction(component);
+                ImGui::TreePop();
+            }
+
+            if (removeComponent)
+                gameObject.RemoveComponent<componentType>();
         }
     }
 
     void GameObjectsPanel::DrawVec3Control(const std::string& label, glm::vec3& values, float resetValue, float columnWidth)
     {
+        ImGuiIO& io = ImGui::GetIO();
+        auto boldFont = io.Fonts->Fonts[0];
         ImGui::PushID(label.c_str());
 
         ImGui::Columns(2);
@@ -87,8 +161,10 @@ namespace EpicGameEngine
         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.8f, 0.1f, 0.15f, 1.0f });
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.9f, 0.2f, 0.2f, 1.0f });
         ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.8f, 0.1f, 0.15f, 1.0f });
+        ImGui::PushFont(boldFont);
         if (ImGui::Button("X", buttonSize))
             values.x = resetValue;
+        ImGui::PopFont();
         ImGui::PopStyleColor(3);
 
         ImGui::SameLine();
@@ -99,8 +175,10 @@ namespace EpicGameEngine
         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.2f, 0.7f, 0.2f, 1.0f });
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.3f, 0.8f, 0.3f, 1.0f });
         ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.2f, 0.7f, 0.2f, 1.0f });
+        ImGui::PushFont(boldFont);
         if (ImGui::Button("Y", buttonSize))
             values.y = resetValue;
+        ImGui::PopFont();
         ImGui::PopStyleColor(3);
 
         ImGui::SameLine();
@@ -111,8 +189,10 @@ namespace EpicGameEngine
         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.1f, 0.25f, 0.8f, 1.0f });
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.2f, 0.35f, 0.9f, 1.0f });
         ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.1f, 0.25f, 0.8f, 1.0f });
+        ImGui::PushFont(boldFont);
         if (ImGui::Button("Z", buttonSize))
             values.z = resetValue;
+        ImGui::PopFont();
         ImGui::PopStyleColor(3);
 
         ImGui::SameLine();
@@ -122,7 +202,6 @@ namespace EpicGameEngine
         ImGui::PopStyleVar();
 
         ImGui::Columns(1);
-
         ImGui::PopID();
     }
 
@@ -139,104 +218,109 @@ namespace EpicGameEngine
             char buffer[256];
             memset(buffer, 0, sizeof(buffer));
             strcpy_s(buffer, sizeof(buffer), name.c_str());
-            if (ImGui::InputText("Name", buffer, sizeof(buffer)))
+            if (ImGui::InputText("##Name", buffer, sizeof(buffer)))
             {
                 name = std::string(buffer);
             }
         }
 
-        if (selection.HasComponent<TransformComponent>())
-        {
-            if (ImGui::TreeNodeEx((void*) typeid(TransformComponent).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "Transform"))
-            {
-                auto& transform = selection.GetComponent<TransformComponent>();
-                DrawVec3Control("Position", transform.Position);
-                DrawVec3Control("Rotation", transform.Rotation);
-                DrawVec3Control("Scale", transform.Scale, 1.0f);
+        ImGui::SameLine();
+        ImGui::PushItemWidth(-1);
 
-                ImGui::TreePop();
-            }
+        if (ImGui::Button("Add Component"))
+        {
+            ImGui::OpenPopup("AddComponent");
         }
 
-        if (selection.HasComponent<CameraComponent>())
+        if (ImGui::BeginPopup("AddComponent"))
         {
-            if (ImGui::TreeNodeEx((void*) typeid(CameraComponent).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "Camera Component"))
+            if (ImGui::MenuItem("Sprite Renderer"))
             {
-                auto& cameraComponent = selection.GetComponent<CameraComponent>();
+                selectionContext.AddComponent<SpriteRendererComponent>();
+                ImGui::CloseCurrentPopup();
+            }
+            if (ImGui::MenuItem("Camera"))
+            {
+                selectionContext.AddComponent<CameraComponent>();
+                ImGui::CloseCurrentPopup();
+            }
 
-                const char* projectionTypeStrings[] = { "Perspective", "Orthographic" };
-                const char* currentProjectionString = projectionTypeStrings[(int) cameraComponent.Camera.projectionType];
+            ImGui::EndPopup();
+        }
 
-                if (ImGui::BeginCombo("Projection Type", currentProjectionString))
+        DrawComponent<TransformComponent>("Transform", selection, [&](auto& component)
+        {
+            DrawVec3Control("Position", component.Position);
+            DrawVec3Control("Rotation", component.Rotation);
+            DrawVec3Control("Scale", component.Scale, 1.0f);
+        });
+
+        DrawComponent<CameraComponent>("Camera Component", selection, [](auto& component)
+        {
+
+            const char* projectionTypeStrings[] = { "Perspective", "Orthographic" };
+            const char* currentProjectionString = projectionTypeStrings[(int) component.Camera.projectionType];
+
+            if (ImGui::BeginCombo("Projection Type", currentProjectionString))
+            {
+                for (int i = 0; i < 2; i++)
                 {
-                    for (int i = 0; i < 2; i++)
+                    bool isSelected = currentProjectionString == projectionTypeStrings[i];
+                    if (ImGui::Selectable(projectionTypeStrings[i], isSelected))
                     {
-                        bool isSelected = currentProjectionString == projectionTypeStrings[i];
-                        if (ImGui::Selectable(projectionTypeStrings[i], isSelected))
-                        {
-                            currentProjectionString = projectionTypeStrings[i];
-                            cameraComponent.Camera.projectionType = static_cast<SceneCamera::ProjectionType>(i);
-                        }
-
-                        if (isSelected)
-                        {
-                            ImGui::SetItemDefaultFocus();
-                        }
+                        currentProjectionString = projectionTypeStrings[i];
+                        component.Camera.projectionType = static_cast<SceneCamera::ProjectionType>(i);
                     }
 
-                    ImGui::EndCombo();
-                }
-
-                ImGui::Checkbox("Primary Camera", &cameraComponent.Primary);
-
-                if (cameraComponent.Camera.projectionType == SceneCamera::ProjectionType::Orthographic)
-                {
-                    // TODO: Implement setting orthographic data that isn't based on the window viewport
-                    float orthoNear = cameraComponent.Camera.GetNearClip();
-                    if (ImGui::DragFloat("Near Clip", &orthoNear, 0.1f))
-                        cameraComponent.Camera.SetNearClip(orthoNear);
-
-                    float orthoFar = cameraComponent.Camera.GetFarClip();
-                    if (ImGui::DragFloat("Far Clip", &orthoFar, 0.1f))
-                        cameraComponent.Camera.SetFarClip(orthoFar);
-                }
-                if (cameraComponent.Camera.projectionType == SceneCamera::ProjectionType::Perspective)
-                {
-                    float verticalFOV = cameraComponent.Camera.perspectiveVerticalFOV;
-                    if (ImGui::DragFloat("Vertical FOV", &verticalFOV, 0.1f))
+                    if (isSelected)
                     {
-                       cameraComponent.Camera.SetPerspectiveFOV(verticalFOV);
+                        ImGui::SetItemDefaultFocus();
                     }
-                    float perspectiveNear = cameraComponent.Camera.GetNearClip();
-                    spdlog::info("{}", perspectiveNear);
-                    if (ImGui::DragFloat("Near Clip", &perspectiveNear, 0.1f))
-                        cameraComponent.Camera.SetNearClip(perspectiveNear);
-
-                    float perspectiveFar = cameraComponent.Camera.GetFarClip();
-                    if (ImGui::DragFloat("Far Clip", &perspectiveFar, 0.1f))
-                        cameraComponent.Camera.SetFarClip(perspectiveFar);
                 }
 
-                ImGui::TreePop();
+                ImGui::EndCombo();
             }
-        }
-        if (selection.HasComponent<SpriteRendererComponent>())
-        {
-            if (ImGui::TreeNodeEx((void*) typeid(SpriteRendererComponent).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "Sprite Renderer"))
+
+            ImGui::Checkbox("Primary Camera", &component.Primary);
+
+            if (component.Camera.projectionType == SceneCamera::ProjectionType::Orthographic)
             {
-                auto& src = selection.GetComponent<SpriteRendererComponent>();
+                // TODO: Implement setting orthographic data that isn't based on the window viewport
+                float orthoNear = component.Camera.GetNearClip();
+                if (ImGui::DragFloat("Near Clip", &orthoNear, 0.1f))
+                    component.Camera.SetNearClip(orthoNear);
 
-                // TODO: Make this cleaner (probably just remove some casts)
-                float color[4] = { static_cast<float>((float) src.Color.r / 255.0f), static_cast<float>((float) src.Color.g / 255.0f), static_cast<float>((float) src.Color.b / 255.0f), static_cast<float>((float) src.Color.a / 255.0f)};
-                ImGui::ColorEdit4("Color", color);
-
-                src.Color.r = color[0] * 255.0;
-                src.Color.g = color[1] * 255.0;
-                src.Color.b = color[2] * 255.0;
-                src.Color.a = color[3] * 255.0;
-
-                ImGui::TreePop();
+                float orthoFar = component.Camera.GetFarClip();
+                if (ImGui::DragFloat("Far Clip", &orthoFar, 0.1f))
+                    component.Camera.SetFarClip(orthoFar);
             }
-        }
+            if (component.Camera.projectionType == SceneCamera::ProjectionType::Perspective)
+            {
+                float verticalFOV = component.Camera.perspectiveVerticalFOV;
+                if (ImGui::DragFloat("Vertical FOV", &verticalFOV, 0.1f))
+                {
+                    component.Camera.SetPerspectiveFOV(verticalFOV);
+                }
+                float perspectiveNear = component.Camera.GetNearClip();
+                spdlog::info("{}", perspectiveNear);
+                if (ImGui::DragFloat("Near Clip", &perspectiveNear, 0.1f))
+                    component.Camera.SetNearClip(perspectiveNear);
+
+                float perspectiveFar = component.Camera.GetFarClip();
+                if (ImGui::DragFloat("Far Clip", &perspectiveFar, 0.1f))
+                    component.Camera.SetFarClip(perspectiveFar);
+            }
+        });
+
+        DrawComponent<SpriteRendererComponent>("Sprite Renderer", selection, [](auto& component)
+        {
+            float color[4] = { static_cast<float>((float) component.Color.r / 255.0f), static_cast<float>((float) component.Color.g / 255.0f), static_cast<float>((float) component.Color.b / 255.0f), static_cast<float>((float) component.Color.a / 255.0f)};
+            ImGui::ColorEdit4("Color", color);
+
+            component.Color.r = color[0] * 255.0;
+            component.Color.g = color[1] * 255.0;
+            component.Color.b = color[2] * 255.0;
+            component.Color.a = color[3] * 255.0;
+        });
     }
 }

@@ -34,10 +34,8 @@ namespace dear_spdlog {
 			//std::cout << "creating" << std::endl;
 		}
 		inline void draw_imgui(float posx = 5.0f, float posy = 5.0f, float width = 200.0f, float height = 1000.0f) const {
-			ImGui::Begin("Log", nullptr);
-
+		    ImGui::Begin("Log");
 			for (auto const& msg : messages_) {
-
 				switch (msg.level) {
 				case spdlog::level::debug:
 					ImGui::TextColored(LVL_DBG_CLR, "DBG");

@@ -51,7 +51,6 @@ namespace EpicGameEngine
         entt::entity entityHandle{ entt::null };
     };
 
-
     class ScriptableGameObject
     {
     public:

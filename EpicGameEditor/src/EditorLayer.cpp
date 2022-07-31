@@ -153,11 +153,17 @@ namespace EpicGameEngine
 			// DockSpace
 			ImGuiIO& io = ImGui::GetIO();
 			//io.ConfigFlags ^= ImGuiConfigFlags_ViewportsEnable;
+			ImGuiStyle& style = ImGui::GetStyle();
+			float minWinSizeX = style.WindowMinSize.x;
+			style.WindowMinSize.x = 370.f;
 			if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
 			{
 				ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
 				ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
+
 			}
+
+            style.WindowMinSize.x = minWinSizeX;
 
 			if (ImGui::BeginMenuBar())
             {
@@ -174,17 +180,25 @@ namespace EpicGameEngine
                 ImGui::EndMenuBar();
             }
 			
-
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 3.0f, 3.0f});
+			// TODO: Disallow focusing the viewport and hovering effects
 			ImGui::Begin("Viewport");
 			void* textureID = (void*) GPU_GetTextureHandle(Renderer::texture);
 			ImVec2 imGuiViewportSize = ImGui::GetContentRegionAvail();
 			viewportSize = { imGuiViewportSize.x, imGuiViewportSize.y };
 			ImGui::Image(textureID, ImVec2{ static_cast<float>(viewportSize.x), static_cast<float>(viewportSize.y) });
 			ImGui::End();
+            ImGui::PopStyleVar();
+
+            ImGui::Begin("Content Browser");
+            ImGui::Text("Epic Content Browser"); // TODO: Create content browser
+            ImGui::End();
+
+            ssink->draw_imgui(); // Log Window
+
 
 			gameObjectsPanel.OnImGuiRender();
 
-            ssink->draw_imgui();
 
 			ImGui::End();
 		}

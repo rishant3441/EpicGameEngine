@@ -17,5 +17,7 @@ namespace EpicGameEngine
         void BeginFrame();
         void OnImGuiRender();
         void EndFrame();
+
+        void SetDarkThemeColors();
     };
 }

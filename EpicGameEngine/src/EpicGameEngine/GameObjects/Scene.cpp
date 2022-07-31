@@ -22,6 +22,11 @@ namespace EpicGameEngine
        return gameObject;
     }
 
+    void Scene::DeleteGameObject(GameObject gameObject)
+    {
+        registry.destroy(gameObject);
+    }
+
     void Scene::OnUpdate(Timestep ts)
     {
         registry.view<NativeScriptComponent>().each([=](auto gameObject, auto& script)
