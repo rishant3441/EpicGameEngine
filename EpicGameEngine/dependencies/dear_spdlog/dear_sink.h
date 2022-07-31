@@ -31,7 +31,7 @@ namespace dear_spdlog {
 
 	public:
 		inline dear_sink() {
-			std::cout << "creating" << std::endl;
+			//std::cout << "creating" << std::endl;
 		}
 		inline void draw_imgui(float posx = 5.0f, float posy = 5.0f, float width = 200.0f, float height = 1000.0f) const {
 			ImGui::Begin("Log", nullptr);

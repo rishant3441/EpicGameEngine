@@ -187,6 +187,8 @@ namespace EpicGameEngine
                     ImGui::EndCombo();
                 }
 
+                ImGui::Checkbox("Primary Camera", &cameraComponent.Primary);
+
                 if (cameraComponent.Camera.projectionType == SceneCamera::ProjectionType::Orthographic)
                 {
                     // TODO: Implement setting orthographic data that isn't based on the window viewport
