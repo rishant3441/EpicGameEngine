@@ -8,3 +8,6 @@
 [submodule "EpicGameEngine/dependencies/glm"]
 	path = EpicGameEngine/dependencies/glm
 	url = https://github.com/g-truc/glm.git
+[submodule "EpicGameEngine/dependencies/yaml-cpp"]
+	path = EpicGameEngine/dependencies/yaml-cpp
+	url = https://github.com/jbeder/yaml-cpp
