@@ -10,4 +10,4 @@
 	url = https://github.com/g-truc/glm.git
 [submodule "EpicGameEngine/dependencies/yaml-cpp"]
 	path = EpicGameEngine/dependencies/yaml-cpp
-	url = https://github.com/jbeder/yaml-cpp
+	url = https://github.com/rishant3441/yaml-cpp

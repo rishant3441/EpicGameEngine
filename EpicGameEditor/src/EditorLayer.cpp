@@ -3,6 +3,9 @@
 #include <SDL_gpu_OpenGL_4.h>
 #include <cassert>
 
+#include <EpicGameEngine/PlatformUtils.h>
+
+
 namespace EpicGameEngine
 {
 	void EditorLayer::OnAttach()
@@ -13,6 +16,7 @@ namespace EpicGameEngine
         activeScene->viewportSize.x = 1024;
         activeScene->viewportSize.y = 576;
 		Renderer::ToggleDrawingToTexture();
+#if 0
 		SDL_Color color;
 		color.a = 255;
 		color.r = 255;
@@ -85,6 +89,7 @@ namespace EpicGameEngine
             }
         };
         camera.AddComponent<NativeScriptComponent>().Bind<CameraContrller>();
+#endif
 
         // Panels
         gameObjectsPanel.SetContext(activeScene);
@@ -165,15 +170,48 @@ namespace EpicGameEngine
 
             style.WindowMinSize.x = minWinSizeX;
 
+
 			if (ImGui::BeginMenuBar())
             {
                 if (ImGui::BeginMenu("File"))
                 {
-                    // Disabling fullscreen would allow the window to be moved to the front of other windows,
-                    // which we can't undo at the moment without finer window depth/z control.
-                    //ImGui::MenuItem("Fullscreen", NULL, &opt_fullscreen_persistant);
+                    // TODO: Implement Keyboard Shortcuts
+
+                    if (ImGui::MenuItem("New", "Ctrl+N"))
+                    {
+                        activeScene = std::make_shared<Scene>();
+                        activeScene->OnViewportResize(viewportSize.x, viewportSize.y);
+                        gameObjectsPanel.SetContext(activeScene);
+                    }
+
+                    if (ImGui::MenuItem("Open...", "Ctrl+O"))
+                    {
+                         std::string filepath = FileDialogs::OpenFile("Epic Game Engine Scene (*.ege)\0*.ege\0");
+
+                         if (!filepath.empty())
+                         {
+                             activeScene = std::make_shared<Scene>();
+                             activeScene->OnViewportResize(viewportSize.x, viewportSize.y);
+                             gameObjectsPanel.SetContext(activeScene);
+
+                             SceneSerializer serializer(activeScene);
+                             serializer.Deserialize(filepath);
+                         }
+                    }
+
+                    if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S"))
+                    {
+
+                        std::string filepath = FileDialogs::SaveFile("Epic Game Engine Scene (*.ege)\0*.ege\0");
+                        if (!filepath.empty())
+                        {
+                            SceneSerializer serializer(activeScene);
+                            serializer.Serialize(filepath);
+                        }
+                    }
 
                     if (ImGui::MenuItem("Exit")) Application::Get().Close();
+
                     ImGui::EndMenu();
                 }
 

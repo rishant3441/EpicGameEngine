@@ -30,5 +30,6 @@ namespace EpicGameEngine
     private:
         friend class GameObject;
         friend class GameObjectsPanel;
+        friend class SceneSerializer;
     };
 }

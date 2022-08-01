@@ -16,7 +16,7 @@ find_package(glew REQUIRED)
 add_library(
 	EpicGameEngine STATIC 
 	src/EpicGameEngine/Application.cpp
- "include/EpicGameEngine/Window/Window.h" "include/EpicGameEngine/ege_pch.h" "include/EpicGameEngine/Window/WindowsWindow.h" "src/EpicGameEngine/Window/WindowsWindow.cpp" "include/EpicGameEngine/Input/Input.h" "include/EpicGameEngine/Input/MouseCodes.h" "src/EpicGameEngine/Input/WindowsInput.cpp" "include/EpicGameEngine/Events/Event.h" "src/EpicGameEngine/Events/EventConversion.cpp" "include/EpicGameEngine/Renderer/Renderer.h" "src/EpicGameEngine/Renderer/Renderer.cpp" "include/EpicGameEngine/Layers/Layer.h" "include/EpicGameEngine/Layers/LayerArray.h" "src/EpicGameEngine/Layers/LayerArray.cpp" "include/EpicGameEngine/GameObjects/GameObject.h" "src/EpicGameEngine/Layers/Layer.cpp" "include/EpicGameEngine/ImGui/ImGuiLayer.h" "src/EpicGameEngine/ImGui/ImGuiLayer.cpp" "include/EpicGameEngine/Renderer/Camera/CameraController.h" "src/EpicGameEngine/Renderer/Camera/CameraController.cpp" "include/EpicGameEngine/Timestep.h" src/EpicGameEngine/GameObjects/Scene.cpp include/EpicGameEngine/GameObjects/Scene.h src/EpicGameEngine/Renderer/Texture.cpp include/EpicGameEngine/Renderer/Texture.h include/EpicGameEngine/GameObjects/Components.h src/EpicGameEngine/GameObjects/GameObject.cpp src/EpicGameEngine/Renderer/Camera/Camera.cpp include/EpicGameEngine/Renderer/Camera/Camera.h src/EpicGameEngine/Debug.cpp include/EpicGameEngine/Debug.h dependencies/dear_spdlog/dear_sink.cpp dependencies/dear_spdlog/dear_sink.h)
+ "include/EpicGameEngine/Window/Window.h" "include/EpicGameEngine/ege_pch.h" "include/EpicGameEngine/Window/WindowsWindow.h" "src/EpicGameEngine/Window/WindowsWindow.cpp" "include/EpicGameEngine/Input/Input.h" "include/EpicGameEngine/Input/MouseCodes.h" "src/EpicGameEngine/Input/WindowsInput.cpp" "include/EpicGameEngine/Events/Event.h" "src/EpicGameEngine/Events/EventConversion.cpp" "include/EpicGameEngine/Renderer/Renderer.h" "src/EpicGameEngine/Renderer/Renderer.cpp" "include/EpicGameEngine/Layers/Layer.h" "include/EpicGameEngine/Layers/LayerArray.h" "src/EpicGameEngine/Layers/LayerArray.cpp" "include/EpicGameEngine/GameObjects/GameObject.h" "src/EpicGameEngine/Layers/Layer.cpp" "include/EpicGameEngine/ImGui/ImGuiLayer.h" "src/EpicGameEngine/ImGui/ImGuiLayer.cpp" "include/EpicGameEngine/Renderer/Camera/CameraController.h" "src/EpicGameEngine/Renderer/Camera/CameraController.cpp" "include/EpicGameEngine/Timestep.h" src/EpicGameEngine/GameObjects/Scene.cpp include/EpicGameEngine/GameObjects/Scene.h src/EpicGameEngine/Renderer/Texture.cpp include/EpicGameEngine/Renderer/Texture.h include/EpicGameEngine/GameObjects/Components.h src/EpicGameEngine/GameObjects/GameObject.cpp src/EpicGameEngine/Renderer/Camera/Camera.cpp include/EpicGameEngine/Renderer/Camera/Camera.h src/EpicGameEngine/Debug.cpp include/EpicGameEngine/Debug.h dependencies/dear_spdlog/dear_sink.cpp dependencies/dear_spdlog/dear_sink.h src/EpicGameEngine/GameObjects/SceneSerializer.cpp include/EpicGameEngine/GameObjects/SceneSerializer.h include/EpicGameEngine/PlatformUtils.h include/Platform/Windows/WindowsPlatformUtils.cpp)
 
 target_include_directories(
 	EpicGameEngine PUBLIC
@@ -39,6 +39,8 @@ target_include_directories(
 	dependencies/entt/include
 	PUBLIC
 	dependencies/dear_spdlog/
+	PUBLIC
+	dependencies/yaml-cpp/include/
 )
 
 include_directories(
@@ -61,6 +63,7 @@ target_link_libraries(EpicGameEngine PUBLIC ${SDL2_GPU_LIBRARY_PATH})
 target_link_directories(EpicGameEngine PUBLIC opengl32)
 target_link_libraries(EpicGameEngine PUBLIC IMGUI)
 target_link_libraries(EpicGameEngine PUBLIC ${GLEW_GPU_LIBRARY_PATH})
+target_link_libraries(EpicGameEngine PUBLIC yaml-cpp)
 
 if (MSVC)
 	target_compile_definitions(
