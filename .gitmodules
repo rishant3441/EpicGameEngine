@@ -11,3 +11,6 @@
 [submodule "EpicGameEngine/dependencies/yaml-cpp"]
 	path = EpicGameEngine/dependencies/yaml-cpp
 	url = https://github.com/rishant3441/yaml-cpp
+[submodule "EpicGameEngine/dependencies/ImGuizmo"]
+	path = EpicGameEngine/dependencies/ImGuizmo
+	url = https://github.com/rishant3441/ImGuizmo
