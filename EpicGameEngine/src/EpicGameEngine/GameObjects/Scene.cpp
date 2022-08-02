@@ -66,7 +66,7 @@ namespace EpicGameEngine
                             GPU_SetActiveTarget(Renderer::target);
                             GPU_MatrixMode(Renderer::target, GPU_PROJECTION);
                             GPU_LoadIdentity();
-                            GPU_Ortho(mainCamera->GetLeft(), mainCamera->GetRight(), mainCamera->GetBottom(), mainCamera->GetTop(), mainCamera->orthographicNear, mainCamera->orthographicFar);
+                            GPU_Ortho(mainCamera->GetLeft(), mainCamera->GetRight(), mainCamera->GetTop(), mainCamera->GetBottom(), mainCamera->orthographicNear, mainCamera->orthographicFar);
                             GPU_Translate(-cameraTransform->Position.x, cameraTransform->Position.y, cameraTransform->Position.z);
                             // TODO: Implement Rotation
                             GPU_Scale(cameraTransform->Scale.x, cameraTransform->Scale.y, 1);
@@ -75,6 +75,8 @@ namespace EpicGameEngine
                         }
                         if (mainCamera->projectionType == SceneCamera::ProjectionType::Perspective)
                         {
+                            float offsetX, offsetY;
+
                             GPU_SetActiveTarget(Renderer::target);
                             GPU_MatrixMode(Renderer::target, GPU_PROJECTION);
                             GPU_LoadIdentity();
@@ -84,8 +86,21 @@ namespace EpicGameEngine
                             //float fW = fH * mainCamera->aspectRatio;
                             //spdlog::info("PH: {}, PW: {}, OH: {}, OW: {}", fH, fW, mainCamera->orthographicNear, mainCamera->orthographicFar);
                             GPU_Translate(-cameraTransform->Position.x, cameraTransform->Position.y, transform.Position.z);
+
+                            offsetX = Renderer::target->w/2.0f;
+                            offsetY = Renderer::target->h/2.0f;
+                            GPU_Translate(offsetX, offsetY, 0);
+
                             // TODO: Implement Rotation
-                            GPU_Scale(cameraTransform->Scale.x, cameraTransform->Scale.y, 1);
+                            glm::mat4 rotation = glm::toMat4(glm::quat(transform.Rotation));
+                            //GPU_MultiplyAndAssign(GPU_GetCurrentMatrix(), glm::value_ptr(rotation));
+                            GPU_Rotate(transform.Rotation.x, 1, 0, 0);
+                            GPU_Rotate(transform.Rotation.y, 0, 1, 0);
+                            GPU_Rotate(transform.Rotation.z, 0, 0, 1);
+                            GPU_Scale(cameraTransform->Scale.x, cameraTransform->Scale.y, cameraTransform->Scale.z);
+
+                            GPU_Translate(-offsetX, -offsetY, 0);
+
                             GPU_MatrixCopy(GPU_GetProjection(), GPU_GetCurrentMatrix());
                             GPU_MatrixMode(Renderer::target, GPU_MODEL);
                         }
@@ -100,10 +115,28 @@ namespace EpicGameEngine
         {
             auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(gameobject);
 
+            // TODO: Setup rotation
             if(sprite.Texture != nullptr)
+            {
                 Renderer::DrawTexturedRect(transform.Position.x, transform.Position.y, (float) transform.Scale.x * Renderer::unitSize, (float) transform.Scale.y * Renderer::unitSize, *sprite.Texture, 0, sprite.Color);
+            }
             else
-                Renderer::DrawFilledRect(transform.Position.x, transform.Position.y, (float) transform.Scale.x * Renderer::unitSize, (float) transform.Scale.y * Renderer::unitSize, 0, sprite.Color);
+            {
+                GPU_SetActiveTarget(Renderer::target);
+                GPU_MatrixMode(Renderer::target, GPU_MODEL);
+                GPU_LoadIdentity();
+                float xCenter, yCenter;
+                xCenter = transform.Position.x + (transform.Scale.x * 50 / 2);
+                yCenter = transform.Position.y + (transform.Scale.y * 50 / 2);
+                GPU_Translate(xCenter, yCenter, 0);
+                GPU_Translate(0, 0, transform.Position.z);
+                GPU_Rotate(transform.Rotation.x, 1.0f, 0, 0);
+                GPU_Rotate(transform.Rotation.y, 0, 1.0f, 0);
+                GPU_Rotate(-transform.Rotation.z, 0, 0, 1.0f);
+                GPU_Scale(1, 1, 50 * transform.Scale.z);
+                GPU_Translate(-xCenter, -yCenter, 0);
+                Renderer::DrawFilledRect(transform.Position.x + (transform.Scale.x * 50 / 2), transform.Position.y + (transform.Scale.y * 50 / 2), (float) transform.Scale.x * Renderer::unitSize, (float) transform.Scale.y * Renderer::unitSize, 0, sprite.Color);
+            }
         }
     }
 

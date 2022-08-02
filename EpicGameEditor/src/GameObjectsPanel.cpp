@@ -251,7 +251,11 @@ namespace EpicGameEngine
         DrawComponent<TransformComponent>("Transform", selection, [&](auto& component)
         {
             DrawVec3Control("Position", component.Position);
-            DrawVec3Control("Rotation", component.Rotation);
+            glm::vec3 rotation = { -glm::degrees(component.Rotation.x), glm::degrees(component.Rotation.y), component.Rotation.z };
+            DrawVec3Control("Rotation", rotation);
+            component.Rotation.x = -glm::radians(rotation.x);
+            component.Rotation.y = glm::radians(rotation.y);
+            component.Rotation.z = rotation.z;
             DrawVec3Control("Scale", component.Scale, 1.0f);
         });
 
