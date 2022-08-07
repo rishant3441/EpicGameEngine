@@ -5,6 +5,10 @@
 #include <EpicGameEngine/Renderer/Texture.h>
 #include <EpicGameEngine/ege_pch.h>
 #include <spdlog/spdlog.h>
+#include <SDL_gpu_OpenGL_4.h>
+#include <SDL_gpu_RendererImpl.h>
+
+
 
 namespace EpicGameEngine
 {
@@ -59,10 +63,10 @@ namespace EpicGameEngine
         GPU_Rectangle2(Renderer::GetTarget(), { static_cast<float>(x), static_cast<float>(y), static_cast<float>(w), static_cast<float>(h) }, color);
     }
 
-    void Renderer::DrawTexturedRect(double x, double y, double w, double h, const Texture& texture, double rot, SDL_Color color)
+    void Renderer::DrawTexturedRect(double x, double y, double w, double h, const Texture& texture, double rot, SDL_Color color, float pivot_x, float pivot_y)
     {
         GPU_Rect rect = { static_cast<float>(x), static_cast<float>(y), static_cast<float>(w), static_cast<float>(h) };
-        GPU_BlitRectX(texture, nullptr, Renderer::GetTarget(), &rect, rot, 0, 0, GPU_FLIP_VERTICAL);
+        GPU_BlitRectX(texture, nullptr, Renderer::GetTarget(), &rect, rot, pivot_x, pivot_y, GPU_FLIP_VERTICAL);
     }
 
     void Renderer::DrawFilledRect(double x, double y, double w, double h, double rot, SDL_Color color)

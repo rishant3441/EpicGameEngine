@@ -12,7 +12,8 @@
 #include <EpicGameEngine/Renderer/Camera/CameraController.h>
 #include <imgui.h>
 #include <imgui_impl_sdl.h>
-#include <sdl_gpu.h>
+#include <SDL_gpu.h>
+#include <EpicGameEngine/Debug.h>
 #include <EpicGameEngine/Scripting/ScriptingEngine.h>
 
 namespace EpicGameEngine
@@ -38,15 +39,19 @@ namespace EpicGameEngine
 
 		CameraController::UpdateCamera();
 
-	    ScriptingEngine::Init();
-		
-		spdlog::info("EpicGameEngine Initialized");
+		Debug::Log::LogInfo("EpicGameEngine Initialized");
+
+	  ScriptingEngine::Init();
 
 		SDL_Event event{};
 
 		window->OnRender();
 
-		while (window->running)
+        Renderer::target->matrix_mode = GPU_PROJECTION;
+
+        Debug::Log::Init();
+
+        while (window->running)
 		{
 			float time = (float) SDL_GetTicks() / 1000;
 			Timestep timestep = time - lastFrameTime;

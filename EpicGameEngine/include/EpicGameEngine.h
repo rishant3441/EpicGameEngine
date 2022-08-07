@@ -33,6 +33,7 @@
 #include <EpicGameEngine/GameObjects/GameObject.h>
 #include <EpicGameEngine/GameObjects/Scene.h>
 #include <EpicGameEngine/GameObjects/Components.h>
+#include <EpicGameEngine/GameObjects/SceneSerializer.h>
 
 // RENDERING:
 #include <EpicGameEngine/Renderer/Renderer.h>

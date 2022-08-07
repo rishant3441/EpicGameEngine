@@ -12,7 +12,7 @@ namespace EpicGameEngine
 		unsigned int width;
 		unsigned int height;
 
-		WindowData(std::string title = "Epic Game Engine", unsigned int width = 1280, unsigned int height = 720)
+		WindowData(std::string title = "Epic Game Engine", unsigned int width = 1600, unsigned int height = 900)
 			: Title(std::move(title)), width(width), height(height)
 		{}
 	};
@@ -28,7 +28,7 @@ namespace EpicGameEngine
 
 		virtual void OnEvent(std::shared_ptr<Event> e) = 0;
 
-		static auto CreateWindow(const WindowData& data = WindowData()) -> Window*;
+		static Window* CreateWindow(const WindowData& data = WindowData());
 
 		SDL_Renderer* renderer; 
 

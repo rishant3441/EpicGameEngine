@@ -19,3 +19,7 @@ target_include_directories(IMGUI PUBLIC ${IMGUI_DIR} PUBLIC ${IMGUI_DIR}/backend
 target_link_libraries(IMGUI PUBLIC ${SDL2_LIBRARIES})
 
 add_subdirectory(spdlog)
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "Building shared libs is off")
+add_subdirectory(yaml-cpp)
+add_subdirectory(ImGuizmo)
+

@@ -26,13 +26,13 @@ namespace EpicGameEngine
         }
 
         static void DrawRect(double x, double y, double w, double h, double rot = 0, SDL_Color color = { 255, 0, 0, 255 });
-        static void DrawTexturedRect(double x, double y, double w, double h, const Texture& texture, double rot = 0, SDL_Color color = { 255, 0, 0, 255 });
+        static void DrawTexturedRect(double x, double y, double w, double h, const Texture& texture, double rot = 0, SDL_Color color = { 255, 0, 0, 255 }, float pivot_x = 0, float pivot_y = 0);
         static void DrawFilledRect(double x, double y, double w, double h, double rot = 0, SDL_Color color = { 255, 0, 0, 255 });
 
         inline static GPU_Target* target;
         inline static GPU_Target* window = nullptr;
         inline static GPU_Image* texture;
         inline static bool enableDrawingToTexture = false;
-        inline static int unitSize;
+        inline static float unitSize;
     };
 }
