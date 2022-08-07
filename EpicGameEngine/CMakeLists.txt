@@ -41,6 +41,8 @@ target_include_directories(
 	dependencies/dear_spdlog/
 	PUBLIC
 	dependencies/yaml-cpp/include/
+	PUBLIC
+	dependencies/ImGuizmo/
 )
 
 include_directories(
@@ -64,6 +66,7 @@ target_link_directories(EpicGameEngine PUBLIC opengl32)
 target_link_libraries(EpicGameEngine PUBLIC IMGUI)
 target_link_libraries(EpicGameEngine PUBLIC ${GLEW_GPU_LIBRARY_PATH})
 target_link_libraries(EpicGameEngine PUBLIC yaml-cpp)
+target_link_libraries(EpicGameEngine PUBLIC ImGuizmo)
 
 if (MSVC)
 	target_compile_definitions(

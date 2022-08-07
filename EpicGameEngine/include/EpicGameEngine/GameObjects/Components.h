@@ -36,7 +36,6 @@ namespace EpicGameEngine
         {}
     };
 
-    // TODO: Z Coord isn't actually used even when using a perspective camera.
     struct TransformComponent
     {
         glm::vec3 Position = { 0.0f, 0.0f, 0.0f };
@@ -49,6 +48,10 @@ namespace EpicGameEngine
             : Position(position)
         {}
 
+        glm::mat4 GetRotation() const
+        {
+            return glm::toMat4(glm::quat(Rotation));
+        }
         [[nodiscard]] glm::mat4 GetTransform() const
         {
             glm::mat4 rotation = glm::toMat4(glm::quat(Rotation));

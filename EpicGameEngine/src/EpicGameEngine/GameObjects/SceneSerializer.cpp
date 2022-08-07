@@ -232,7 +232,7 @@ namespace EpicGameEngine
             return false;
 
         std::string sceneName = data["Scene"].as<std::string>();
-        spdlog::info("Deserializing scene '{0}'", sceneName);
+        spdlog::info("ENGINE: Deserializing scene '{0}'", sceneName);
 
         auto gameObjects = data["GameObjects"];
         if (gameObjects)
@@ -246,7 +246,7 @@ namespace EpicGameEngine
                 if (nameComponent)
                     name = nameComponent["Name"].as<std::string>();
 
-                spdlog::info("Deserialized gameObject with ID = {0}, name = {1}", uuid, name);
+                spdlog::info("ENGINE: Deserialized gameObject with ID = {0}, name = {1}", uuid, name);
 
                 GameObject deserializedGameObject = scene->CreateGameObject(name);
 

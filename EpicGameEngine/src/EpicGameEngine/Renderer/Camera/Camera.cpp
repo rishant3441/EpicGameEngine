@@ -74,10 +74,10 @@ namespace EpicGameEngine
 
     void SceneCamera::recalculateProjection()
     {
-        left = 0;
-        right = width;
-        top = 0;
-        bottom = height;
+        left = -width/2;
+        right = width/2;
+        top = -height/2;
+        bottom = height/2;
     }
 
     void SceneCamera::SetPerspectiveFOV(float fov)

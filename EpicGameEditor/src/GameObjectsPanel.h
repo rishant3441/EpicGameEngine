@@ -22,6 +22,8 @@ namespace EpicGameEngine
 
         void OnImGuiRender();
 
+        GameObject GetSelectedGameObject() const { return selectionContext; }
+
     private:
         void DrawGameObjectNode(GameObject gameObject);
         void DrawVec3Control(const std::string& label, glm::vec3& values, float resetValue = 0.0f, float columnWidth = 75.0f);

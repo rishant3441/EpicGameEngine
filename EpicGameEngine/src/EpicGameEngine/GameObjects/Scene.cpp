@@ -41,7 +41,7 @@ namespace EpicGameEngine
             script.Instance->OnUpdate(ts);
         });
 
-        Camera* mainCamera = nullptr;
+        SceneCamera* mainCamera = nullptr;
         TransformComponent* cameraTransform;
         {
             auto view = registry.view<TransformComponent, CameraComponent>();
@@ -75,33 +75,20 @@ namespace EpicGameEngine
                         }
                         if (mainCamera->projectionType == SceneCamera::ProjectionType::Perspective)
                         {
-                            float offsetX, offsetY;
+                            Renderer::target->use_camera = false;
+                            glm::mat4 viewMatrix;
+                            glm::mat4 projectionMatrix;
 
+                            viewMatrix = cameraTransform->GetTransform();
+                            viewMatrix = glm::inverse(viewMatrix);
+                            projectionMatrix = glm::perspective(glm::radians(mainCamera->perspectiveVerticalFOV), mainCamera->aspectRatio, mainCamera->perspectiveNear, mainCamera->perspectiveFar);
                             GPU_SetActiveTarget(Renderer::target);
                             GPU_MatrixMode(Renderer::target, GPU_PROJECTION);
                             GPU_LoadIdentity();
-                            //GPU_Perspective(mainCamera->perspectiveVerticalFOV, mainCamera->aspectRatio, mainCamera->perspectiveNear, mainCamera->perspectiveFar);
-                            GPU_Frustum(mainCamera->GetLeft(), mainCamera->GetRight(), mainCamera->GetBottom(), mainCamera->GetTop(), mainCamera->perspectiveNear, mainCamera->perspectiveFar);
-                            //float fH = tanf((mainCamera->perspectiveVerticalFOV / 360) * 3.14159265359) * mainCamera->perspectiveNear;
-                            //float fW = fH * mainCamera->aspectRatio;
-                            //spdlog::info("PH: {}, PW: {}, OH: {}, OW: {}", fH, fW, mainCamera->orthographicNear, mainCamera->orthographicFar);
-                            GPU_Translate(-cameraTransform->Position.x, cameraTransform->Position.y, transform.Position.z);
-
-                            offsetX = Renderer::target->w/2.0f;
-                            offsetY = Renderer::target->h/2.0f;
-                            GPU_Translate(offsetX, offsetY, 0);
-
-                            // TODO: Implement Rotation
-                            glm::mat4 rotation = glm::toMat4(glm::quat(transform.Rotation));
-                            //GPU_MultiplyAndAssign(GPU_GetCurrentMatrix(), glm::value_ptr(rotation));
-                            GPU_Rotate(transform.Rotation.x, 1, 0, 0);
-                            GPU_Rotate(transform.Rotation.y, 0, 1, 0);
-                            GPU_Rotate(transform.Rotation.z, 0, 0, 1);
-                            GPU_Scale(cameraTransform->Scale.x, cameraTransform->Scale.y, cameraTransform->Scale.z);
-
-                            GPU_Translate(-offsetX, -offsetY, 0);
-
-                            GPU_MatrixCopy(GPU_GetProjection(), GPU_GetCurrentMatrix());
+                            GPU_MatrixCopy(GPU_GetProjection(), glm::value_ptr(projectionMatrix));
+                            GPU_MatrixMode(Renderer::target, GPU_VIEW);
+                            GPU_LoadIdentity();
+                            GPU_MatrixCopy(GPU_GetView(), glm::value_ptr(viewMatrix));
                             GPU_MatrixMode(Renderer::target, GPU_MODEL);
                         }
                     }
@@ -122,20 +109,20 @@ namespace EpicGameEngine
             }
             else
             {
+                Renderer::unitSize = 1.0f;
                 GPU_SetActiveTarget(Renderer::target);
                 GPU_MatrixMode(Renderer::target, GPU_MODEL);
                 GPU_LoadIdentity();
                 float xCenter, yCenter;
-                xCenter = transform.Position.x + (transform.Scale.x * 50 / 2);
-                yCenter = transform.Position.y + (transform.Scale.y * 50 / 2);
+                xCenter = transform.Position.x + (transform.Scale.x * Renderer::unitSize / 2);
+                yCenter = transform.Position.y + (transform.Scale.y * Renderer::unitSize / 2);
                 GPU_Translate(xCenter, yCenter, 0);
                 GPU_Translate(0, 0, transform.Position.z);
-                GPU_Rotate(transform.Rotation.x, 1.0f, 0, 0);
-                GPU_Rotate(transform.Rotation.y, 0, 1.0f, 0);
-                GPU_Rotate(-transform.Rotation.z, 0, 0, 1.0f);
-                GPU_Scale(1, 1, 50 * transform.Scale.z);
+                GPU_MultiplyAndAssign(GPU_GetCurrentMatrix(), glm::value_ptr(transform.GetRotation()));
+                GPU_Scale(1, 1, Renderer::unitSize * transform.Scale.z);
                 GPU_Translate(-xCenter, -yCenter, 0);
-                Renderer::DrawFilledRect(transform.Position.x + (transform.Scale.x * 50 / 2), transform.Position.y + (transform.Scale.y * 50 / 2), (float) transform.Scale.x * Renderer::unitSize, (float) transform.Scale.y * Renderer::unitSize, 0, sprite.Color);
+                GPU_MatrixCopy(GPU_GetModel(), GPU_GetCurrentMatrix());
+                Renderer::DrawFilledRect(transform.Position.x, -transform.Position.y, (float) transform.Scale.x * Renderer::unitSize, (float) transform.Scale.y * Renderer::unitSize, 0, sprite.Color);
             }
         }
     }
@@ -154,5 +141,17 @@ namespace EpicGameEngine
                 cameraComponent.Camera.SetViewportSize(width, height);
             }
         }
+    }
+
+    GameObject Scene::GetPrimaryCamera()
+    {
+        auto view = registry.view<CameraComponent>();
+        for (auto gameObject : view)
+        {
+           const auto& camera = view.get<CameraComponent>(gameObject);
+           if (camera.Primary)
+               return GameObject{ gameObject, this };
+        }
+        return {};
     }
 }

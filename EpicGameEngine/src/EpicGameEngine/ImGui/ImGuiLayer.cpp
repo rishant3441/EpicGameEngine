@@ -8,6 +8,7 @@
 #include <imgui.h>
 #include <imgui_impl_sdl.h>
 #include <imgui_impl_opengl3.h>
+#include <ImGuizmo.h>
 
 namespace EpicGameEngine
 {
@@ -58,6 +59,8 @@ namespace EpicGameEngine
         ImGui_ImplOpenGL3_NewFrame();
 
         ImGui::NewFrame();
+        ImGuizmo::BeginFrame();
+
     }
     void ImGuiLayer::OnImGuiRender()
     {

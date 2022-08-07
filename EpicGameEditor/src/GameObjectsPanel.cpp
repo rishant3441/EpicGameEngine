@@ -251,11 +251,10 @@ namespace EpicGameEngine
         DrawComponent<TransformComponent>("Transform", selection, [&](auto& component)
         {
             DrawVec3Control("Position", component.Position);
-            glm::vec3 rotation = { -glm::degrees(component.Rotation.x), glm::degrees(component.Rotation.y), component.Rotation.z };
+            //glm::vec3 rotation = { -glm::degrees(component.Rotation.x), glm::degrees(component.Rotation.y), component.Rotation.z };
+            glm::vec3 rotation = glm::degrees(component.Rotation);
             DrawVec3Control("Rotation", rotation);
-            component.Rotation.x = -glm::radians(rotation.x);
-            component.Rotation.y = glm::radians(rotation.y);
-            component.Rotation.z = rotation.z;
+            component.Rotation = glm::radians(rotation);
             DrawVec3Control("Scale", component.Scale, 1.0f);
         });
 
@@ -306,7 +305,6 @@ namespace EpicGameEngine
                     component.Camera.SetPerspectiveFOV(verticalFOV);
                 }
                 float perspectiveNear = component.Camera.GetNearClip();
-                spdlog::info("{}", perspectiveNear);
                 if (ImGui::DragFloat("Near Clip", &perspectiveNear, 0.1f))
                     component.Camera.SetNearClip(perspectiveNear);
 

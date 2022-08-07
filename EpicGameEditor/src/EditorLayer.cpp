@@ -4,11 +4,16 @@
 #include <cassert>
 
 #include <EpicGameEngine/PlatformUtils.h>
+#include <ImGuizmo.h>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/transform.hpp>
 
 
 namespace EpicGameEngine
 {
-	void EditorLayer::OnAttach()
+    static glm::mat4 cubeTransform;
+    void EditorLayer::OnAttach()
 	{
 	    ssink = dear_sink_mt();
 
@@ -182,6 +187,8 @@ namespace EpicGameEngine
                         activeScene = std::make_shared<Scene>();
                         activeScene->OnViewportResize(viewportSize.x, viewportSize.y);
                         gameObjectsPanel.SetContext(activeScene);
+
+                        spdlog::info("EDITOR: New project created");
                     }
 
                     if (ImGui::MenuItem("Open...", "Ctrl+O"))
@@ -218,13 +225,48 @@ namespace EpicGameEngine
                 ImGui::EndMenuBar();
             }
 			
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 3.0f, 3.0f});
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0.0f, 0.0f});
 			// TODO: Disallow focusing the viewport and hovering effects
 			ImGui::Begin("Viewport");
 			void* textureID = (void*) GPU_GetTextureHandle(Renderer::texture);
 			ImVec2 imGuiViewportSize = ImGui::GetContentRegionAvail();
 			viewportSize = { imGuiViewportSize.x, imGuiViewportSize.y };
 			ImGui::Image(textureID, ImVec2{ static_cast<float>(viewportSize.x), static_cast<float>(viewportSize.y) });
+
+			GameObject selectedGameObject = gameObjectsPanel.GetSelectedGameObject();
+            if (selectedGameObject.operator bool())
+			{
+			    ImGuizmo::SetOrthographic(false);
+			    ImGuizmo::SetDrawlist();
+			    float windowWidth = (float) ImGui::GetWindowWidth();
+			    float windowHeight = (float) ImGui::GetWindowHeight();
+			    ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
+
+			    auto cameraGameObject = activeScene->GetPrimaryCamera();
+			    const auto& cameraC = cameraGameObject.GetComponent<CameraComponent>();
+			    glm::mat4 cameraView = glm::inverse(cameraGameObject.GetComponent<TransformComponent>().GetTransform());
+			    auto cameraTransform = cameraGameObject.GetComponent<TransformComponent>();
+			    glm::mat4 cameraProjection = glm::perspective(glm::radians(cameraC.Camera.perspectiveVerticalFOV), cameraC.Camera.aspectRatio, cameraC.Camera.perspectiveNear, cameraC.Camera.perspectiveFar);
+
+                auto& tc = selectedGameObject.GetComponent<TransformComponent>();
+                glm::mat4 transform = tc.GetTransform();
+
+
+                ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection), ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::WORLD, glm::value_ptr(transform));
+                ImGuizmo::ViewManipulate(glm::value_ptr(cameraView), 8.0f, ImVec2(0, 0), ImVec2(10, 10), ImColor(255, 0, 0, 255));
+                glm::vec3 Position = { 0, 0, -2 };
+                glm::vec3 Rotation = { 0, 0, 0 };
+                glm::vec3 Scale = { 1000, 1000, 1000 };
+                cubeTransform = glm::translate(glm::mat4{1.0f}, Position) * glm::toMat4(glm::quat(Rotation)) * glm::scale(glm::mat4{1.0f}, Scale);
+                //ImGuizmo::DrawCubes(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection), glm::value_ptr(cubeTransform), 1);
+
+			    if (ImGuizmo::IsUsing())
+			    {
+			        tc.Position = (glm::vec3(transform[3]));
+			    }
+
+			}
+
 			ImGui::End();
             ImGui::PopStyleVar();
 

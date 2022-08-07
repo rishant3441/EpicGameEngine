@@ -33,6 +33,6 @@ namespace EpicGameEngine
         inline static GPU_Target* window = nullptr;
         inline static GPU_Image* texture;
         inline static bool enableDrawingToTexture = false;
-        inline static int unitSize;
+        inline static float unitSize;
     };
 }

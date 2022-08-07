@@ -30,7 +30,7 @@ namespace EpicGameEngine
 
         float orthographicNear = -1.0f, orthographicFar = 1.0f;
         float perspectiveNear = 1.0f, perspectiveFar = 1000.0f;
-        float perspectiveVerticalFOV = glm::radians(45.0f);
+        float perspectiveVerticalFOV = 9900000256.000f;
         float aspectRatio;
 
         enum class ProjectionType { Perspective = 0, Orthographic = 1};
@@ -77,8 +77,8 @@ namespace EpicGameEngine
         ~SceneCamera() override = default;
 
 
-        float GetNearClip() { return orthographicNear; }
-        float GetFarClip() { return orthographicFar; }
+        float GetNearClip() { return this->projectionType == Camera::ProjectionType::Orthographic ? orthographicNear : perspectiveNear; }
+        float GetFarClip() { return this->projectionType == Camera::ProjectionType::Orthographic ? orthographicFar : perspectiveFar; }
 
         void SetOrthographic(float nearClip, float farClip);
         void SetViewportSize(uint32_t width, uint32_t height);
