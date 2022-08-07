@@ -14,6 +14,7 @@
 #include <imgui_impl_sdl.h>
 #include <SDL_gpu.h>
 #include <EpicGameEngine/Debug.h>
+#include <EpicGameEngine/Scripting/ScriptingEngine.h>
 
 namespace EpicGameEngine
 {
@@ -40,8 +41,9 @@ namespace EpicGameEngine
 
 		Debug::Log::LogInfo("EpicGameEngine Initialized");
 
-		SDL_Event event{};
+	  ScriptingEngine::Init();
 
+		SDL_Event event{};
 
 		window->OnRender();
 

@@ -48,7 +48,7 @@ namespace EpicGameEngine
 
             void OnUpdate(Timestep ts)
             {
-               spdlog::info("Timestep: {}", ts.GetSeconds());
+               //spdlog::info("Timestep: {}", ts.GetSeconds());
             }
         };
 
