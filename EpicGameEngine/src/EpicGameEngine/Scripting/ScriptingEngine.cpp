@@ -6,11 +6,18 @@
 //
 
 #include <EpicGameEngine/Scripting/ScriptingEngine.h>
+#include <EpicGameEngine/Scripting/ScriptingRegister.h>
+#include <EpicGameEngine/GameObjects/Scene.h>
 #include <EpicGameEngine/ege_pch.h>
+#include <EpicGameEngine/GameObjects/GameObject.h>
+#include <EpicGameEngine/GameObjects/Components.h>
 #include <spdlog/spdlog.h>
 #include <mono/jit/jit.h>
 #include <mono/metadata/assembly.h>
 #include <mono/metadata/attrdefs.h>
+
+#include <utility>
+#include <EpicGameEngine/GameObjects/Scene.h>
 
 namespace EpicGameEngine
 {
@@ -20,9 +27,19 @@ namespace EpicGameEngine
         MonoDomain* AppDomain = nullptr;
 
         MonoAssembly* CoreAssembly = nullptr;
+        MonoImage* CoreAssemblyImage = nullptr;
+
+        ScriptClass BaseClass;
+        std::unordered_map<std::string, Ref<ScriptClass>> GameObjectClasses;
+        // TODO: Switch to UUIDS
+        std::unordered_map<std::string, Ref<ScriptInstance>> GameObjectInstances;
+
+        Scene* CurrentScene = nullptr;
     };
 
     static ScriptingEngineData* data = nullptr;
+
+
 
     void EpicGameEngine::ScriptingEngine::Init()
     {
@@ -48,12 +65,22 @@ namespace EpicGameEngine
         }
 
         data->RootDomain = rootDomain;
-
         data->AppDomain = mono_domain_create_appdomain((char*) "EGEAppDomain", nullptr);
         mono_domain_set(data->AppDomain, true);
-
         MonoAssembly* assembly = LoadCSharpAssembly("EpicGameEngine-Scripting.dll");
         data->CoreAssembly = assembly;
+        MonoImage* image = mono_assembly_get_image(data->CoreAssembly);
+        data->CoreAssemblyImage = image;
+        LoadAssemblyClasses(data->CoreAssembly);
+        ScriptingRegister::RegisterScripts();
+
+#if 0
+        auto& classes = data->GameObjectClasses;
+
+        // Instantiate Class
+        data->BaseClass = ScriptClass("EpicGameEngine", "Main");
+        MonoObject* classInstance = data->BaseClass.InstantiateClass();
+#endif
     }
 
     void EpicGameEngine::ScriptingEngine::ShutdownMono()
@@ -112,6 +139,11 @@ namespace EpicGameEngine
         return assembly;
     }
 
+    std::unordered_map<std::string, Ref<ScriptClass>> ScriptingEngine::GetGameObjectClasses()
+    {
+        return data->GameObjectClasses;
+    }
+
     void ScriptingEngine::PrintAssemblyTypes(MonoAssembly *assembly)
     {
         MonoImage* image = mono_assembly_get_image(assembly);
@@ -156,6 +188,13 @@ namespace EpicGameEngine
 
         mono_runtime_object_init(classInstance);
         return classInstance;
+    }
+
+    MonoObject* ScriptingEngine::InstantiateClass(MonoClass* monoClass)
+    {
+        MonoObject* object = mono_object_new(data->AppDomain, monoClass);
+        mono_runtime_object_init(object);
+        return object;
     }
 
     void ScriptingEngine::CallMonoFunction(MonoObject* objectInstance, const char* name, unsigned int numberOfParams, void* params[])
@@ -330,6 +369,101 @@ namespace EpicGameEngine
         std::string result(utf8);
         mono_free(utf8);
         return result;
+    }
+
+    void ScriptingEngine::LoadAssemblyClasses(MonoAssembly* assembly)
+    {
+        data->GameObjectClasses.clear();
+
+        MonoImage* image = mono_assembly_get_image(assembly);
+        const MonoTableInfo* typeDefinitionsTable = mono_image_get_table_info(image, MONO_TABLE_TYPEDEF);
+        int32_t numTypes = mono_table_info_get_rows(typeDefinitionsTable);
+        MonoClass* baseClass = mono_class_from_name(image, "EpicGameEngine", "Main");
+
+        for (int32_t i = 0; i < numTypes; i++)
+        {
+            uint32_t cols[MONO_TYPEDEF_SIZE];
+            mono_metadata_decode_row(typeDefinitionsTable, i, cols, MONO_TYPEDEF_SIZE);
+
+            const char* nameSpace = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAMESPACE]);
+            const char* name = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAME]);
+            std::string fullName;
+            if (strlen(nameSpace) != 0)
+                fullName = fmt::format("{}.{}", nameSpace, name);
+            else
+                fullName = name;
+
+            MonoClass* monoClass = mono_class_from_name(image, nameSpace, name);
+
+            bool isEntity = mono_class_is_subclass_of(monoClass, baseClass, false);
+            if (isEntity)
+                data->GameObjectClasses[fullName] = CreateRef<ScriptClass>(nameSpace, name);
+        }
+    }
+
+    void ScriptingEngine::OnRuntimeStart(Scene* scene)
+    {
+        data->CurrentScene = scene;
+    }
+
+    void ScriptingEngine::OnRuntimeStop()
+    {
+
+    }
+
+    bool ScriptingEngine::ClassExists(const std::string& fullName)
+    {
+       return data->GameObjectClasses.find(fullName) != data->GameObjectClasses.end();
+    }
+
+    void ScriptingEngine::OnGOCreate(GameObject gameObject)
+    {
+        const auto& script = gameObject.GetComponent<CSharpScriptComponent>();
+        if (ScriptingEngine::ClassExists(script.name))
+        {
+            
+        }
+    }
+
+    ScriptClass::ScriptClass(const std::string& classNamespace, const std::string& className)
+            : classNamespace(classNamespace), className(className)
+    {
+        monoClass = mono_class_from_name(data->CoreAssemblyImage, classNamespace.c_str(), className.c_str());
+    }
+
+    MonoObject* ScriptClass::InstantiateClass()
+    {
+        return ScriptingEngine::InstantiateClass(monoClass);
+    }
+
+    MonoMethod *ScriptClass::GetMethod(const std::string& name, int numOfParameters)
+    {
+        return mono_class_get_method_from_name(monoClass, name.c_str(), numOfParameters);
+    }
+
+    MonoObject *ScriptClass::CallMethod(MonoObject* object, MonoMethod* method, void** params)
+    {
+       return mono_runtime_invoke(method, object, params, nullptr);
+    }
+
+    ScriptInstance::ScriptInstance(Ref<ScriptClass> scriptClass)
+        : scriptClass(std::move(scriptClass))
+    {
+        instance = scriptClass->InstantiateClass();
+        onStartMethod = scriptClass->GetMethod("OnStart", 0);
+        onUpdateMethod = scriptClass->GetMethod("OnUpdate", 1);
+
+    }
+
+    void ScriptInstance::CallOnStart()
+    {
+        scriptClass->CallMethod(instance, onStartMethod);
+    }
+
+    void ScriptInstance::CallOnUpdate(float ts)
+    {
+        void* param = &ts;
+        scriptClass->CallMethod(instance, onUpdateMethod, &param);
     }
 }
 

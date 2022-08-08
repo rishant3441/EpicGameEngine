@@ -186,6 +186,16 @@ namespace EpicGameEngine
            out << YAML::EndMap; // SpriteRendererComponent
        }
 
+       if (gameObject.HasComponent<CSharpScriptComponent>())
+       {
+           auto& scriptComponent = gameObject.GetComponent<CSharpScriptComponent>();
+
+           out << YAML::Key << "CSharpScriptComponent";
+           out << YAML::BeginMap;
+           out << YAML::Key << "ClassName" << YAML::Value << scriptComponent.name;
+           out << YAML::EndMap;
+       }
+
        out << YAML::EndMap;
     }
 
@@ -279,6 +289,13 @@ namespace EpicGameEngine
                     cc.fixedAspectRatio = cameraComponent["FixedAspectRatio"].as<bool>();
 
                     cc.Camera.SetViewportSize(850, 536); // TODO: Don't hardcode the starter window viewport
+                }
+
+                auto cSharpScriptComponent = gameObject["CSharpScriptComponent"];
+                if (cSharpScriptComponent)
+                {
+                    auto& sc = deserializedGameObject.AddComponent<CSharpScriptComponent>();
+                    sc.name = cSharpScriptComponent["ClassName"].as<std::string>();
                 }
 
                 auto spriteRendererComponent = gameObject["SpriteRendererComponent"];

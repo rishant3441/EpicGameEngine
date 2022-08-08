@@ -7,6 +7,7 @@
 #include <EpicGameEngine/GameObjects/GameObject.h>
 #include <EpicGameEngine/GameObjects/Components.h>
 #include <EpicGameEngine/Renderer/Renderer.h>
+#include <EpicGameEngine/Scripting/ScriptingEngine.h>
 #include <spdlog/spdlog.h>
 
 #include <glm/glm.hpp>
@@ -124,6 +125,14 @@ namespace EpicGameEngine
                 GPU_MatrixCopy(GPU_GetModel(), GPU_GetCurrentMatrix());
                 Renderer::DrawFilledRect(transform.Position.x, -transform.Position.y, (float) transform.Scale.x * Renderer::unitSize, (float) transform.Scale.y * Renderer::unitSize, 0, sprite.Color);
             }
+        }
+        ScriptingEngine::OnRuntimeStart(this);
+        auto view = registry.view<CSharpScriptComponent>();
+        for (auto gameObjectID : view)
+        {
+            GameObject gameObject = { gameObjectID, this };
+            ScriptingEngine::OnGOCreate(gameObject);
+
         }
     }
 

@@ -11,6 +11,7 @@ namespace EpicGameEngine
 {
     class ScriptingRegister
     {
+    public:
         static void RegisterScripts();
     };
 }

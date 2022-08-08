@@ -7,7 +7,10 @@
 
 #include "GameObjectsPanel.h"
 #include <EpicGameEngine.h>
+#include <EpicGameEngine/Scripting/ScriptingEngine.h>
 #include <imgui.h>
+#include <map>
+#include <unordered_map>
 
 #include <glm/gtc/type_ptr.hpp>
 #include <imgui_internal.h>
@@ -234,6 +237,7 @@ namespace EpicGameEngine
 
         if (ImGui::BeginPopup("AddComponent"))
         {
+            // TODO: Clean this up (for ex. move into seperate function or something)
             if (ImGui::MenuItem("Sprite Renderer"))
             {
                 selectionContext.AddComponent<SpriteRendererComponent>();
@@ -242,6 +246,11 @@ namespace EpicGameEngine
             if (ImGui::MenuItem("Camera"))
             {
                 selectionContext.AddComponent<CameraComponent>();
+                ImGui::CloseCurrentPopup();
+            }
+            if (ImGui::MenuItem("CSharp Script"))
+            {
+                selectionContext.AddComponent<CSharpScriptComponent>();
                 ImGui::CloseCurrentPopup();
             }
 
@@ -323,6 +332,25 @@ namespace EpicGameEngine
             component.Color.g = color[1] * 255.0;
             component.Color.b = color[2] * 255.0;
             component.Color.a = color[3] * 255.0;
+        });
+
+        DrawComponent<CSharpScriptComponent>("CSharp Script", selection, [](auto& component) {
+            bool scriptClassExists = ScriptingEngine::ClassExists(component.name);
+
+            static char buffer[64];
+            strcpy_s(buffer, sizeof(buffer), component.name.c_str());
+
+            if (!scriptClassExists)
+                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.9f, 0.2f, 0.3f, 1.0f));
+
+            if (ImGui::InputText("Class Name", buffer, sizeof(buffer)))
+            {
+                // Game Object Classes
+                component.name = buffer;
+            }
+
+            if (!scriptClassExists)
+                ImGui::PopStyleColor();
         });
     }
 }

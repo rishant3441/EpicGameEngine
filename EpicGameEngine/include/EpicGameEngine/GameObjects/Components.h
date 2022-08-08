@@ -84,6 +84,14 @@ namespace EpicGameEngine
         CameraComponent(const CameraComponent&) = default;
     };
 
+    struct CSharpScriptComponent
+    {
+        std::string name;
+
+        CSharpScriptComponent() = default;
+        CSharpScriptComponent(const CSharpScriptComponent&) = default;
+    };
+
     struct NativeScriptComponent
     {
         ScriptableGameObject* Instance = nullptr;
@@ -97,6 +105,5 @@ namespace EpicGameEngine
             InstantiateScript = []() { return static_cast<ScriptableGameObject*>(new T()); };
             DeleteScript = [](NativeScriptComponent* script) { delete script->Instance; script->Instance = nullptr; };
         }
-
     };
 }

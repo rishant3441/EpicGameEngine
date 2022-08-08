@@ -54,7 +54,7 @@ void ExampleLayer::OnAttach()
 
         void OnStart()
         {
-
+            spdlog::info("Camera Controller Initialized!");
         }
     };
     camera.AddComponent<NativeScriptComponent>().Bind<CameraContrller>();
