@@ -8,6 +8,7 @@
 #include <EpicGameEngine/GameObjects/Components.h>
 #include <EpicGameEngine/Renderer/Renderer.h>
 #include <EpicGameEngine/Scripting/ScriptingEngine.h>
+#include <EpicGameEngine/UUID.h>
 #include <spdlog/spdlog.h>
 
 #include <glm/glm.hpp>
@@ -17,10 +18,16 @@ namespace EpicGameEngine
 {
     GameObject Scene::CreateGameObject(const std::string &name)
     {
-       GameObject gameObject =  { registry.create(), this };
-       gameObject.AddComponent<TransformComponent>();
-       gameObject.AddComponent<NameComponent>(name.empty() ? "Empty Game Object" : name);
-       return gameObject;
+        return CreateGameObjectWithUUID(name, UUID());
+    }
+
+    GameObject Scene::CreateGameObjectWithUUID(const std::string &name, UUID uuid)
+    {
+        GameObject gameObject =  { registry.create(), this };
+        gameObject.AddComponent<IDComponent>(uuid);
+        gameObject.AddComponent<TransformComponent>();
+        gameObject.AddComponent<NameComponent>(name.empty() ? "Empty Game Object" : name);
+        return gameObject;
     }
 
     void Scene::DeleteGameObject(GameObject gameObject)
@@ -132,7 +139,6 @@ namespace EpicGameEngine
         {
             GameObject gameObject = { gameObjectID, this };
             ScriptingEngine::OnGOCreate(gameObject);
-
         }
     }
 

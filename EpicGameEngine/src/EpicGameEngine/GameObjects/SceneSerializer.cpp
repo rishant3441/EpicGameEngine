@@ -125,7 +125,7 @@ namespace EpicGameEngine
     {
        out << YAML::BeginMap;
        out << YAML::Key << "GameObject";
-       out << YAML::Value << "12089374129343"; // TODO: Game Object ID
+       out << YAML::Value << gameObject.GetUUID(); // TODO: Game Object ID
 
        if (gameObject.HasComponent<NameComponent>())
        {
@@ -249,7 +249,7 @@ namespace EpicGameEngine
         {
             for (auto gameObject : gameObjects)
             {
-                uint64_t uuid = gameObject["GameObject"].as<uint64_t>(); // TODO
+                uint64_t uuid = gameObject["GameObject"].as<uint64_t>();
 
                 std::string name;
                 auto nameComponent = gameObject["NameComponent"];
@@ -258,7 +258,7 @@ namespace EpicGameEngine
 
                 spdlog::info("ENGINE: Deserialized gameObject with ID = {0}, name = {1}", uuid, name);
 
-                GameObject deserializedGameObject = scene->CreateGameObject(name);
+                GameObject deserializedGameObject = scene->CreateGameObjectWithUUID(name, uuid);
 
                 auto transformComponent = gameObject["TransformComponent"];
                 if (transformComponent)

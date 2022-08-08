@@ -11,6 +11,7 @@
 #include <EpicGameEngine/ege_pch.h>
 #include <EpicGameEngine/GameObjects/GameObject.h>
 #include <EpicGameEngine/GameObjects/Components.h>
+#include <EpicGameEngine/Debug.h>
 #include <spdlog/spdlog.h>
 #include <mono/jit/jit.h>
 #include <mono/metadata/assembly.h>
@@ -31,8 +32,7 @@ namespace EpicGameEngine
 
         ScriptClass BaseClass;
         std::unordered_map<std::string, Ref<ScriptClass>> GameObjectClasses;
-        // TODO: Switch to UUIDS
-        std::unordered_map<std::string, Ref<ScriptInstance>> GameObjectInstances;
+        std::unordered_map<UUID, Ref<ScriptInstance>> GameObjectInstances;
 
         Scene* CurrentScene = nullptr;
     };
@@ -73,6 +73,8 @@ namespace EpicGameEngine
         data->CoreAssemblyImage = image;
         LoadAssemblyClasses(data->CoreAssembly);
         ScriptingRegister::RegisterScripts();
+        data->BaseClass = ScriptClass("EpicGameEngine", "GameObject");
+        data->BaseClass.InstantiateClass();
 
 #if 0
         auto& classes = data->GameObjectClasses;
@@ -378,7 +380,7 @@ namespace EpicGameEngine
         MonoImage* image = mono_assembly_get_image(assembly);
         const MonoTableInfo* typeDefinitionsTable = mono_image_get_table_info(image, MONO_TABLE_TYPEDEF);
         int32_t numTypes = mono_table_info_get_rows(typeDefinitionsTable);
-        MonoClass* baseClass = mono_class_from_name(image, "EpicGameEngine", "Main");
+        MonoClass* baseClass = mono_class_from_name(image, "EpicGameEngine", "GameObject");
 
         for (int32_t i = 0; i < numTypes; i++)
         {
@@ -388,6 +390,7 @@ namespace EpicGameEngine
             const char* nameSpace = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAMESPACE]);
             const char* name = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAME]);
             std::string fullName;
+
             if (strlen(nameSpace) != 0)
                 fullName = fmt::format("{}.{}", nameSpace, name);
             else
@@ -397,7 +400,10 @@ namespace EpicGameEngine
 
             bool isEntity = mono_class_is_subclass_of(monoClass, baseClass, false);
             if (isEntity)
+            {
+                Debug::Log::LogInfo("{}.{}", nameSpace, name);
                 data->GameObjectClasses[fullName] = CreateRef<ScriptClass>(nameSpace, name);
+            }
         }
     }
 
@@ -408,7 +414,7 @@ namespace EpicGameEngine
 
     void ScriptingEngine::OnRuntimeStop()
     {
-
+        data->CurrentScene = nullptr;
     }
 
     bool ScriptingEngine::ClassExists(const std::string& fullName)
@@ -419,9 +425,13 @@ namespace EpicGameEngine
     void ScriptingEngine::OnGOCreate(GameObject gameObject)
     {
         const auto& script = gameObject.GetComponent<CSharpScriptComponent>();
+        //Debug::Log::LogInfo("{}", ScriptingEngine::ClassExists(script.name));
         if (ScriptingEngine::ClassExists(script.name))
         {
-            
+            Ref<ScriptInstance> instance = CreateRef<ScriptInstance>(data->GameObjectClasses[script.name]);
+            data->GameObjectInstances[gameObject.GetUUID()] = instance;
+
+            instance->CallOnStart();
         }
     }
 
@@ -447,7 +457,7 @@ namespace EpicGameEngine
     }
 
     ScriptInstance::ScriptInstance(Ref<ScriptClass> scriptClass)
-        : scriptClass(std::move(scriptClass))
+        : scriptClass(scriptClass)
     {
         instance = scriptClass->InstantiateClass();
         onStartMethod = scriptClass->GetMethod("OnStart", 0);

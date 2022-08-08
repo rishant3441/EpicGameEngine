@@ -4,4 +4,5 @@ include(CSharpUtilities)
 add_library(EpicGameEngine-Scripting SHARED
             Source/Main.cs
             Source/Camera.cs
+            Source/EpicGameEngine/GameObjects/GameObject.cs
         )

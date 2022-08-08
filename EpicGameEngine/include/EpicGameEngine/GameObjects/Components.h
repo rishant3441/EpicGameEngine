@@ -10,6 +10,7 @@
 #include <EpicGameEngine/Renderer/Texture.h>
 #include <EpicGameEngine/GameObjects/GameObject.h>
 #include <EpicGameEngine/Renderer/Camera/Camera.h>
+#include <EpicGameEngine/UUID.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -19,6 +20,19 @@
 
 namespace EpicGameEngine
 {
+    struct IDComponent
+    {
+        UUID ID;
+
+        IDComponent() = default;
+        IDComponent(UUID uuid)
+            : ID(uuid)
+        {
+
+        }
+        IDComponent(const IDComponent&) = default;
+    };
+
     /// Holds name of the Game Object
     /**
      *

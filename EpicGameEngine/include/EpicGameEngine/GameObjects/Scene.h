@@ -7,6 +7,7 @@
 #include <entt.hpp>
 #include <EpicGameEngine/ege_pch.h>
 #include <EpicGameEngine/Timestep.h>
+#include <EpicGameEngine/UUID.h>
 
 namespace EpicGameEngine
 {
@@ -19,6 +20,7 @@ namespace EpicGameEngine
         ~Scene() = default;
 
         GameObject CreateGameObject(const std::string& name = std::string());
+        GameObject CreateGameObjectWithUUID(const std::string& name, UUID uuid);
         void DeleteGameObject(GameObject gameObject);
 
         void OnUpdate(Timestep ts);
@@ -32,5 +34,6 @@ namespace EpicGameEngine
         friend class GameObject;
         friend class GameObjectsPanel;
         friend class SceneSerializer;
+
     };
 }

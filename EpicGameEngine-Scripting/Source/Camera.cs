@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Sandbox
 {
-    public class Camera
+    public class Camera : EpicGameEngine.GameObject
     {
         void OnStart()
         {
