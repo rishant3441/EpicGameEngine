@@ -68,5 +68,5 @@ void ExampleLayer::OnRender()
 
 void ExampleLayer::OnUpdate(Timestep time)
 {
-    activeScene->OnUpdate(time);
+    activeScene->OnRuntimeUpdate(time);
 }

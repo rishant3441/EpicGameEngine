@@ -35,7 +35,7 @@ namespace EpicGameEngine
         registry.destroy(gameObject);
     }
 
-    void Scene::OnUpdate(Timestep ts)
+    void Scene::OnRuntimeUpdate(Timestep ts)
     {
         registry.view<NativeScriptComponent>().each([=](auto gameObject, auto& script)
         {
@@ -105,12 +105,34 @@ namespace EpicGameEngine
             }
         }
 
+        ScriptingEngine::OnRuntimeStart(this);
+        auto view = registry.view<CSharpScriptComponent>();
+        for (auto gameObjectID : view)
+        {
+            GameObject gameObject = { gameObjectID, this };
+            ScriptingEngine::OnGOCreate(gameObject);
+        }
+    }
+
+    void Scene::OnEditorUpdate(Timestep ts, EditorCamera& camera)
+    {
+        GPU_SetActiveTarget(Renderer::target);
+        GPU_SetCamera(Renderer::target, nullptr);
+        Renderer::target->use_camera = false;
+        GPU_MatrixMode(Renderer::target, GPU_PROJECTION);
+        GPU_LoadIdentity();
+        GPU_MatrixCopy(GPU_GetProjection(), glm::value_ptr(camera.GetProjectionMatrix()));
+        GPU_MatrixMode(Renderer::target, GPU_VIEW);
+        GPU_LoadIdentity();
+        GPU_MatrixCopy(GPU_GetView(), glm::value_ptr(camera.GetViewMatrix()));
+        GPU_MatrixMode(Renderer::target, GPU_MODEL);
+
+        // TODO: Clean this up - probably put into DrawRect function
         auto group = registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
         for (auto gameobject : group)
         {
             auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(gameobject);
 
-            // TODO: Setup rotation
             if(sprite.Texture != nullptr)
             {
                 Renderer::DrawTexturedRect(transform.Position.x, transform.Position.y, (float) transform.Scale.x * Renderer::unitSize, (float) transform.Scale.y * Renderer::unitSize, *sprite.Texture, 0, sprite.Color);
@@ -132,13 +154,6 @@ namespace EpicGameEngine
                 GPU_MatrixCopy(GPU_GetModel(), GPU_GetCurrentMatrix());
                 Renderer::DrawFilledRect(transform.Position.x, -transform.Position.y, (float) transform.Scale.x * Renderer::unitSize, (float) transform.Scale.y * Renderer::unitSize, 0, sprite.Color);
             }
-        }
-        ScriptingEngine::OnRuntimeStart(this);
-        auto view = registry.view<CSharpScriptComponent>();
-        for (auto gameObjectID : view)
-        {
-            GameObject gameObject = { gameObjectID, this };
-            ScriptingEngine::OnGOCreate(gameObject);
         }
     }
 

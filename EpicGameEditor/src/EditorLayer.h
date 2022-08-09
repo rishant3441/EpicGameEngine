@@ -14,9 +14,17 @@ namespace EpicGameEngine
 		void OnUpdate(Timestep time) override;
 		void OnRender() override;
 		void OnImGuiRender() override;
+        virtual void OnEvent(std::shared_ptr<Event> e) override;
+
+        bool OnScrollEvent(MouseScrolledEvent& event);
+
+        void Toolbar();
 
         std::shared_ptr<EpicGameEngine::Scene> activeScene;
         glm::vec2 viewportSize{0, 0};
+
+        EditorCamera editorCamera;
+
         static inline GameObject camera;
         static inline GameObject rect;
 

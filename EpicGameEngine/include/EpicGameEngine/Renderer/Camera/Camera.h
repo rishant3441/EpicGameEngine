@@ -8,6 +8,10 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <EpicGameEngine/Events/Event.h>
+#include <EpicGameEngine/Events/InputEvent.h>
+#include <EpicGameEngine/Timestep.h>
+#include <EpicGameEngine/Debug.h>
 
 namespace EpicGameEngine
 {
@@ -91,6 +95,87 @@ namespace EpicGameEngine
 
     private:
         void recalculateProjection();
+    };
+
+    class EditorCamera : public Camera
+    {
+    public:
+        EditorCamera() = default;
+        EditorCamera(float fov, float aspectRatio, float nearClip, float farClip);
+
+        void OnUpdate(Timestep ts);
+        // TODO: On Event
+        void OnEvent(std::shared_ptr<Event> e);
+
+        inline void SetViewportSize(float width, float height)
+        {
+            viewportWidth = width;
+            viewportHeight = height;
+            UpdateProjection();
+        }
+
+        glm::vec3 CalculatePosition() const;
+
+        float GetDistance() const { return distance; }
+        float SetDistance(float newDistance) { distance = newDistance; }
+
+        const glm::mat4& GetViewMatrix() const
+        {
+            return viewMatrix;
+        }
+
+        const glm::mat4 GetProjectionMatrix() const
+        {
+            return projection;
+        }
+
+        const glm::mat4 GetViewProjectionMatrix() const { return viewMatrix * projection; }
+
+        const glm::vec3& GetPosition() const
+        {
+            return position;
+        }
+
+        float GetPitch() const
+        {
+            return pitch;
+        }
+
+        float GetYaw() const
+        {
+            return yaw;
+        }
+
+        glm::vec3 GetForwardDirection() const;
+        glm::vec3 GetRightDirection() const;
+        glm::vec3 GetUpDirection() const;
+        glm::quat GetOrientation() const;
+
+    private:
+
+        void UpdateProjection();
+        void UpdateView();
+        void MouseZoom(float delta);
+        void MousePan(const glm::vec2& delta);
+
+        float ZoomSpeed();
+        std::pair<float, float> PanSpeed() const;
+        bool OnMouseScroll(MouseScrolledEvent& e);
+
+
+        float fov = 45.0f, aspectRatio = 1.778f, nearClip = 0.1f, farClip = 1000.0f;
+
+        glm::mat4 viewMatrix;
+        glm::vec3 position = { 0.0f, 0.0f, 1.0f };
+        glm::vec3 FocalPoint = { 0.0f, 0.0f, 0.0f };
+
+        glm::vec2 initialMousePos = { 0.0f, 0.0f };
+
+        float distance = 10.0f;
+        float pitch = 0.0f, yaw = 0.0f;
+
+        float viewportWidth = 854, viewportHeight = 576;
+
     };
 }
 

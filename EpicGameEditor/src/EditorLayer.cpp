@@ -18,8 +18,13 @@ namespace EpicGameEngine
 	    ssink = dear_sink_mt();
 
         activeScene = std::make_shared<EpicGameEngine::Scene>();
+        editorCamera = EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
+
+        viewportSize.x = 1024;
+        viewportSize.y = 576;
         activeScene->viewportSize.x = 1024;
         activeScene->viewportSize.y = 576;
+        editorCamera.SetViewportSize(activeScene->viewportSize.x, activeScene->viewportSize.y);
 		Renderer::ToggleDrawingToTexture();
 #if 0
 		SDL_Color color;
@@ -107,13 +112,15 @@ namespace EpicGameEngine
 
 	void EditorLayer::OnUpdate(Timestep time)
     {
+        editorCamera.OnUpdate(time);
 
-        activeScene->OnUpdate(time);
+        activeScene->OnEditorUpdate(time, editorCamera);
 
         if (Renderer::target->w != viewportSize.x || Renderer::target->h != viewportSize.y)
         {
             Renderer::target->w = viewportSize.x;
             Renderer::target->h = viewportSize.y;
+            editorCamera.SetViewportSize(viewportSize.x, viewportSize.y);
             activeScene->OnViewportResize(viewportSize.x, viewportSize.y);
         }
 	}
@@ -242,18 +249,21 @@ namespace EpicGameEngine
 			    float windowHeight = (float) ImGui::GetWindowHeight();
 			    ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
 
-			    auto cameraGameObject = activeScene->GetPrimaryCamera();
+			    /*auto cameraGameObject = activeScene->GetPrimaryCamera();
 			    const auto& cameraC = cameraGameObject.GetComponent<CameraComponent>();
 			    glm::mat4 cameraView = glm::inverse(cameraGameObject.GetComponent<TransformComponent>().GetTransform());
 			    auto cameraTransform = cameraGameObject.GetComponent<TransformComponent>();
 			    glm::mat4 cameraProjection = glm::perspective(glm::radians(cameraC.Camera.perspectiveVerticalFOV), cameraC.Camera.aspectRatio, cameraC.Camera.perspectiveNear, cameraC.Camera.perspectiveFar);
+*/
+			    const glm::mat4& cameraProjection = editorCamera.GetProjectionMatrix();
+			    const glm::mat4& cameraView = editorCamera.GetViewMatrix();
 
                 auto& tc = selectedGameObject.GetComponent<TransformComponent>();
                 glm::mat4 transform = tc.GetTransform();
 
 
                 ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection), ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::WORLD, glm::value_ptr(transform));
-                ImGuizmo::ViewManipulate(glm::value_ptr(cameraView), 8.0f, ImVec2(0, 0), ImVec2(10, 10), ImColor(255, 0, 0, 255));
+                //ImGuizmo::ViewManipulate(glm::value_ptr(cameraView), 8.0f, ImVec2(0, 0), ImVec2(10, 10), ImColor(255, 0, 0, 255));
                 glm::vec3 Position = { 0, 0, -2 };
                 glm::vec3 Rotation = { 0, 0, 0 };
                 glm::vec3 Scale = { 1000, 1000, 1000 };
@@ -286,5 +296,10 @@ namespace EpicGameEngine
 
     void EditorLayer::OnRender()
     {
+    }
+
+    void EditorLayer::OnEvent(std::shared_ptr<Event> e)
+    {
+        editorCamera.OnEvent(e);
     }
 }

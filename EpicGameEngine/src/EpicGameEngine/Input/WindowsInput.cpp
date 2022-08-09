@@ -20,22 +20,17 @@ namespace EpicGameEngine
 		{
 			return true;
 		}
-		else
-			return false;
 
 		if (button == 1 && (buttons & SDL_BUTTON_RMASK) != 0)
 		{
 			return true;
 		}
-		else
-			return false;
-		
+
 		if (button == 2 && (buttons & SDL_BUTTON_MMASK) != 0)
 		{
 			return true;
 		}
-		else
-			return false;
+		return false;
 	}
 
 	auto Input::GetMouseX() -> float
@@ -90,6 +85,11 @@ namespace EpicGameEngine
 				return true;
 			else
 				return false;
+        if (key == Keyboard::LeftAlt)
+            if (state[SDL_SCANCODE_LALT])
+                return true;
+            else
+                return false;
 		return false;
 	}
 
