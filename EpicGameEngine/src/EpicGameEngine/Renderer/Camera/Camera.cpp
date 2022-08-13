@@ -94,7 +94,6 @@ namespace EpicGameEngine
     void EditorCamera::UpdateProjection()
     {
         aspectRatio = viewportWidth / viewportHeight;
-        printf("%f, %f", viewportWidth, viewportHeight);
         projection = glm::perspective(glm::radians(fov), aspectRatio, nearClip, farClip);
     }
 

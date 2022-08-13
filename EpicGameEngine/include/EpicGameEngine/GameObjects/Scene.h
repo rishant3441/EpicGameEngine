@@ -25,14 +25,20 @@ namespace EpicGameEngine
         void DeleteGameObject(GameObject gameObject);
 
         void OnEditorUpdate(Timestep ts, EditorCamera& camera);
+        void OnRuntimeStart();
+        void OnRuntimeStop();
         void OnRuntimeUpdate(Timestep ts);
         void OnViewportResize(uint32_t width, uint32_t height);
+
         GameObject GetPrimaryCamera();
+        GameObject GetGameObjectByUUID(UUID uuid);
 
         entt::registry registry;
 
         glm::vec2 viewportSize;
     private:
+        std::unordered_map<UUID, entt::entity> entityMap;
+
         friend class GameObject;
         friend class GameObjectsPanel;
         friend class SceneSerializer;

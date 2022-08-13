@@ -20,6 +20,7 @@ namespace EpicGameEngine
         virtual ~Layer() = default;
 
         virtual void OnAttach() {}
+        virtual void DefferedOnAttach() {}
         virtual void OnDetach() {}
         virtual void OnUpdate(Timestep time) {}
         virtual void OnRender() {}

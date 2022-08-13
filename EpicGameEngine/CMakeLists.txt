@@ -8,13 +8,13 @@ add_subdirectory(dependencies)
 find_package(SDL2 REQUIRED)
 include_directories(${SDL2_INCLUDE_DIRS})
 
-find_package (SDL_gpu REQUIRED)
-
 find_package(OpenGL REQUIRED)
 
 find_package(glew REQUIRED)
 
 find_package(mono REQUIRED)
+
+find_package(OpenMP REQUIRED)
 
 add_library(
 	EpicGameEngine STATIC 
@@ -29,7 +29,7 @@ target_include_directories(
 	PUBLIC 
 	dependencies/spdlog/include/
 	PUBLIC
-	${SDL2_GPU_INCLUDE_DIR}
+	dependencies/sdl-gpu/include/
 	PUBLIC
 	${OPENGL_INCLUDE_DIRS}
 	PUBLIC
@@ -59,20 +59,21 @@ target_compile_definitions(
 )
 
 target_precompile_headers(
-	EpicGameEngine PRIVATE "include/EpicGameEngine/ege_pch.h"
+	EpicGameEngine PUBLIC "include/EpicGameEngine/ege_pch.h"
 )
 
 add_dependencies(EpicGameEngine IMGUI)
 
 target_link_libraries(EpicGameEngine PRIVATE ${SDL2_LIBRARIES})
 target_link_libraries(EpicGameEngine PRIVATE spdlog::spdlog)
-target_link_libraries(EpicGameEngine PUBLIC ${SDL2_GPU_LIBRARY_PATH})
+target_link_libraries(EpicGameEngine PUBLIC SDL_gpu)
 target_link_directories(EpicGameEngine PUBLIC opengl32)
 target_link_libraries(EpicGameEngine PUBLIC IMGUI)
 target_link_libraries(EpicGameEngine PUBLIC ${GLEW_GPU_LIBRARY_PATH})
 target_link_libraries(EpicGameEngine PUBLIC yaml-cpp)
 target_link_libraries(EpicGameEngine PUBLIC ImGuizmo)
 target_link_libraries(EpicGameEngine PUBLIC ${MONO_LIBRARY})
+target_link_libraries(EpicGameEngine PUBLIC OpenMP::OpenMP_CXX)
 if (MSVC)
     target_link_libraries(EpicGameEngine PUBLIC Ws2_32.lib)
     target_link_libraries(EpicGameEngine PUBLIC Winmm.lib)
@@ -87,3 +88,4 @@ if (MSVC)
 		EGE_PLATFORM_WINDOWS
 	)
 endif()
+

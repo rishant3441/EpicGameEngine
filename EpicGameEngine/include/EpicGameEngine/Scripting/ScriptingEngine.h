@@ -34,17 +34,19 @@ namespace EpicGameEngine
     class ScriptInstance
     {
     public:
-        ScriptInstance(Ref<ScriptClass> scriptClass);
+        ScriptInstance(Ref<ScriptClass> scriptClass, GameObject gameObject);
 
         void CallOnStart();
         void CallOnUpdate(float ts);
     private:
         Ref<ScriptClass> scriptClass;
 
-                MonoObject* instance = nullptr;
-                MonoMethod* onStartMethod = nullptr;
-                MonoMethod* onUpdateMethod = nullptr;
-            };
+		MonoObject* instance = nullptr;
+		MonoMethod* onStartMethod = nullptr;
+		MonoMethod* onUpdateMethod = nullptr;
+        MonoMethod* constructor = nullptr; 
+	};
+
     class ScriptingEngine
     {
     public:
@@ -61,6 +63,9 @@ namespace EpicGameEngine
         static bool ClassExists(const std::string& fullName);
 
         static void OnGOCreate(GameObject gameObject);
+        static void OnGOUpdate(GameObject gameObject, float ts);
+
+        static Scene* GetCurrentScene(); 
 
     private:
         static void InitMono();

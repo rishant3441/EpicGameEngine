@@ -11,6 +11,7 @@ namespace EpicGameEngine
 		~EditorLayer();
 
 		void OnAttach() override;
+        void DefferedOnAttach() override;
 		void OnUpdate(Timestep time) override;
 		void OnRender() override;
 		void OnImGuiRender() override;
@@ -31,5 +32,20 @@ namespace EpicGameEngine
         GameObjectsPanel gameObjectsPanel;
 
         inline static dear_sink_mt_t ssink;
-	};
+
+        enum class SceneState
+        {
+            Edit = 0,
+            Play = 1
+        };
+
+        SceneState sceneState = SceneState::Edit;
+	private:
+	    Ref<Texture> playIcon = std::make_shared<Texture>();
+	    Ref<Texture> stopIcon = std::make_shared<Texture>();
+
+        void OnScenePlay();
+
+        void OnSceneStop();
+    };
 }

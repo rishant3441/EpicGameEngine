@@ -415,6 +415,8 @@ namespace EpicGameEngine
     void ScriptingEngine::OnRuntimeStop()
     {
         data->CurrentScene = nullptr;
+
+        data->GameObjectInstances.clear();
     }
 
     bool ScriptingEngine::ClassExists(const std::string& fullName)
@@ -425,14 +427,22 @@ namespace EpicGameEngine
     void ScriptingEngine::OnGOCreate(GameObject gameObject)
     {
         const auto& script = gameObject.GetComponent<CSharpScriptComponent>();
-        //Debug::Log::LogInfo("{}", ScriptingEngine::ClassExists(script.name));
         if (ScriptingEngine::ClassExists(script.name))
         {
-            Ref<ScriptInstance> instance = CreateRef<ScriptInstance>(data->GameObjectClasses[script.name]);
+            Ref<ScriptInstance> instance = CreateRef<ScriptInstance>(data->GameObjectClasses[script.name], gameObject);
             data->GameObjectInstances[gameObject.GetUUID()] = instance;
 
             instance->CallOnStart();
         }
+    }
+
+    void ScriptingEngine::OnGOUpdate(GameObject gameObject, float ts)
+    {
+        UUID gameObjectID = gameObject.GetUUID();
+        assert(data->GameObjectInstances.find(gameObjectID) != data->GameObjectInstances.end());
+
+        Ref<ScriptInstance> instance = data->GameObjectInstances[gameObjectID];
+        instance->CallOnUpdate(ts);
     }
 
     ScriptClass::ScriptClass(const std::string& classNamespace, const std::string& className)
@@ -456,13 +466,23 @@ namespace EpicGameEngine
        return mono_runtime_invoke(method, object, params, nullptr);
     }
 
-    ScriptInstance::ScriptInstance(Ref<ScriptClass> scriptClass)
+    ScriptInstance::ScriptInstance(Ref<ScriptClass> scriptClass, GameObject gameObject)
         : scriptClass(scriptClass)
     {
         instance = scriptClass->InstantiateClass();
         onStartMethod = scriptClass->GetMethod("OnStart", 0);
         onUpdateMethod = scriptClass->GetMethod("OnUpdate", 1);
+        constructor = data->BaseClass.GetMethod(".ctor", 1); 
 
+        assert(onStartMethod);
+        assert(onUpdateMethod);
+        assert(constructor);
+
+        {
+            uint64_t gameObjectID = gameObject.GetUUID();
+            void* param = &gameObjectID;
+            scriptClass->CallMethod(instance, constructor, &param);
+        }
     }
 
     void ScriptInstance::CallOnStart()
@@ -474,6 +494,10 @@ namespace EpicGameEngine
     {
         void* param = &ts;
         scriptClass->CallMethod(instance, onUpdateMethod, &param);
+    }
+    Scene* ScriptingEngine::GetCurrentScene()
+    {
+        return data->CurrentScene;
     }
 }
 

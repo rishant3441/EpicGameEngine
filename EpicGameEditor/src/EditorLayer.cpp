@@ -26,6 +26,7 @@ namespace EpicGameEngine
         activeScene->viewportSize.y = 576;
         editorCamera.SetViewportSize(activeScene->viewportSize.x, activeScene->viewportSize.y);
 		Renderer::ToggleDrawingToTexture();
+
 #if 0
 		SDL_Color color;
 		color.a = 255;
@@ -112,9 +113,17 @@ namespace EpicGameEngine
 
 	void EditorLayer::OnUpdate(Timestep time)
     {
-        editorCamera.OnUpdate(time);
 
-        activeScene->OnEditorUpdate(time, editorCamera);
+        switch (sceneState)
+        {
+            case SceneState::Edit:
+                editorCamera.OnUpdate(time);
+                activeScene->OnEditorUpdate(time, editorCamera);
+                break;
+            case SceneState::Play:
+                activeScene->OnRuntimeUpdate(time);
+                break;
+        }
 
         if (Renderer::target->w != viewportSize.x || Renderer::target->h != viewportSize.y)
         {
@@ -284,10 +293,13 @@ namespace EpicGameEngine
             ImGui::Text("Epic Content Browser"); // TODO: Create content browser
             ImGui::End();
 
+			Toolbar();
+
             ssink->draw_imgui(); // Log Window
 
 
 			gameObjectsPanel.OnImGuiRender();
+
 
 
 			ImGui::End();
@@ -301,5 +313,58 @@ namespace EpicGameEngine
     void EditorLayer::OnEvent(std::shared_ptr<Event> e)
     {
         editorCamera.OnEvent(e);
+    }
+
+    void EditorLayer::Toolbar()
+    {
+
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 2));
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0, 0));
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+        auto& colors = ImGui::GetStyle().Colors;
+        const auto& buttonHovered = colors[ImGuiCol_ButtonHovered];
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(buttonHovered.x, buttonHovered.y, buttonHovered.z, 0.5f));
+        const auto& buttonActive = colors[ImGuiCol_ButtonActive];
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(buttonActive.x, buttonActive.y, buttonActive.z, 0.5f));
+
+        ImGui::Begin("##toolbar", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+        float size = ImGui::GetWindowHeight() - 4.0f;
+        Ref<Texture> icon = (sceneState == SceneState::Edit) ? playIcon : stopIcon;
+        ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size - 0.5f));
+        if (ImGui::ImageButton((ImTextureID)icon->GetTextureHandle(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.0f, 0.0f, 0.0f)))
+        {
+            if (sceneState == SceneState::Edit)
+            {
+                OnScenePlay();
+            }
+            else if (sceneState == SceneState::Play)
+            {
+                OnSceneStop();
+            }
+        }
+
+        ImGui::PopStyleVar(2);
+        ImGui::PopStyleColor(3);
+        ImGui::End();
+    }
+
+    void EditorLayer::DefferedOnAttach()
+    {
+        playIcon->LoadImage("resources/icons/PlayButton.png");
+        stopIcon->LoadImage("resources/icons/StopButton.png");
+    }
+
+    void EditorLayer::OnScenePlay()
+    {
+        sceneState = SceneState::Play;
+
+        activeScene->OnRuntimeStart();
+    }
+
+    void EditorLayer::OnSceneStop()
+    {
+        sceneState = SceneState::Edit;
+
+        activeScene->OnRuntimeStop();
     }
 }

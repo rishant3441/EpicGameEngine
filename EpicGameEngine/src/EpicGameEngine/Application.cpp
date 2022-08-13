@@ -15,6 +15,7 @@
 #include <SDL_gpu.h>
 #include <EpicGameEngine/Debug.h>
 #include <EpicGameEngine/Scripting/ScriptingEngine.h>
+#include <omp.h>
 
 namespace EpicGameEngine
 {
@@ -50,6 +51,11 @@ namespace EpicGameEngine
         Renderer::target->matrix_mode = GPU_PROJECTION;
 
         Debug::Log::Init();
+
+        for (auto l : layers.layers)
+        {
+            l->DefferedOnAttach();
+        }
 
         while (window->running)
 		{
