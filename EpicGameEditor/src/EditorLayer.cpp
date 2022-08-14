@@ -4,6 +4,7 @@
 #include <cassert>
 
 #include <EpicGameEngine/PlatformUtils.h>
+#include <EpicGameEngine/Scripting/ScriptingEngine.h>
 #include <ImGuizmo.h>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -15,6 +16,7 @@ namespace EpicGameEngine
     static glm::mat4 cubeTransform;
     void EditorLayer::OnAttach()
 	{
+        ScriptingEngine::Init();
 	    ssink = dear_sink_mt();
 
         activeScene = std::make_shared<EpicGameEngine::Scene>();
@@ -209,7 +211,7 @@ namespace EpicGameEngine
 
                     if (ImGui::MenuItem("Open...", "Ctrl+O"))
                     {
-                         std::string filepath = FileDialogs::OpenFile("Epic Game Engine Scene (*.ege)\0*.ege\0");
+                         std::string filepath = FileDialogs::OpenFile("epic game engine scene (*.ege)\0*.ege\0");
 
                          if (!filepath.empty())
                          {

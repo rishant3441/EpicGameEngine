@@ -42,7 +42,6 @@ namespace EpicGameEngine
 
 		Debug::Log::LogInfo("EpicGameEngine Initialized");
 
-	  ScriptingEngine::Init();
 
 		SDL_Event event{};
 
