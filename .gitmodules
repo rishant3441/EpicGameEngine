@@ -14,3 +14,6 @@
 [submodule "EpicGameEngine/dependencies/ImGuizmo"]
 	path = EpicGameEngine/dependencies/ImGuizmo
 	url = https://github.com/rishant3441/ImGuizmo
+[submodule "EpicGameEngine/dependencies/sdl-gpu"]
+	path = EpicGameEngine/dependencies/sdl-gpu
+	url = https://github.com/rishant3441/sdl-gpu/

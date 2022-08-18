@@ -1,6 +1,6 @@
 Scene: Unnamed Scene
 GameObjects:
-  - GameObject: 12089374129343
+  - GameObject: 8170119712284523009
     NameComponent:
       Name: Rectangle
     TransformComponent:
@@ -9,7 +9,7 @@ GameObjects:
       Scale: [1, 1, 2]
     SpriteRendererComponent:
       Color: [255, 0, 0, 255]
-  - GameObject: 12089374129343
+  - GameObject: 6024076333729872528
     NameComponent:
       Name: Camera
     TransformComponent:
@@ -26,3 +26,5 @@ GameObjects:
         OrthographicFar: 1
       Primary: true
       FixedAspectRatio: false
+    CSharpScriptComponent:
+      ClassName: Sandbox.Camera

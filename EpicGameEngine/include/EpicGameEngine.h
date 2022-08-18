@@ -19,6 +19,8 @@
 
 // EVENTS:
 #include <EpicGameEngine/Events/Event.h>
+#include <EpicGameEngine/Events/InputEvent.h>
+#include <EpicGameEngine/Events/WindowEvent.h>
 
 // INPUT:
 #include <EpicGameEngine/Input/Input.h>

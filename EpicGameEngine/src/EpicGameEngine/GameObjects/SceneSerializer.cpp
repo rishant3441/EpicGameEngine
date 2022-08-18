@@ -125,7 +125,7 @@ namespace EpicGameEngine
     {
        out << YAML::BeginMap;
        out << YAML::Key << "GameObject";
-       out << YAML::Value << "12089374129343"; // TODO: Game Object ID
+       out << YAML::Value << gameObject.GetUUID(); // TODO: Game Object ID
 
        if (gameObject.HasComponent<NameComponent>())
        {
@@ -186,6 +186,16 @@ namespace EpicGameEngine
            out << YAML::EndMap; // SpriteRendererComponent
        }
 
+       if (gameObject.HasComponent<CSharpScriptComponent>())
+       {
+           auto& scriptComponent = gameObject.GetComponent<CSharpScriptComponent>();
+
+           out << YAML::Key << "CSharpScriptComponent";
+           out << YAML::BeginMap;
+           out << YAML::Key << "ClassName" << YAML::Value << scriptComponent.name;
+           out << YAML::EndMap;
+       }
+
        out << YAML::EndMap;
     }
 
@@ -239,7 +249,7 @@ namespace EpicGameEngine
         {
             for (auto gameObject : gameObjects)
             {
-                uint64_t uuid = gameObject["GameObject"].as<uint64_t>(); // TODO
+                uint64_t uuid = gameObject["GameObject"].as<uint64_t>();
 
                 std::string name;
                 auto nameComponent = gameObject["NameComponent"];
@@ -248,7 +258,7 @@ namespace EpicGameEngine
 
                 spdlog::info("ENGINE: Deserialized gameObject with ID = {0}, name = {1}", uuid, name);
 
-                GameObject deserializedGameObject = scene->CreateGameObject(name);
+                GameObject deserializedGameObject = scene->CreateGameObjectWithUUID(name, uuid);
 
                 auto transformComponent = gameObject["TransformComponent"];
                 if (transformComponent)
@@ -279,6 +289,13 @@ namespace EpicGameEngine
                     cc.fixedAspectRatio = cameraComponent["FixedAspectRatio"].as<bool>();
 
                     cc.Camera.SetViewportSize(850, 536); // TODO: Don't hardcode the starter window viewport
+                }
+
+                auto cSharpScriptComponent = gameObject["CSharpScriptComponent"];
+                if (cSharpScriptComponent)
+                {
+                    auto& sc = deserializedGameObject.AddComponent<CSharpScriptComponent>();
+                    sc.name = cSharpScriptComponent["ClassName"].as<std::string>();
                 }
 
                 auto spriteRendererComponent = gameObject["SpriteRendererComponent"];

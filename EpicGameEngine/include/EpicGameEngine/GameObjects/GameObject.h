@@ -1,5 +1,6 @@
 #pragma once
 #include <EpicGameEngine/ege_pch.h>
+#include <EpicGameEngine/UUID.h>
 #include <entt.hpp>
 #include "Scene.h"
 
@@ -47,6 +48,9 @@ namespace EpicGameEngine
         bool operator !=(const GameObject& other) const { return !(*this == other); }
 
         Scene* scene = nullptr;
+
+        UUID GetUUID();
+
     private:
         entt::entity entityHandle{ entt::null };
     };

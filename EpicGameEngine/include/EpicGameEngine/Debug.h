@@ -26,12 +26,12 @@ namespace EpicGameEngine
 
             }
             template <typename... Args>
-             static void LogWarn(spdlog::format_string_t<Args...> text, Args&&... args)
+             inline static void LogWarn(spdlog::format_string_t<Args...> text, Args&&... args)
              {
                  spdlog::info(text, std::forward<Args>(args)...);
              }
             template <typename... Args>
-            static void LogError(spdlog::format_string_t<Args...> text, Args&&... args)
+            inline static void LogError(spdlog::format_string_t<Args...> text, Args&&... args)
             {
                 spdlog::error(text, std::forward<Args>(args)...);
             }

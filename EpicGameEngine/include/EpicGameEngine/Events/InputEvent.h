@@ -41,4 +41,22 @@ namespace EpicGameEngine
 
         EVENT_CLASS_TYPE(MouseReleased);
     };
+
+    class MouseScrolledEvent : public Event
+    {
+    public:
+        MouseScrolledEvent(int xScrolled, int yScrolled)
+            : xScrolled(xScrolled), yScrolled(yScrolled)
+            {}
+        ~MouseScrolledEvent() override = default;
+
+        [[nodiscard]] auto toString() const -> std::string override
+        {
+            return "Mouse Scrolled Event";
+        }
+
+        int xScrolled, yScrolled;
+
+        EVENT_CLASS_TYPE(MouseScrolled);
+    };
 }

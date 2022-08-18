@@ -54,7 +54,7 @@ void ExampleLayer::OnAttach()
 
         void OnStart()
         {
-
+            spdlog::info("Camera Controller Initialized!");
         }
     };
     camera.AddComponent<NativeScriptComponent>().Bind<CameraContrller>();
@@ -68,5 +68,5 @@ void ExampleLayer::OnRender()
 
 void ExampleLayer::OnUpdate(Timestep time)
 {
-    activeScene->OnUpdate(time);
+    activeScene->OnRuntimeUpdate(time);
 }

@@ -8,6 +8,7 @@
 #include <EpicGameEngine/GameObjects/GameObject.h>
 #include <EpicGameEngine/ege_pch.h>
 #include <EpicGameEngine/GameObjects/Scene.h>
+#include <EpicGameEngine/GameObjects/Components.h>
 
 namespace EpicGameEngine
 {
@@ -16,5 +17,10 @@ namespace EpicGameEngine
             : entityHandle(handle), scene(newScene)
     {
 
+    }
+
+    UUID GameObject::GetUUID()
+    {
+       return GetComponent<IDComponent>().ID;
     }
 }

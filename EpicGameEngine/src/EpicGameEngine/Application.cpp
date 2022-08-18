@@ -14,6 +14,8 @@
 #include <imgui_impl_sdl.h>
 #include <SDL_gpu.h>
 #include <EpicGameEngine/Debug.h>
+#include <EpicGameEngine/Scripting/ScriptingEngine.h>
+#include <omp.h>
 
 namespace EpicGameEngine
 {
@@ -28,9 +30,11 @@ namespace EpicGameEngine
 		delete m_ImGuiLayer;
 	}
 
-	// TODO: Rewrite this to use our new event system when it is complete.
-	void Application::Run()
+	void Application::Run(int argc, char** argv)
 	{
+	    ArgCount = argc;
+	    Args = *argv;
+
 		window = std::shared_ptr<Window>(Window::CreateWindow());
 
 		m_ImGuiLayer = new ImGuiLayer();
@@ -42,12 +46,16 @@ namespace EpicGameEngine
 
 		SDL_Event event{};
 
-
 		window->OnRender();
 
         Renderer::target->matrix_mode = GPU_PROJECTION;
 
         Debug::Log::Init();
+
+        for (auto l : layers.layers)
+        {
+            l->DefferedOnAttach();
+        }
 
         while (window->running)
 		{

@@ -4,6 +4,7 @@
 #include <cassert>
 
 #include <EpicGameEngine/PlatformUtils.h>
+#include <EpicGameEngine/Scripting/ScriptingEngine.h>
 #include <ImGuizmo.h>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -15,12 +16,27 @@ namespace EpicGameEngine
     static glm::mat4 cubeTransform;
     void EditorLayer::OnAttach()
 	{
+        if (argCount > 2)
+        {
+            Debug::Log::LogInfo("{}", args[2]);
+            ScriptingEngine::Init(argCount, args);
+        }
+        else
+        {
+            ScriptingEngine::Init();
+        }
 	    ssink = dear_sink_mt();
 
         activeScene = std::make_shared<EpicGameEngine::Scene>();
+        editorCamera = EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
+
+        viewportSize.x = 1024;
+        viewportSize.y = 576;
         activeScene->viewportSize.x = 1024;
         activeScene->viewportSize.y = 576;
+        editorCamera.SetViewportSize(activeScene->viewportSize.x, activeScene->viewportSize.y);
 		Renderer::ToggleDrawingToTexture();
+
 #if 0
 		SDL_Color color;
 		color.a = 255;
@@ -48,7 +64,7 @@ namespace EpicGameEngine
 
             void OnUpdate(Timestep ts)
             {
-               spdlog::info("Timestep: {}", ts.GetSeconds());
+               //spdlog::info("Timestep: {}", ts.GetSeconds());
             }
         };
 
@@ -108,12 +124,22 @@ namespace EpicGameEngine
 	void EditorLayer::OnUpdate(Timestep time)
     {
 
-        activeScene->OnUpdate(time);
+        switch (sceneState)
+        {
+            case SceneState::Edit:
+                editorCamera.OnUpdate(time);
+                activeScene->OnEditorUpdate(time, editorCamera);
+                break;
+            case SceneState::Play:
+                activeScene->OnRuntimeUpdate(time);
+                break;
+        }
 
         if (Renderer::target->w != viewportSize.x || Renderer::target->h != viewportSize.y)
         {
             Renderer::target->w = viewportSize.x;
             Renderer::target->h = viewportSize.y;
+            editorCamera.SetViewportSize(viewportSize.x, viewportSize.y);
             activeScene->OnViewportResize(viewportSize.x, viewportSize.y);
         }
 	}
@@ -193,7 +219,7 @@ namespace EpicGameEngine
 
                     if (ImGui::MenuItem("Open...", "Ctrl+O"))
                     {
-                         std::string filepath = FileDialogs::OpenFile("Epic Game Engine Scene (*.ege)\0*.ege\0");
+                         std::string filepath = FileDialogs::OpenFile("epic game engine scene (*.ege)\0*.ege\0");
 
                          if (!filepath.empty())
                          {
@@ -242,18 +268,21 @@ namespace EpicGameEngine
 			    float windowHeight = (float) ImGui::GetWindowHeight();
 			    ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
 
-			    auto cameraGameObject = activeScene->GetPrimaryCamera();
+			    /*auto cameraGameObject = activeScene->GetPrimaryCamera();
 			    const auto& cameraC = cameraGameObject.GetComponent<CameraComponent>();
 			    glm::mat4 cameraView = glm::inverse(cameraGameObject.GetComponent<TransformComponent>().GetTransform());
 			    auto cameraTransform = cameraGameObject.GetComponent<TransformComponent>();
 			    glm::mat4 cameraProjection = glm::perspective(glm::radians(cameraC.Camera.perspectiveVerticalFOV), cameraC.Camera.aspectRatio, cameraC.Camera.perspectiveNear, cameraC.Camera.perspectiveFar);
+*/
+			    const glm::mat4& cameraProjection = editorCamera.GetProjectionMatrix();
+			    const glm::mat4& cameraView = editorCamera.GetViewMatrix();
 
                 auto& tc = selectedGameObject.GetComponent<TransformComponent>();
                 glm::mat4 transform = tc.GetTransform();
 
 
                 ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection), ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::WORLD, glm::value_ptr(transform));
-                ImGuizmo::ViewManipulate(glm::value_ptr(cameraView), 8.0f, ImVec2(0, 0), ImVec2(10, 10), ImColor(255, 0, 0, 255));
+                //ImGuizmo::ViewManipulate(glm::value_ptr(cameraView), 8.0f, ImVec2(0, 0), ImVec2(10, 10), ImColor(255, 0, 0, 255));
                 glm::vec3 Position = { 0, 0, -2 };
                 glm::vec3 Rotation = { 0, 0, 0 };
                 glm::vec3 Scale = { 1000, 1000, 1000 };
@@ -274,10 +303,13 @@ namespace EpicGameEngine
             ImGui::Text("Epic Content Browser"); // TODO: Create content browser
             ImGui::End();
 
+			Toolbar();
+
             ssink->draw_imgui(); // Log Window
 
 
 			gameObjectsPanel.OnImGuiRender();
+
 
 
 			ImGui::End();
@@ -286,5 +318,75 @@ namespace EpicGameEngine
 
     void EditorLayer::OnRender()
     {
+    }
+
+    void EditorLayer::OnEvent(std::shared_ptr<Event> e)
+    {
+        editorCamera.OnEvent(e);
+    }
+
+    void EditorLayer::Toolbar()
+    {
+
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 2));
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0, 0));
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+        auto& colors = ImGui::GetStyle().Colors;
+        const auto& buttonHovered = colors[ImGuiCol_ButtonHovered];
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(buttonHovered.x, buttonHovered.y, buttonHovered.z, 0.5f));
+        const auto& buttonActive = colors[ImGuiCol_ButtonActive];
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(buttonActive.x, buttonActive.y, buttonActive.z, 0.5f));
+
+        ImGui::Begin("##toolbar", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+        float size = ImGui::GetWindowHeight() - 4.0f;
+        Ref<Texture> icon = (sceneState == SceneState::Edit) ? playIcon : stopIcon;
+        ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size - 0.5f));
+        if (ImGui::ImageButton((ImTextureID)icon->GetTextureHandle(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.0f, 0.0f, 0.0f)))
+        {
+            if (sceneState == SceneState::Edit)
+            {
+                OnScenePlay();
+            }
+            else if (sceneState == SceneState::Play)
+            {
+                OnSceneStop();
+            }
+        }
+
+        ImGui::PopStyleVar(2);
+        ImGui::PopStyleColor(3);
+        ImGui::End();
+    }
+
+    void EditorLayer::DefferedOnAttach()
+    {
+        playIcon->LoadImage("resources/icons/PlayButton.png");
+        stopIcon->LoadImage("resources/icons/StopButton.png");
+
+        if (argCount > 1)
+        {
+            activeScene = std::make_shared<Scene>();
+            activeScene->OnViewportResize(viewportSize.x, viewportSize.y);
+            gameObjectsPanel.SetContext(activeScene);
+
+            SceneSerializer serializer(activeScene);
+            std::string filepath = args[1];
+            serializer.Deserialize(filepath);
+        }
+
+    }
+
+    void EditorLayer::OnScenePlay()
+    {
+        sceneState = SceneState::Play;
+
+        activeScene->OnRuntimeStart();
+    }
+
+    void EditorLayer::OnSceneStop()
+    {
+        sceneState = SceneState::Edit;
+
+        activeScene->OnRuntimeStop();
     }
 }
