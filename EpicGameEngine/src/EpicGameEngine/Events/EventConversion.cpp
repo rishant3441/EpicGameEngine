@@ -36,6 +36,7 @@ namespace EpicGameEngine
                         break;
                     case SDL_BUTTON_MIDDLE:
                         return std::make_shared<MousePressedEvent>(Mouse::ButtonMiddle);
+                        break;
                 }
             case SDL_MOUSEBUTTONUP: 
                 switch(event->button.button)
@@ -49,6 +50,9 @@ namespace EpicGameEngine
                     case SDL_BUTTON_MIDDLE:
                         return std::make_shared<MouseReleasedEvent>(Mouse::ButtonMiddle);
                 }
+                break;
+            case SDL_MOUSEWHEEL:
+                return std::make_shared<MouseScrolledEvent>(event->wheel.x, event->wheel.y);
         }
         return nullptr;
     }

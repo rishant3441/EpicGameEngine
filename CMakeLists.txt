@@ -3,7 +3,9 @@ project (EpicGameEngine)
 
 set (CMAKE_CXX_STANDARD 20)
 
+add_subdirectory(scripts)
 add_subdirectory(EpicGameEngine)
 add_subdirectory(EpicGameEditor)
 add_subdirectory(EpicGameEngine-Scripting)
+add_subdirectory(EGELauncher)
 add_subdirectory(Sandbox)

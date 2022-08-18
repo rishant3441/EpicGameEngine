@@ -7,10 +7,13 @@
 
 #pragma once
 
+#include <EpicGameEngine/UUID.h>
+
 namespace EpicGameEngine
 {
     class ScriptingRegister
     {
+    public:
         static void RegisterScripts();
     };
 }

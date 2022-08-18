@@ -1,8 +1,8 @@
 #include "dear_sink.h"
+#include <memory>
 
 const dear_sink_mt_t dear_sink_mt() {
-	auto llog = spdlog::create<dear_spdlog::dear_sink<std::mutex>>(std::string("llog"));
-
+    auto llog = spdlog::create<dear_spdlog::dear_sink<std::mutex>>(std::string("llog"));
 	// I don't understand this step, shouldn't it log to all registered loggers?
 	spdlog::set_default_logger(llog);
 

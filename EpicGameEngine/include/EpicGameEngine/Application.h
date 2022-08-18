@@ -16,7 +16,7 @@ namespace EpicGameEngine
 		Application();
 		virtual ~Application();
 
-		virtual void Run();
+		virtual void Run(int argc, char** argv);
 
 		void OnEvent(std::shared_ptr<Event> e);
 
@@ -36,6 +36,9 @@ namespace EpicGameEngine
 		ImGuiLayer* m_ImGuiLayer;
 
 		GPU_Camera camera;
+
+		int ArgCount = 0;
+		char* Args = nullptr;
 	private: 
 		void PollEvents(SDL_Event e);	
 
@@ -45,6 +48,6 @@ namespace EpicGameEngine
 	};
 
 	// To be defined in CLIENT
-	Application* CreateApplication();
+	Application* CreateApplication(int argc, char** argv);
 }
 

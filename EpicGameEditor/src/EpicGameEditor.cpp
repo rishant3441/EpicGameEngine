@@ -7,9 +7,9 @@ namespace EpicGameEngine
 	class EpicGameEditor : public Application
 	{
 	public:	
-		EpicGameEditor()
+		EpicGameEditor(int argc, char** argv)
 		{
-			layers.PushLayer(new EditorLayer());
+			layers.PushLayer(new EditorLayer(argc, argv));
 		}
 
 		~EpicGameEditor()
@@ -17,8 +17,8 @@ namespace EpicGameEngine
 		}
 	};
 
-	EpicGameEngine::Application* EpicGameEngine::CreateApplication()
+	Application* CreateApplication(int argc, char** argv)
 	{
-		return new EpicGameEditor();
+		return new EpicGameEditor(argc, argv);
 	}
 }

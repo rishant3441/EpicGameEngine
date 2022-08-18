@@ -22,4 +22,5 @@ add_subdirectory(spdlog)
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "Building shared libs is off")
 add_subdirectory(yaml-cpp)
 add_subdirectory(ImGuizmo)
+add_subdirectory(sdl-gpu)
 

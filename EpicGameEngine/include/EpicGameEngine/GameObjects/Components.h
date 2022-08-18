@@ -10,6 +10,7 @@
 #include <EpicGameEngine/Renderer/Texture.h>
 #include <EpicGameEngine/GameObjects/GameObject.h>
 #include <EpicGameEngine/Renderer/Camera/Camera.h>
+#include <EpicGameEngine/UUID.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -19,6 +20,19 @@
 
 namespace EpicGameEngine
 {
+    struct IDComponent
+    {
+        UUID ID;
+
+        IDComponent() = default;
+        IDComponent(UUID uuid)
+            : ID(uuid)
+        {
+
+        }
+        IDComponent(const IDComponent&) = default;
+    };
+
     /// Holds name of the Game Object
     /**
      *
@@ -84,6 +98,14 @@ namespace EpicGameEngine
         CameraComponent(const CameraComponent&) = default;
     };
 
+    struct CSharpScriptComponent
+    {
+        std::string name;
+
+        CSharpScriptComponent() = default;
+        CSharpScriptComponent(const CSharpScriptComponent&) = default;
+    };
+
     struct NativeScriptComponent
     {
         ScriptableGameObject* Instance = nullptr;
@@ -97,6 +119,5 @@ namespace EpicGameEngine
             InstantiateScript = []() { return static_cast<ScriptableGameObject*>(new T()); };
             DeleteScript = [](NativeScriptComponent* script) { delete script->Instance; script->Instance = nullptr; };
         }
-
     };
 }

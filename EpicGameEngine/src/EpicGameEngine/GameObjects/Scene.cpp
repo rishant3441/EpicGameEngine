@@ -7,6 +7,8 @@
 #include <EpicGameEngine/GameObjects/GameObject.h>
 #include <EpicGameEngine/GameObjects/Components.h>
 #include <EpicGameEngine/Renderer/Renderer.h>
+#include <EpicGameEngine/Scripting/ScriptingEngine.h>
+#include <EpicGameEngine/UUID.h>
 #include <spdlog/spdlog.h>
 
 #include <glm/glm.hpp>
@@ -16,18 +18,28 @@ namespace EpicGameEngine
 {
     GameObject Scene::CreateGameObject(const std::string &name)
     {
-       GameObject gameObject =  { registry.create(), this };
-       gameObject.AddComponent<TransformComponent>();
-       gameObject.AddComponent<NameComponent>(name.empty() ? "Empty Game Object" : name);
-       return gameObject;
+        return CreateGameObjectWithUUID(name, UUID());
+    }
+
+    GameObject Scene::CreateGameObjectWithUUID(const std::string &name, UUID uuid)
+    {
+        GameObject gameObject =  { registry.create(), this };
+        gameObject.AddComponent<IDComponent>(uuid);
+        gameObject.AddComponent<TransformComponent>();
+        gameObject.AddComponent<NameComponent>(name.empty() ? "Empty Game Object" : name);
+
+        entityMap[uuid] = gameObject; 
+
+        return gameObject;
     }
 
     void Scene::DeleteGameObject(GameObject gameObject)
     {
         registry.destroy(gameObject);
+        entityMap.erase(gameObject.GetUUID());
     }
 
-    void Scene::OnUpdate(Timestep ts)
+    void Scene::OnRuntimeUpdate(Timestep ts)
     {
         registry.view<NativeScriptComponent>().each([=](auto gameObject, auto& script)
         {
@@ -40,6 +52,13 @@ namespace EpicGameEngine
 
             script.Instance->OnUpdate(ts);
         });
+
+        auto view = registry.view<CSharpScriptComponent>();
+        for (auto gameObjectID : view)
+        {
+            GameObject gameObject = { gameObjectID, this };
+            ScriptingEngine::OnGOUpdate(gameObject, ts.GetSeconds());
+        }
 
         SceneCamera* mainCamera = nullptr;
         TransformComponent* cameraTransform;
@@ -97,12 +116,56 @@ namespace EpicGameEngine
             }
         }
 
+        // TODO: Clean this up - probably put into DrawRect function
         auto group = registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
         for (auto gameobject : group)
         {
             auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(gameobject);
 
-            // TODO: Setup rotation
+            if(sprite.Texture != nullptr)
+            {
+                Renderer::DrawTexturedRect(transform.Position.x, transform.Position.y, (float) transform.Scale.x * Renderer::unitSize, (float) transform.Scale.y * Renderer::unitSize, *sprite.Texture, 0, sprite.Color);
+            }
+            else
+            {
+                Renderer::unitSize = 1.0f;
+                GPU_SetActiveTarget(Renderer::target);
+                GPU_MatrixMode(Renderer::target, GPU_MODEL);
+                GPU_LoadIdentity();
+                float xCenter, yCenter;
+                xCenter = transform.Position.x + (transform.Scale.x * Renderer::unitSize / 2);
+                yCenter = transform.Position.y + (transform.Scale.y * Renderer::unitSize / 2);
+                GPU_Translate(xCenter, yCenter, 0);
+                GPU_Translate(0, 0, transform.Position.z);
+                GPU_MultiplyAndAssign(GPU_GetCurrentMatrix(), glm::value_ptr(transform.GetRotation()));
+                GPU_Scale(1, 1, Renderer::unitSize * transform.Scale.z);
+                GPU_Translate(-xCenter, -yCenter, 0);
+                GPU_MatrixCopy(GPU_GetModel(), GPU_GetCurrentMatrix());
+                Renderer::DrawFilledRect(transform.Position.x, -transform.Position.y, (float) transform.Scale.x * Renderer::unitSize, (float) transform.Scale.y * Renderer::unitSize, 0, sprite.Color);
+            }
+        }
+        
+    }
+
+    void Scene::OnEditorUpdate(Timestep ts, EditorCamera& camera)
+    {
+        GPU_SetActiveTarget(Renderer::target);
+        GPU_SetCamera(Renderer::target, nullptr);
+        Renderer::target->use_camera = false;
+        GPU_MatrixMode(Renderer::target, GPU_PROJECTION);
+        GPU_LoadIdentity();
+        GPU_MatrixCopy(GPU_GetProjection(), glm::value_ptr(camera.GetProjectionMatrix()));
+        GPU_MatrixMode(Renderer::target, GPU_VIEW);
+        GPU_LoadIdentity();
+        GPU_MatrixCopy(GPU_GetView(), glm::value_ptr(camera.GetViewMatrix()));
+        GPU_MatrixMode(Renderer::target, GPU_MODEL);
+
+        // TODO: Clean this up - probably put into DrawRect function
+        auto group = registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
+        for (auto gameobject : group)
+        {
+            auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(gameobject);
+
             if(sprite.Texture != nullptr)
             {
                 Renderer::DrawTexturedRect(transform.Position.x, transform.Position.y, (float) transform.Scale.x * Renderer::unitSize, (float) transform.Scale.y * Renderer::unitSize, *sprite.Texture, 0, sprite.Color);
@@ -154,4 +217,30 @@ namespace EpicGameEngine
         }
         return {};
     }
+
+    void Scene::OnRuntimeStart()
+    {
+        ScriptingEngine::OnRuntimeStart(this);
+
+        auto view = registry.view<CSharpScriptComponent>();
+        for (auto gameObjectID : view)
+        {
+            GameObject gameObject = { gameObjectID, this };
+            ScriptingEngine::OnGOCreate(gameObject);
+        }
+    }
+    void Scene::OnRuntimeStop()
+    {
+        ScriptingEngine::OnRuntimeStop();
+    }
+
+    GameObject Scene::GetGameObjectByUUID(UUID uuid)
+    {
+        if (entityMap.find(uuid) != entityMap.end())
+            return { entityMap.at(uuid), this };
+
+        Debug::Log::LogWarn("SCENE: No gameObject with specified UUID {} was found in the scene.", uuid); 
+        return {};
+    }
 }
+

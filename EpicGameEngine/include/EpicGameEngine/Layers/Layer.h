@@ -15,11 +15,11 @@ namespace EpicGameEngine
         Layer(std::string name = "Layer")
         : name(std::move(name))
         {
-
         }
         virtual ~Layer() = default;
 
         virtual void OnAttach() {}
+        virtual void DefferedOnAttach() {}
         virtual void OnDetach() {}
         virtual void OnUpdate(Timestep time) {}
         virtual void OnRender() {}
