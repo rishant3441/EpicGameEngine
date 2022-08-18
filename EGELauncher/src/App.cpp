@@ -5,9 +5,9 @@
 class EGELauncherApp : public EpicGameEngine::Application
 {
 public:
-	EGELauncherApp()
+	EGELauncherApp(int argc, char** argv)
 	{
-		layers.PushLayer(new EpicGameEngine::LauncherLayer());
+		layers.PushLayer(new EpicGameEngine::LauncherLayer(argc, argv));
 	}
 	~EGELauncherApp()
 	{
@@ -15,7 +15,7 @@ public:
 	}
 };
 
-EpicGameEngine::Application* EpicGameEngine::CreateApplication()
+EpicGameEngine::Application* EpicGameEngine::CreateApplication(int argc, char** argv)
 {
-	return new EGELauncherApp();
+	return new EGELauncherApp(argc, argv);
 }

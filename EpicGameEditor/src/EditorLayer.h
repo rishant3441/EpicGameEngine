@@ -8,6 +8,10 @@ namespace EpicGameEngine
 	class EditorLayer : public Layer
 	{
 	public:
+	    EditorLayer(int argc, char** argv)
+	        : argCount(argc), args(argv)
+	    {
+	    }
 		~EditorLayer();
 
 		void OnAttach() override;
@@ -40,6 +44,9 @@ namespace EpicGameEngine
         };
 
         SceneState sceneState = SceneState::Edit;
+
+        int argCount;
+        char** args;
 	private:
 	    Ref<Texture> playIcon = std::make_shared<Texture>();
 	    Ref<Texture> stopIcon = std::make_shared<Texture>();

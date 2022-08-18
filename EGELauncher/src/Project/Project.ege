@@ -1,0 +1,30 @@
+Scene: Project
+GameObjects:
+  - GameObject: 8170119712284523009
+    NameComponent:
+      Name: Rectangle
+    TransformComponent:
+      Position: [0, 0, -10.8000002]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 2]
+    SpriteRendererComponent:
+      Color: [255, 0, 0, 255]
+  - GameObject: 6024076333729872528
+    NameComponent:
+      Name: Camera
+    TransformComponent:
+      Position: [0, 0, 1]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    CameraComponent:
+      Camera:
+        ProjectionType: 0
+        PerspectiveFOV: 45
+        PerspectiveNear: 1
+        PerspectiveFar: 1000
+        OrthographicNear: -1
+        OrthographicFar: 1
+      Primary: true
+      FixedAspectRatio: false
+    CSharpScriptComponent:
+      ClassName: Sandbox.Camera

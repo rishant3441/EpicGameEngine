@@ -30,9 +30,11 @@ namespace EpicGameEngine
 		delete m_ImGuiLayer;
 	}
 
-	// TODO: Rewrite this to use our new event system when it is complete.
-	void Application::Run()
+	void Application::Run(int argc, char** argv)
 	{
+	    ArgCount = argc;
+	    Args = *argv;
+
 		window = std::shared_ptr<Window>(Window::CreateWindow());
 
 		m_ImGuiLayer = new ImGuiLayer();
@@ -41,7 +43,6 @@ namespace EpicGameEngine
 		CameraController::UpdateCamera();
 
 		Debug::Log::LogInfo("EpicGameEngine Initialized");
-
 
 		SDL_Event event{};
 

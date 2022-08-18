@@ -15,7 +15,6 @@ namespace EpicGameEngine
         Layer(std::string name = "Layer")
         : name(std::move(name))
         {
-
         }
         virtual ~Layer() = default;
 

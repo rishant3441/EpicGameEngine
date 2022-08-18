@@ -30,6 +30,9 @@ namespace EpicGameEngine
         MonoAssembly* CoreAssembly = nullptr;
         MonoImage* CoreAssemblyImage = nullptr;
 
+        MonoAssembly* AppAssembly = nullptr;
+        MonoImage* AppAssemblyImage = nullptr;
+
         ScriptClass BaseClass;
         std::unordered_map<std::string, Ref<ScriptClass>> GameObjectClasses;
         std::unordered_map<UUID, Ref<ScriptInstance>> GameObjectInstances;
@@ -45,7 +48,7 @@ namespace EpicGameEngine
     {
         data = new ScriptingEngineData();
 
-        InitMono();
+        InitMono(0, nullptr);
     }
 
     void EpicGameEngine::ScriptingEngine::Shutdown()
@@ -53,8 +56,11 @@ namespace EpicGameEngine
         delete data;
     }
 
-    void EpicGameEngine::ScriptingEngine::InitMono()
+    void EpicGameEngine::ScriptingEngine::InitMono(int argc, char** argv)
     {
+        ArgCount = argc;
+        Args = argv;
+
         mono_set_assemblies_path("mono/lib");
 
         MonoDomain* rootDomain = mono_jit_init("EGEScriptingRuntime");
@@ -71,9 +77,19 @@ namespace EpicGameEngine
         data->CoreAssembly = assembly;
         MonoImage* image = mono_assembly_get_image(data->CoreAssembly);
         data->CoreAssemblyImage = image;
-        LoadAssemblyClasses(data->CoreAssembly);
+
+        if (ArgCount > 2)
+        {
+            std::string filepath = Args[2];
+            MonoAssembly* appAssembly = LoadCSharpAssembly(filepath);
+            data->AppAssembly = appAssembly;
+            MonoImage* appImage = mono_assembly_get_image(data->AppAssembly);
+            data->AppAssemblyImage = appImage;
+        }
+
+        LoadAssemblyClasses();
         ScriptingRegister::RegisterScripts();
-        data->BaseClass = ScriptClass("EpicGameEngine", "GameObject");
+        data->BaseClass = ScriptClass("EpicGameEngine", "GameObject", true);
         data->BaseClass.InstantiateClass();
 
 #if 0
@@ -373,22 +389,21 @@ namespace EpicGameEngine
         return result;
     }
 
-    void ScriptingEngine::LoadAssemblyClasses(MonoAssembly* assembly)
+    void ScriptingEngine::LoadAssemblyClasses()
     {
         data->GameObjectClasses.clear();
 
-        MonoImage* image = mono_assembly_get_image(assembly);
-        const MonoTableInfo* typeDefinitionsTable = mono_image_get_table_info(image, MONO_TABLE_TYPEDEF);
+        const MonoTableInfo* typeDefinitionsTable = mono_image_get_table_info(data->AppAssemblyImage, MONO_TABLE_TYPEDEF);
         int32_t numTypes = mono_table_info_get_rows(typeDefinitionsTable);
-        MonoClass* baseClass = mono_class_from_name(image, "EpicGameEngine", "GameObject");
+        MonoClass* baseClass = mono_class_from_name(data->CoreAssemblyImage, "EpicGameEngine", "GameObject");
 
         for (int32_t i = 0; i < numTypes; i++)
         {
             uint32_t cols[MONO_TYPEDEF_SIZE];
             mono_metadata_decode_row(typeDefinitionsTable, i, cols, MONO_TYPEDEF_SIZE);
 
-            const char* nameSpace = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAMESPACE]);
-            const char* name = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAME]);
+            const char* nameSpace = mono_metadata_string_heap(data->AppAssemblyImage, cols[MONO_TYPEDEF_NAMESPACE]);
+            const char* name = mono_metadata_string_heap(data->AppAssemblyImage, cols[MONO_TYPEDEF_NAME]);
             std::string fullName;
 
             if (strlen(nameSpace) != 0)
@@ -396,13 +411,15 @@ namespace EpicGameEngine
             else
                 fullName = name;
 
-            MonoClass* monoClass = mono_class_from_name(image, nameSpace, name);
+            MonoClass* monoClass = mono_class_from_name(data->AppAssemblyImage, nameSpace, name);
+
+            if (monoClass == baseClass)
+                continue;
 
             bool isEntity = mono_class_is_subclass_of(monoClass, baseClass, false);
             if (isEntity)
             {
-                Debug::Log::LogInfo("{}.{}", nameSpace, name);
-                data->GameObjectClasses[fullName] = CreateRef<ScriptClass>(nameSpace, name);
+                data->GameObjectClasses[fullName] = CreateRef<ScriptClass>(nameSpace, name, false);
             }
         }
     }
@@ -445,10 +462,10 @@ namespace EpicGameEngine
         instance->CallOnUpdate(ts);
     }
 
-    ScriptClass::ScriptClass(const std::string& classNamespace, const std::string& className)
+    ScriptClass::ScriptClass(const std::string& classNamespace, const std::string& className, bool isCore)
             : classNamespace(classNamespace), className(className)
     {
-        monoClass = mono_class_from_name(data->CoreAssemblyImage, classNamespace.c_str(), className.c_str());
+        monoClass = mono_class_from_name(isCore ? data->CoreAssemblyImage : data->AppAssemblyImage, classNamespace.c_str(), className.c_str());
     }
 
     MonoObject* ScriptClass::InstantiateClass()
@@ -498,6 +515,13 @@ namespace EpicGameEngine
     Scene* ScriptingEngine::GetCurrentScene()
     {
         return data->CurrentScene;
+    }
+
+    void ScriptingEngine::Init(int argc, char** argv)
+    {
+        data = new ScriptingEngineData();
+
+        InitMono(argc, argv);
     }
 }
 

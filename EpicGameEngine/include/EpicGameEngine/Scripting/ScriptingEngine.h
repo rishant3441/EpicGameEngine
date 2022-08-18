@@ -18,7 +18,7 @@ namespace EpicGameEngine
     {
     public:
         ScriptClass() = default;
-        ScriptClass(const std::string& classNamespace, const std::string& className);
+        ScriptClass(const std::string& classNamespace, const std::string& className, bool isCore = true);
 
         MonoObject* InstantiateClass(); /// \brief Only instantiates the class
         MonoMethod* GetMethod(const std::string& name, int numOfParameters);
@@ -51,6 +51,7 @@ namespace EpicGameEngine
     {
     public:
         static void Init();
+        static void Init(int argc, char** argv);
         static void Shutdown();
 
         static std::unordered_map<std::string, Ref<ScriptClass>> GetGameObjectClasses();
@@ -65,10 +66,13 @@ namespace EpicGameEngine
         static void OnGOCreate(GameObject gameObject);
         static void OnGOUpdate(GameObject gameObject, float ts);
 
-        static Scene* GetCurrentScene(); 
+        static Scene* GetCurrentScene();
+
+        inline static int ArgCount;
+        inline static char** Args;
 
     private:
-        static void InitMono();
+        static void InitMono(int argc, char** argv);
         static void ShutdownMono();
 
         // TODO: Clean this up (via seperate namespaces, classes, etc.)
@@ -88,7 +92,7 @@ namespace EpicGameEngine
         bool CheckMonoError(MonoError &error);
         std::string MonoStringToUTF8(MonoString *monoString);
 
-        static void LoadAssemblyClasses(MonoAssembly *pAssembly);
+        static void LoadAssemblyClasses();
     };
 }
 

@@ -23,6 +23,8 @@ namespace EpicGameEngine
 	class LauncherLayer : public Layer
 	{
 	public:
+	    LauncherLayer(int argc, char** argv);
+
 		void OnAttach() override;
 		void OnUpdate(Timestep time) override;
 		void OnImGuiRender() override;
@@ -30,8 +32,12 @@ namespace EpicGameEngine
 
 		std::string executablePath;
 		std::vector<ProjectData> projects;
+
+		int argCount;
+		char* args;
 	private:
 	    bool showSettings = false;
+	    bool showNewProject = false;
 	    bool showAddProject = false;
 
 	    void AddProject();

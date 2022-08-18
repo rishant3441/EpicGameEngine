@@ -16,7 +16,15 @@ namespace EpicGameEngine
     static glm::mat4 cubeTransform;
     void EditorLayer::OnAttach()
 	{
-        ScriptingEngine::Init();
+        if (argCount > 2)
+        {
+            Debug::Log::LogInfo("{}", args[2]);
+            ScriptingEngine::Init(argCount, args);
+        }
+        else
+        {
+            ScriptingEngine::Init();
+        }
 	    ssink = dear_sink_mt();
 
         activeScene = std::make_shared<EpicGameEngine::Scene>();
@@ -354,6 +362,18 @@ namespace EpicGameEngine
     {
         playIcon->LoadImage("resources/icons/PlayButton.png");
         stopIcon->LoadImage("resources/icons/StopButton.png");
+
+        if (argCount > 1)
+        {
+            activeScene = std::make_shared<Scene>();
+            activeScene->OnViewportResize(viewportSize.x, viewportSize.y);
+            gameObjectsPanel.SetContext(activeScene);
+
+            SceneSerializer serializer(activeScene);
+            std::string filepath = args[1];
+            serializer.Deserialize(filepath);
+        }
+
     }
 
     void EditorLayer::OnScenePlay()

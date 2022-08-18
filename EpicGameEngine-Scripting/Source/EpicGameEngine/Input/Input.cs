@@ -3,7 +3,7 @@ using System.Text;
 
 namespace EpicGameEngine
 {
-    class Input
+    public class Input
     {
         public static bool IsKeyPressed(KeyCode keyCode)
         {

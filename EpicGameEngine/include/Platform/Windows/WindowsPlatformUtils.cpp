@@ -14,6 +14,14 @@
 
 #include <Windows.h>
 #include <commdlg.h>
+#include <ShlObj_core.h>
+#include <shellapi.h>
+#include <winuser.h>
+#include <atlbase.h>
+#include <atlstr.h>
+#include <comutil.h>
+#include <locale>
+#include <codecvt>
 
 namespace EpicGameEngine
 {
@@ -69,5 +77,37 @@ namespace EpicGameEngine
             return ofn.lpstrFile;
 
         return std::string();
+    }
+
+    std::string FileDialogs::OpenFolder(const char* filter)
+    {
+        IFileDialog *pfd;
+        LPWSTR g_path = (LPWSTR) L"";
+
+        if (SUCCEEDED(CoCreateInstance(CLSID_FileOpenDialog, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pfd))))
+        {
+            DWORD dwOptions;
+            if (SUCCEEDED(pfd->GetOptions(&dwOptions)))
+            {
+                pfd->SetOptions(dwOptions | FOS_PICKFOLDERS);
+            }
+            if (SUCCEEDED(pfd->Show(nullptr)))
+            {
+                IShellItem *psi;
+                if (SUCCEEDED(pfd->GetResult(&psi)))
+                {
+                    if(!SUCCEEDED(psi->GetDisplayName(SIGDN_DESKTOPABSOLUTEPARSING, &g_path)))
+                    {
+                        MessageBox(NULL, "GetIDListName() failed", nullptr, NULL);
+                    }
+                    psi->Release();
+                }
+            }
+            pfd->Release();
+        }
+        std::wstring wideString(g_path);
+        using convert_type = std::codecvt_utf8<wchar_t>;
+        std::wstring_convert<convert_type, wchar_t> converter;
+        return converter.to_bytes(wideString);
     }
 }
