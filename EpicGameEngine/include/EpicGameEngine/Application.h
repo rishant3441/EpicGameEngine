@@ -17,8 +17,9 @@ namespace EpicGameEngine
 		virtual ~Application();
 
 		virtual void Run(int argc, char** argv);
+        void GameLoop();
 
-		void OnEvent(std::shared_ptr<Event> e);
+        void OnEvent(std::shared_ptr<Event> e);
 
 		void Close();
 
@@ -39,8 +40,12 @@ namespace EpicGameEngine
 
 		int ArgCount = 0;
 		char* Args = nullptr;
-	private: 
-		void PollEvents(SDL_Event e);	
+
+		bool thread_ready = false;
+		std::mutex mtx;
+		std::condition_variable cv;
+	private:
+		void PollEvents(SDL_Event e);
 
 	private:
 		static Application* Instance;

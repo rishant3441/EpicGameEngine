@@ -15,6 +15,7 @@
 #include <SDL_gpu.h>
 #include <EpicGameEngine/Debug.h>
 #include <EpicGameEngine/Scripting/ScriptingEngine.h>
+#include <EpicGameEngine/ege_pch.h>
 #include <omp.h>
 
 namespace EpicGameEngine
@@ -28,6 +29,19 @@ namespace EpicGameEngine
 	Application::~Application()
 	{
 		delete m_ImGuiLayer;
+	}
+
+	void Application::GameLoop()
+	{
+            float time = (float) SDL_GetTicks() / 1000;
+            Timestep timestep = time - lastFrameTime;
+            lastFrameTime = time;
+
+            thread_ready = false;
+            std::for_each(std::execution::par, layers.layers.begin(), layers.layers.end(), [&](auto l){
+                l->OnUpdate(timestep);
+            });
+            thread_ready = true;
 	}
 
 	void Application::Run(int argc, char** argv)
@@ -57,12 +71,10 @@ namespace EpicGameEngine
             l->DefferedOnAttach();
         }
 
+        //std::thread gameThread(&Application::GameLoop, this);
+
         while (window->running)
 		{
-			float time = (float) SDL_GetTicks() / 1000;
-			Timestep timestep = time - lastFrameTime;
-			lastFrameTime = time;
-
 			Application::PollEvents(sdlEvent);
 			window->OnUpdate();
 			GPU_ClearRGBA(Renderer::GetTarget(), 0, 0, 0, 255);
@@ -70,21 +82,21 @@ namespace EpicGameEngine
 			{
 				GPU_ClearRGBA(Renderer::window, 0, 0, 0, 255);
 			}
-			for (auto l : layers.layers)
-			{
-				l->OnUpdate(timestep);
-			}
-			GPU_FlushBlitBuffer();
+            GameLoop();
+            GPU_FlushBlitBuffer();
+
 			m_ImGuiLayer->BeginFrame();
-			for (auto l : layers.layers)
-			{
-				l->OnImGuiRender();
-			}
+
+            std::for_each(std::execution::par, layers.layers.begin(), layers.layers.end(), [&](auto l){
+                l->OnImGuiRender();
+            });
+
 			m_ImGuiLayer->OnImGuiRender();
 			m_ImGuiLayer->EndFrame();
-			window->OnRender();
-		}
-		Renderer::Shutdown();
+
+            window->OnRender();
+        }
+        Renderer::Shutdown();
 	}
 
 	void Application::PollEvents(SDL_Event e)

@@ -14,6 +14,10 @@
 #include <functional>
 #include <fstream>
 #include <cassert>
+#include <thread>
+#include <atomic>
+#include <algorithm>
+#include <execution>
 #include <SDL.h>
 #include <SDL_gpu.h>
 #include <glm/glm.hpp>
