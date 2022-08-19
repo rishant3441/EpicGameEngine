@@ -133,7 +133,7 @@ namespace EpicGameEngine
                 }
                 else
                 {
-                    std::lock_guard<std::mutex> lock(mtx);
+                    //std::lock_guard<std::mutex> lock(mtx);
                     GPU_SetActiveTarget(Renderer::target);
 
                     //GPU_MatrixMode(Renderer::target, GPU_MODEL);
