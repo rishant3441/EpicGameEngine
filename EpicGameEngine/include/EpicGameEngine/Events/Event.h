@@ -2,6 +2,8 @@
 
 #include <EpicGameEngine/ege_pch.h>
 
+#include <utility>
+
 /// Has the Core Event Handler for the engine.
 /**
  *
@@ -62,7 +64,7 @@ namespace EpicGameEngine
 	{
 	public:
 		EventDispatcher(std::shared_ptr<Event> event)
-			: event(event)
+			: event(std::move(event))
 		{
 		}
 
