@@ -18,6 +18,8 @@
 #include <EpicGameEngine/ege_pch.h>
 #include <omp.h>
 
+#include <ranges>
+
 namespace EpicGameEngine
 {
 	Application* Application::Instance = nullptr;
@@ -51,10 +53,6 @@ namespace EpicGameEngine
 		m_ImGuiLayer = MainAllocator.Allocate<ImGuiLayer>();
 		m_ImGuiLayer->OnAttach();
 
-		CameraController::UpdateCamera();
-
-		Debug::Log::LogInfo("EpicGameEngine Initialized");
-
 		SDL_Event event{};
 
 		window->OnRender();
@@ -62,6 +60,8 @@ namespace EpicGameEngine
         Renderer::target->matrix_mode = GPU_PROJECTION;
 
         Debug::Log::Init();
+
+        Debug::Log::LogInfo("EpicGameEngine Initialized");
 
         for (auto l : layers.layers)
         {
@@ -74,17 +74,21 @@ namespace EpicGameEngine
             FrameAllocator.Clear();
 
 			Application::PollEvents(sdlEvent);
-			window->OnUpdate();
+
+			// Set Background Color. TODO: Set a way to change this in the editor perhaps?
 			GPU_ClearRGBA(Renderer::GetTarget(), 0, 0, 0, 255);
 			if (Renderer::enableDrawingToTexture)
 			{
 				GPU_ClearRGBA(Renderer::window, 0, 0, 0, 255);
 			}
 
+			/// Game Loop - Updating objects, layers, etc.
             GameLoop();
 
+			// Needed for ImGui
             GPU_FlushBlitBuffer();
 
+            // ImGui Rendering
 			m_ImGuiLayer->BeginFrame();
 
             std::for_each(std::execution::par, layers.layers.begin(), layers.layers.end(), [&](auto l){
@@ -94,8 +98,10 @@ namespace EpicGameEngine
 			m_ImGuiLayer->OnImGuiRender();
 			m_ImGuiLayer->EndFrame();
 
+		    // Final full render to screen (Swapping Buffers)
             window->OnRender();
         }
+
         Renderer::Shutdown();
 	}
 
@@ -103,10 +109,14 @@ namespace EpicGameEngine
 	{
 		if (SDL_PollEvent(&e))
 		{
-
+		    // Converts an SDL_Event to our own managed Event System
 			event = SDL_Event_to_Event(&e);
+
+			// ImGui has their own way of handling SDL_Events.
 			ImGui_ImplSDL2_ProcessEvent(&e);
-			for (auto it = layers.layers.rbegin(); it != layers.layers.rend(); it++)
+
+			// Go through all the layers and pass events to them.
+			for (auto& layer : std::ranges::reverse_view(layers.layers))
 			{
 				if (event == nullptr)
 					break;
@@ -114,21 +124,26 @@ namespace EpicGameEngine
 				{
 					break;
 				}
-				(*it)->OnEvent(event);
+				layer->OnEvent(event);
 			}
+
+			// Calls the Application's OnEvent
 			Application::OnEvent(event);
 		}	
 	}
 
 	void Application::OnEvent(std::shared_ptr<Event> e)
 	{
+	    // Goes through all of the system OnEvents and calls them
 		// TODO: Make this more readable
 		if (e == nullptr)
 			return;
+		// Window Events
 		if (e->GetEventType() == EventType::WindowClose || e->GetEventType() == EventType::WindowResize)
 		{
 			window->OnEvent(e);
 		}
+		// Mouse Events
 		if (e->GetEventType() == EventType::MousePressed || e->GetEventType() == EventType::MouseReleased)
 		{
 			InputSystem.OnEvent(e);
