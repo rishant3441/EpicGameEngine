@@ -5,12 +5,13 @@
 #include "EpicGameEngine/Events/WindowEvent.h"
 #include "spdlog/spdlog.h"
 #include "EpicGameEngine/Renderer/Renderer.h"
+#include "EpicGameEngine/Application.h"
 
 namespace EpicGameEngine
 {
 	auto Window::CreateWindow(const WindowData& data) -> Window*
 	{
-		return new WindowsWindow(data);
+	    return new WindowsWindow(data);
 	}
 
 	WindowsWindow::WindowsWindow(const WindowData& data)
@@ -26,7 +27,6 @@ namespace EpicGameEngine
 	void WindowsWindow::Init(const WindowData& data)
 	{	
 		window = SDL_CreateWindow(data.Title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, data.width, data.height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
-		//target = GPU_Init(data.width, data.height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 		Renderer::Init(data);
 	}
 
@@ -41,6 +41,7 @@ namespace EpicGameEngine
 	{
 		Renderer::Render();
 	}
+
     void WindowsWindow::OnEvent(std::shared_ptr<Event> e)
 	{
 		EventDispatcher eventDispatcher(e);

@@ -19,6 +19,7 @@ namespace EpicGameEngine
     }
     ImGuiLayer::~ImGuiLayer()
     {
+        // ImGui Boilerplate
         ImGui_ImplOpenGL3_Shutdown();
         ImGui_ImplSDL2_Shutdown();
         ImGui::DestroyContext();
@@ -28,27 +29,33 @@ namespace EpicGameEngine
         ImGui::CreateContext();
         ImGui::StyleColorsDark();
 
+        // Sets Theme. TODO: Implement a light theme for the people who need it (ew).
         SetDarkThemeColors();
 
+        // Set ImGui Flags
         ImGuiIO& io = ImGui::GetIO();
         io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;
         io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;
         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
         io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
+        // Add Fonts
         io.Fonts->AddFontFromFileTTF("assets/fonts/opensans/OpenSans-Bold.ttf", 18.0f);
         io.FontDefault = io.Fonts->AddFontFromFileTTF("assets/fonts/opensans/OpenSans-Regular.ttf", 18.0f);
 
+        // Set Rendering to either a framebuffer or the screen
         if (Renderer::enableDrawingToTexture)
             ImGui_ImplSDL2_InitForOpenGL(WindowsWindow::window, Renderer::window->context->context);
         else
         {
             ImGui_ImplSDL2_InitForOpenGL(WindowsWindow::window, SDL_GL_GetCurrentContext());
         }
+
         ImGui_ImplOpenGL3_Init("#version 430 core");
     }
     void ImGuiLayer::OnDetach()
     {
+        // ImGui Shutdown
         ImGui_ImplOpenGL3_Shutdown();
         ImGui_ImplSDL2_Shutdown();
         ImGui::DestroyContext();
@@ -59,8 +66,8 @@ namespace EpicGameEngine
         ImGui_ImplOpenGL3_NewFrame();
 
         ImGui::NewFrame();
+        // Transformation Guizmos
         ImGuizmo::BeginFrame();
-
     }
     void ImGuiLayer::OnImGuiRender()
     {
@@ -68,6 +75,7 @@ namespace EpicGameEngine
 
     void ImGuiLayer::EndFrame()
     {
+        // ImGui Rendering Code
         if (Renderer::enableDrawingToTexture)
             GPU_SetActiveTarget(Renderer::window);
         ImGui::Render();

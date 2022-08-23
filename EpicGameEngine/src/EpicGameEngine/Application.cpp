@@ -46,26 +46,51 @@ namespace EpicGameEngine
             });
 	}
 
-	void Application::Run(int argc, char** argv)
+	void Application::RenderLoop()
+    {
+        // Needed for ImGui
+        GPU_FlushBlitBuffer();
+
+        // ImGui Rendering
+        m_ImGuiLayer->BeginFrame();
+
+        std::for_each(std::execution::par, layers.layers.begin(), layers.layers.end(), [&](auto l){
+            l->OnImGuiRender();
+        });
+
+        m_ImGuiLayer->OnImGuiRender();
+        m_ImGuiLayer->EndFrame();
+
+        // Final full render to screen (Swapping Buffers)
+        window->OnRender();
+    }
+
+    void Application::Run(int argc, char** argv)
 	{
+	    // Stores arguments passed through
 	    ArgCount = argc;
 	    Args = *argv;
 
+	    // Creates a window
 		window = std::shared_ptr<Window>(Window::CreateWindow());
 
+		// Creates the seperate ImGui Layer
 		m_ImGuiLayer = MainAllocator.Allocate<ImGuiLayer>();
 		m_ImGuiLayer->OnAttach();
 
+		// Constructs SDL_Event that is necessary for event loop
 		SDL_Event event{};
 
+		// First render to initialize stuff
 		window->OnRender();
 
-        Renderer::target->matrix_mode = GPU_PROJECTION;
-
+		// Inits Logger
         Debug::Log::Init();
 
         Debug::Log::LogInfo("EpicGameEngine Initialized");
 
+        // OnAttach function that runs after the Engine is initialized
+        // For example, loading textures doesn't work without a renderer.
         for (auto l : layers.layers)
         {
             l->DefferedOnAttach();
@@ -76,6 +101,7 @@ namespace EpicGameEngine
             // Reset Frame Allocator
             FrameAllocator.Clear();
 
+            // Runs Event Loop
 			Application::PollEvents(sdlEvent);
 
 			// Set Background Color. TODO: Set a way to change this in the editor perhaps?
@@ -85,26 +111,16 @@ namespace EpicGameEngine
 				GPU_ClearRGBA(Renderer::window, 0, 0, 0, 255);
 			}
 
-			/// Game Loop - Updating objects, layers, etc.
+			// Game Loop - Updating objects, layers, etc.
             GameLoop();
 
-			// Needed for ImGui
-            GPU_FlushBlitBuffer();
-
-            // ImGui Rendering
-			m_ImGuiLayer->BeginFrame();
-
-            std::for_each(std::execution::par, layers.layers.begin(), layers.layers.end(), [&](auto l){
-                l->OnImGuiRender();
-            });
-
-			m_ImGuiLayer->OnImGuiRender();
-			m_ImGuiLayer->EndFrame();
-
-		    // Final full render to screen (Swapping Buffers)
-            window->OnRender();
+			// Render Loop - Actually renders objects and widgets to the screen.
+			RenderLoop();
         }
 
+        // Shutdown Process
+        MainAllocator.Clear();
+        FrameAllocator.Clear();
         Renderer::Shutdown();
 	}
 

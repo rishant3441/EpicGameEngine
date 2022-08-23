@@ -16,6 +16,7 @@ namespace EpicGameEngine
 			: Title(std::move(title)), width(width), height(height)
 		{}
 	};
+
 	class EPICGAMEENGINE_API Window
 	{
 	public:

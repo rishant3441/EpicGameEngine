@@ -25,7 +25,6 @@ namespace EpicGameEngine
         virtual void OnRender() {}
         virtual void OnImGuiRender();
         virtual void OnEvent(std::shared_ptr<Event> e)  {}
-        
 
         [[nodiscard]] const std::string& GetName() const { return name; }
 
