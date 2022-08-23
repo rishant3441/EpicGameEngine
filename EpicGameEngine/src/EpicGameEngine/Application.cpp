@@ -22,6 +22,7 @@
 
 namespace EpicGameEngine
 {
+    // Singleton
 	Application* Application::Instance = nullptr;
 
 	Application::Application()
@@ -34,10 +35,12 @@ namespace EpicGameEngine
 
 	void Application::GameLoop()
 	{
+	        // Calculate Delta Time
             float time = (float) SDL_GetTicks() / 1000;
             Timestep timestep = time - lastFrameTime;
             lastFrameTime = time;
 
+            // Loops through layers and calls their OnUpdate
             std::for_each(std::execution::par, layers.layers.begin(), layers.layers.end(), [&](auto l){
                 l->OnUpdate(timestep);
             });
