@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <EpicGameEngine/CoreLib/CoreLib.h>
 
 #ifdef EGE_PLATFORM_WINDOWS
 	#ifdef EGE_BUILD_DLL

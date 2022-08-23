@@ -38,8 +38,11 @@ bin/
 bin-int/
 out/
 build/
+.cache/
 
 # CLion
 .idea/
 
 CMakeSettings.json
+compile_commands.json
+tags

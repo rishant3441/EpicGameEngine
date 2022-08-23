@@ -1,4 +1,4 @@
-#include "EpicGameEngine/Application.h"
+#include <EpicGameEngine/Application.h>
 #ifdef EGE_PLATFORM_WINDOWS
 #include "EpicGameEngine/Window/Window.h"
 #include "EpicGameEngine/Window/WindowsWindow.h"
@@ -28,7 +28,6 @@ namespace EpicGameEngine
 	}
 	Application::~Application()
 	{
-		delete m_ImGuiLayer;
 	}
 
 	void Application::GameLoop()
@@ -51,7 +50,7 @@ namespace EpicGameEngine
 
 		window = std::shared_ptr<Window>(Window::CreateWindow());
 
-		m_ImGuiLayer = new ImGuiLayer();
+		m_ImGuiLayer = MainAllocator.Allocate<ImGuiLayer>();
 		m_ImGuiLayer->OnAttach();
 
 		CameraController::UpdateCamera();
@@ -71,8 +70,6 @@ namespace EpicGameEngine
             l->DefferedOnAttach();
         }
 
-        //std::thread gameThread(&Application::GameLoop, this);
-
         while (window->running)
 		{
 			Application::PollEvents(sdlEvent);
@@ -82,7 +79,9 @@ namespace EpicGameEngine
 			{
 				GPU_ClearRGBA(Renderer::window, 0, 0, 0, 255);
 			}
+
             GameLoop();
+
             GPU_FlushBlitBuffer();
 
 			m_ImGuiLayer->BeginFrame();

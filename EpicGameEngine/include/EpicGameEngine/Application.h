@@ -44,6 +44,12 @@ namespace EpicGameEngine
 		bool thread_ready = false;
 		std::mutex mtx;
 		std::condition_variable cv;
+
+		// Allocators
+		CoreLib::BumpMemPool memPool;
+		CoreLib::BumpAllocator MainAllocator = CoreLib::BumpAllocator(&memPool, 1024 * 1024);
+		CoreLib::BumpAllocator FrameAllocator = CoreLib::BumpAllocator(&memPool, memPool.size);
+
 	private:
 		void PollEvents(SDL_Event e);
 

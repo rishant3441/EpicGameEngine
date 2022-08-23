@@ -29,7 +29,6 @@ namespace EpicGameEngine
 
         [[nodiscard]] const std::string& GetName() const { return name; }
 
-        std::vector<GameObject*> gameObjects{};
     private:
         std::string name;
     };
