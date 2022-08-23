@@ -155,13 +155,17 @@ namespace EpicGameEngine
 	{
 	    // Goes through all of the system OnEvents and calls them
 		// TODO: Make this more readable
+
+		// Returns if the event doesn't exist
 		if (e == nullptr)
 			return;
+
 		// Window Events
 		if (e->GetEventType() == EventType::WindowClose || e->GetEventType() == EventType::WindowResize)
 		{
 			window->OnEvent(e);
 		}
+
 		// Mouse Events
 		if (e->GetEventType() == EventType::MousePressed || e->GetEventType() == EventType::MouseReleased)
 		{
