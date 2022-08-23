@@ -19,6 +19,7 @@ namespace EpicGameEngine
 		virtual void Run(int argc, char** argv);
         void GameLoop();
         void RenderLoop();
+        void Shutdown();
         void OnEvent(std::shared_ptr<Event> e);
 		void Close();
 

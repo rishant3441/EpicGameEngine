@@ -65,6 +65,14 @@ namespace EpicGameEngine
         window->OnRender();
     }
 
+    void Application::Shutdown()
+    {
+	    Debug::Log::LogInfo("Epic Game Engine Shutting Down...");
+        MainAllocator.Clear();
+        FrameAllocator.Clear();
+        Renderer::Shutdown();
+    }
+
     void Application::Run(int argc, char** argv)
 	{
 	    // Stores arguments passed through
@@ -119,9 +127,7 @@ namespace EpicGameEngine
         }
 
         // Shutdown Process
-        MainAllocator.Clear();
-        FrameAllocator.Clear();
-        Renderer::Shutdown();
+        Shutdown();
 	}
 
 	void Application::PollEvents(SDL_Event e)
@@ -176,6 +182,5 @@ namespace EpicGameEngine
 	void Application::Close()
 	{
 		window->running = false;
-		Renderer::Shutdown();
 	}
 }
