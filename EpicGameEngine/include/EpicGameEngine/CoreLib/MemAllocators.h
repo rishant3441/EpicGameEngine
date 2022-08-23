@@ -28,41 +28,37 @@ namespace EpicGameEngine
         {
             BumpAllocator(size_t size = 1024)
             {
-               *pool = BumpMemPool();
+               pool = BumpMemPool();
                Realloc(size);
             }
 
-            BumpAllocator(BumpMemPool* newPool, size_t size = 1024)
+            BumpAllocator(BumpMemPool& newPool, size_t size = 1024)
             {
                 pool = newPool;
 
                 // Creates a new self-managed pool.
-                if (pool == nullptr)
-                {
-                    *pool = BumpMemPool();
-                }
-                if (pool->startPtr == nullptr)
+                if (pool.startPtr == nullptr)
                 {
                     Realloc(size);
                 }
             }
             ~BumpAllocator()
             {
-                free(pool->startPtr);
+                free(pool.startPtr);
             }
 
             template<typename T, typename... Args>
             T* Allocate(size_t amountOfType = 1, Args&&... args)
             {
-                if (pool->size - pool->filledSize < sizeof(T) * amountOfType)
+                if (pool.size - pool.filledSize < sizeof(T) * amountOfType)
                 {
-                    ReallocAndCopy((pool->size * 2) + sizeof(T) * amountOfType);
+                    ReallocAndCopy((pool.size * 2) + sizeof(T) * amountOfType);
                 }
 
-                void* newPtr = pool->offset;
+                void* newPtr = pool.offset;
                 T *t = new(newPtr) T(std::forward<Args>(args)...);
-                pool->offset = (char*) pool->offset + sizeof(T) * amountOfType;
-                pool->filledSize += sizeof(T) * amountOfType;
+                pool.offset = (char*) pool.offset + sizeof(T) * amountOfType;
+                pool.filledSize += sizeof(T) * amountOfType;
                 return t;
             }
 
@@ -75,32 +71,34 @@ namespace EpicGameEngine
 
             void Realloc(std::size_t newSize = 1024)
             {
-                pool->size = newSize;
-                pool->filledSize = 0;
+                pool.size = newSize;
+                pool.filledSize = 0;
 
-                pool->offset = malloc(pool->size);
-                pool->startPtr = pool->offset;
-                pool->endPtr = (char*) pool->startPtr + pool->size;
+                pool.offset = malloc(pool.size);
+                pool.startPtr = pool.offset;
+                pool.endPtr = (char*) pool.startPtr + pool.size;
             }
 
             void ReallocAndCopy(std::size_t newSize)
             {
                 void* newAlloc = malloc(newSize);
-                memcpy(newAlloc, pool->startPtr, pool->size);
-                free(pool->startPtr);
-                pool->size = newSize;
-                pool->startPtr = newAlloc;
+                memcpy(newAlloc, pool.startPtr, pool.size);
+                free(pool.startPtr);
+                pool.size = newSize;
+                pool.startPtr = newAlloc;
             }
 
             void Clear()
             {
-                memset(pool->startPtr, 0, pool->size);
-                free(pool->startPtr);
+                memset(pool.startPtr, 0, pool.size);
 
-                Realloc(pool->size);
+                pool.filledSize = 0;
+
+                pool.offset = pool.startPtr;
+                pool.endPtr = (char*) pool.startPtr + pool.size;
             }
         private:
-            BumpMemPool* pool;
+            BumpMemPool pool;
         };
     }
 }

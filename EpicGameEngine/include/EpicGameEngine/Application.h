@@ -18,37 +18,29 @@ namespace EpicGameEngine
 
 		virtual void Run(int argc, char** argv);
         void GameLoop();
-
         void OnEvent(std::shared_ptr<Event> e);
-
 		void Close();
 
 		static Application& Get() { return *Instance;  }
 
+        int ArgCount = 0;
+        char* Args = nullptr;
+
+        SDL_Event sdlEvent{};
+        std::shared_ptr<Event> event = nullptr;
+
+        // Application Systems
 		std::shared_ptr<Window> window;
 
-		SDL_Event sdlEvent{};
-		std::shared_ptr<Event> event = nullptr; 
-
-		LayerArray layers; 
+		LayerArray layers;
 
 		Input InputSystem;
 
 		ImGuiLayer* m_ImGuiLayer;
 
-		GPU_Camera camera;
-
-		int ArgCount = 0;
-		char* Args = nullptr;
-
-		bool thread_ready = false;
-		std::mutex mtx;
-		std::condition_variable cv;
-
 		// Allocators
-		CoreLib::BumpMemPool memPool;
-		CoreLib::BumpAllocator MainAllocator = CoreLib::BumpAllocator(&memPool, 1024 * 1024);
-		CoreLib::BumpAllocator FrameAllocator = CoreLib::BumpAllocator(&memPool, memPool.size);
+		CoreLib::BumpAllocator MainAllocator = CoreLib::BumpAllocator(1024 * 1024);
+		CoreLib::BumpAllocator FrameAllocator = CoreLib::BumpAllocator(1024 * 1024);
 
 	private:
 		void PollEvents(SDL_Event e);

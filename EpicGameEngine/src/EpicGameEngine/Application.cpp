@@ -36,11 +36,9 @@ namespace EpicGameEngine
             Timestep timestep = time - lastFrameTime;
             lastFrameTime = time;
 
-            thread_ready = false;
             std::for_each(std::execution::par, layers.layers.begin(), layers.layers.end(), [&](auto l){
                 l->OnUpdate(timestep);
             });
-            thread_ready = true;
 	}
 
 	void Application::Run(int argc, char** argv)
@@ -72,6 +70,9 @@ namespace EpicGameEngine
 
         while (window->running)
 		{
+            // Reset Frame Allocator
+            FrameAllocator.Clear();
+
 			Application::PollEvents(sdlEvent);
 			window->OnUpdate();
 			GPU_ClearRGBA(Renderer::GetTarget(), 0, 0, 0, 255);
