@@ -120,4 +120,12 @@ namespace EpicGameEngine
             DeleteScript = [](NativeScriptComponent* script) { delete script->Instance; script->Instance = nullptr; };
         }
     };
+
+    struct LightEmitterComponent
+    {
+        float lightRadius = 1;
+
+        LightEmitterComponent() = default;
+        LightEmitterComponent(const LightEmitterComponent&) = default;
+    };
 }

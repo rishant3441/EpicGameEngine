@@ -254,7 +254,7 @@ namespace EpicGameEngine
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0.0f, 0.0f});
 			// TODO: Disallow focusing the viewport and hovering effects
 			ImGui::Begin("Viewport");
-			void* textureID = (void*) GPU_GetTextureHandle(Renderer::texture);
+			void* textureID = (void*) GPU_GetTextureHandle(Renderer::viewport);
 			ImVec2 imGuiViewportSize = ImGui::GetContentRegionAvail();
 			viewportSize = { imGuiViewportSize.x, imGuiViewportSize.y };
 			ImGui::Image(textureID, ImVec2{ static_cast<float>(viewportSize.x), static_cast<float>(viewportSize.y) });

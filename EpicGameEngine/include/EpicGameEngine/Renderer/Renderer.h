@@ -33,6 +33,8 @@ namespace EpicGameEngine
         // TODO: Don't make all of these public and have getters
         inline static GPU_Target* target;
         inline static GPU_Target* window = nullptr;
+        inline static GPU_Target* viewportTarget;
+        inline static GPU_Image* viewport;
         inline static GPU_Image* texture;
         inline static bool enableDrawingToTexture = false;
         inline static float unitSize;

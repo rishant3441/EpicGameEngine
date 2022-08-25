@@ -253,6 +253,11 @@ namespace EpicGameEngine
                 selectionContext.AddComponent<CSharpScriptComponent>();
                 ImGui::CloseCurrentPopup();
             }
+            if (ImGui::MenuItem("Light Emitter"))
+            {
+                selectionContext.AddComponent<LightEmitterComponent>();
+                ImGui::CloseCurrentPopup();
+            }
 
             ImGui::EndPopup();
         }
@@ -351,6 +356,11 @@ namespace EpicGameEngine
 
             if (!scriptClassExists)
                 ImGui::PopStyleColor();
+        });
+
+        DrawComponent<LightEmitterComponent>("Light Emitter", selection, [](auto& component)
+        {
+            ImGui::DragFloat("Radius", &component.lightRadius);
         });
     }
 }

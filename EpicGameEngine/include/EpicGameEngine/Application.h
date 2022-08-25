@@ -6,6 +6,7 @@
 #include <EpicGameEngine/Events/Event.h>
 #include <EpicGameEngine/Input/Input.h>
 #include <EpicGameEngine/ImGui/ImGuiLayer.h>
+#include <EpicGameEngine/Renderer/Lighting/Lighting.h>
 #include <EpicGameEngine/Timestep.h>
 #include <EpicGameEngine/ege_pch.h>
 namespace EpicGameEngine
@@ -38,7 +39,11 @@ namespace EpicGameEngine
 
 		Input InputSystem;
 
+		Timestep timestep = 0.0013f;
+
 		ImGuiLayer* m_ImGuiLayer;
+
+		Lighting* lightingSystem;
 
 		// Allocators
 		CoreLib::BumpAllocator MainAllocator = CoreLib::BumpAllocator(1024 * 1024);

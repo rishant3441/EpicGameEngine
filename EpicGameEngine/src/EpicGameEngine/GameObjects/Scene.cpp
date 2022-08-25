@@ -8,6 +8,7 @@
 #include <EpicGameEngine/GameObjects/Components.h>
 #include <EpicGameEngine/Renderer/Renderer.h>
 #include <EpicGameEngine/Scripting/ScriptingEngine.h>
+#include <EpicGameEngine/Application.h>
 #include <EpicGameEngine/UUID.h>
 #include <spdlog/spdlog.h>
 
@@ -63,7 +64,6 @@ namespace EpicGameEngine
 
         SceneCamera* mainCamera = nullptr;
         TransformComponent* cameraTransform;
-
 
         {
             auto view = registry.view<TransformComponent, CameraComponent>();
@@ -155,35 +155,15 @@ namespace EpicGameEngine
                 }
                 });
         }
-        /*
-        auto group = registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
-        for (auto gameobject : group)
-        {
-            auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(gameobject);
 
-            if(sprite.Texture != nullptr)
-            {
-                Renderer::DrawTexturedRect(transform.Position.x, transform.Position.y, (float) transform.Scale.x * Renderer::unitSize, (float) transform.Scale.y * Renderer::unitSize, *sprite.Texture, 0, sprite.Color);
-            }
-            else
-            {
-                Renderer::unitSize = 1.0f;
-                GPU_SetActiveTarget(Renderer::target);
-                GPU_MatrixMode(Renderer::target, GPU_MODEL);
-                GPU_LoadIdentity();
-                float xCenter, yCenter;
-                xCenter = transform.Position.x + (transform.Scale.x * Renderer::unitSize / 2);
-                yCenter = transform.Position.y + (transform.Scale.y * Renderer::unitSize / 2);
-                GPU_Translate(xCenter, yCenter, 0);
-                GPU_Translate(0, 0, transform.Position.z);
-                GPU_MultiplyAndAssign(GPU_GetCurrentMatrix(), glm::value_ptr(transform.GetRotation()));
-                GPU_Scale(1, 1, Renderer::unitSize * transform.Scale.z);
-                GPU_Translate(-xCenter, -yCenter, 0);
-                GPU_MatrixCopy(GPU_GetModel(), GPU_GetCurrentMatrix());
-                Renderer::DrawFilledRect(transform.Position.x, -transform.Position.y, (float) transform.Scale.x * Renderer::unitSize, (float) transform.Scale.y * Renderer::unitSize, 0, sprite.Color);
-            }
-        }*/
-        
+        {
+            auto view = registry.view<TransformComponent, LightEmitterComponent>();
+            for_each(std::execution::par, view.begin(), view.end(), [&](auto gameobject){
+                auto& transform = view.get<TransformComponent>(gameobject);
+                auto& lec = view.get<LightEmitterComponent>(gameobject);
+                Application::Get().lightingSystem->RenderAt(transform.Position, lec.lightRadius);
+            });
+        }
     }
 
     void Scene::OnEditorUpdate(Timestep ts, EditorCamera& camera)
@@ -227,6 +207,13 @@ namespace EpicGameEngine
                 Renderer::DrawFilledRect(transform.Position.x, -transform.Position.y, (float) transform.Scale.x * Renderer::unitSize, (float) transform.Scale.y * Renderer::unitSize, 0, sprite.Color);
             }
         }
+
+        auto view = registry.view<TransformComponent, LightEmitterComponent>();
+        for_each(std::execution::par, view.begin(), view.end(), [&](auto gameobject){
+            auto& transform = view.get<TransformComponent>(gameobject);
+            auto& lec = view.get<LightEmitterComponent>(gameobject);
+            Application::Get().lightingSystem->RenderAt(transform.Position, lec.lightRadius);
+        });
     }
 
     void Scene::OnViewportResize(uint32_t width, uint32_t height)

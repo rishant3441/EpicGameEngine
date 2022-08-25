@@ -25,18 +25,23 @@ namespace EpicGameEngine
 		        GPU_SetInitWindow(SDL_GetWindowID(WindowsWindow::window));
             Renderer::window = GPU_Init(data.width, data.height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 
-            Renderer::texture = GPU_CreateImage(1024, 576, GPU_FORMAT_RGB);
+            Renderer::texture = GPU_CreateImage(1024, 576, GPU_FORMAT_RGBA);
             GPU_LoadTarget(Renderer::texture);
             Renderer::target = Renderer::texture->target;
+            Renderer::viewport = GPU_CreateImage(1024, 576, GPU_FORMAT_RGBA);
+            GPU_LoadTarget(viewport);
+            viewportTarget = viewport->target;
             GPU_MakeCurrent(Renderer::window, SDL_GetWindowID(WindowsWindow::window));
         }
         unitSize = 50; /// Default size for scaling shapes
     }
 
-    void Renderer::Shutdown()
-    {
+    void Renderer::Shutdown() {
         if (Renderer::enableDrawingToTexture)
-            GPU_FreeTarget(Renderer::target);
+        {
+            GPU_FreeTarget(viewportTarget);
+            GPU_FreeTarget(target);
+        }
         GPU_Quit();
     }
 
@@ -53,8 +58,14 @@ namespace EpicGameEngine
         }
         else
         {
+            GPU_ClearRGB(viewportTarget, 0, 0, 0);
             GPU_Flip(Renderer::window);
-            GPU_Flip(Renderer::GetTarget());
+
+            GPU_Flip(target);
+
+            GPU_BlitRect(texture, nullptr, viewportTarget, nullptr);
+
+            GPU_Flip(Renderer::viewportTarget);
         }
     }
     

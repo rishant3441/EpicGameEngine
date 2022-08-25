@@ -37,13 +37,15 @@ namespace EpicGameEngine
 	{
 	        // Calculate Delta Time
             float time = (float) SDL_GetTicks() / 1000;
-            Timestep timestep = time - lastFrameTime;
+            timestep = time - lastFrameTime;
             lastFrameTime = time;
 
             // Loops through layers and calls their OnUpdate
             std::for_each(std::execution::par, layers.layers.begin(), layers.layers.end(), [&](auto l){
                 l->OnUpdate(timestep);
             });
+
+            //lightingSystem->Render();
 	}
 
 	void Application::RenderLoop()
@@ -85,6 +87,10 @@ namespace EpicGameEngine
 		// Creates the seperate ImGui Layer
 		m_ImGuiLayer = MainAllocator.Allocate<ImGuiLayer>();
 		m_ImGuiLayer->OnAttach();
+
+		// Initializes Lighting System
+		lightingSystem = MainAllocator.Allocate<Lighting>();
+		lightingSystem->Init();
 
 		// Constructs SDL_Event that is necessary for event loop
 		SDL_Event event{};
