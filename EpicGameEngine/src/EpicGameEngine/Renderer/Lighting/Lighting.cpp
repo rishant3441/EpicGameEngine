@@ -5,13 +5,13 @@
 // SPDX-License-Identifier: MIT
 //
 
-#include <EpicGameEngine/Renderer/Lighting/Lighting.h>
-#include <EpicGameEngine/Renderer/Renderer.h>
-
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glew.h>
+
+#include <EpicGameEngine/Renderer/Lighting/Lighting.h>
+#include <EpicGameEngine/Renderer/Renderer.h>
 
 namespace EpicGameEngine
 {
@@ -24,48 +24,41 @@ namespace EpicGameEngine
         GPU_EnableCamera(lightingTarget, false);
         GPU_SetCamera(lightingTarget, nullptr);
 
-        shaderObj = GPU_CreateShaderProgram();
-
-        vertexShader = "#version 110\n"
+        std::string vertexShader = "#version 110\n"
                        "uniform mat4 u_MVPMatrix;      // A constant representing the combined model/view/projection matrix.\n"
                        " \n"
                        "in vec4 a_Position;     // Per-vertex position information we will pass in.\n"
                        "varying out vec2 v_vTexcoord;\n"
+                       "varying out vec4 v_Position;\n"
                        " \n"
                        "// The entry point for our vertex shader.\n"
                        "void main()\n"
                        "{\n"
                        "    // gl_Position is a special variable used to store the final position.\n"
                        "    // Multiply the vertex by the matrix to get the final point in normalized screen coordinates.\n"
+                       "    v_Position = u_MVPMatrix * a_Position;\n"
                        "    gl_Position = u_MVPMatrix * a_Position;\n"
                        "}";
 
-        fragmentShader = "#version 410\n"
+        std::string fragmentShader = "#version 410\n"
                          "layout(location = 0) out vec4 fragColor;\n"
                          "uniform vec3 lightpos;\n"
                          "uniform vec4 lightColor;\n"
                          "uniform vec4 lightIntensity;\n"
                          "uniform mat4 u_MVPMatrix;\n"
+                         "in vec4 v_Position;\n"
                          "void main()\n"
                          "{\n"
-                         "fragColor = lightColor * 1.0/distance(lightpos, vec3(gl_FragCoord.x, gl_FragCoord.y, lightpos.z)) * lightIntensity/100;\n"
+                         "vec4 tempColor = lightColor * 1.0/(distance(lightpos, vec3(v_Position.x, v_Position.y, v_Position.z)) * 20) * lightIntensity/10000;\n"
+                         "fragColor = vec4(tempColor.x, tempColor.y, tempColor.z, 255);"
                          "}";
-        shader = GPU_CompileShader(GPU_FRAGMENT_SHADER, fragmentShader.c_str());
-        vShader = GPU_CompileShader(GPU_VERTEX_SHADER, vertexShader.c_str());
-
-        Debug::Log::LogInfo("{}", GPU_GetShaderMessage());
-
-        GPU_AttachShader(shaderObj, shader);
-        GPU_AttachShader(shaderObj, vShader);
-        GPU_LinkShaderProgram(shaderObj);
-        glValidateProgram(shaderObj);
-        GPU_DetachShader(shaderObj, shader);
-        GPU_DetachShader(shaderObj, vShader);
+        shader = CreateRef<ShaderProgram>(vertexShader, fragmentShader, "a_Position", "v_vTexCoord", "", "");
     }
 
     void Lighting::Shutdown()
     {
         GPU_FreeImage(lightingTexture);
+        GPU_FreeTarget(lightingTarget);
     }
 
     void Lighting::Render()
@@ -90,7 +83,6 @@ namespace EpicGameEngine
         GPU_SetActiveTarget(lightingTarget);
         GPU_EnableCamera(lightingTarget, false);
         GPU_SetCamera(lightingTarget, nullptr);
-        GPU_ClearColor(lightingTarget, { 0, 0, 0, 0 });
 
         float xCenter = position.x + (intensity * Renderer::unitSize * 0.5f);
         float yCenter = position.y + (intensity * Renderer::unitSize * 0.5f);
@@ -98,7 +90,7 @@ namespace EpicGameEngine
         GPU_LoadIdentity();
         glm::mat4 model = glm::make_mat4(GPU_GetModel());
         model = glm::translate(model, { xCenter, yCenter, 0 });
-        model = glm::translate(model, { position.x + lightingTexture->w, position.y + lightingTexture->h, position.z });
+        model = glm::translate(model, { position.x, -position.y, position.z });
         model = glm::scale(model, { 1, 1, intensity * Renderer::unitSize });
         model = glm::translate(model, { -xCenter, -yCenter, 0 });
         GPU_SetModel(glm::value_ptr(model));
@@ -110,27 +102,25 @@ namespace EpicGameEngine
 
         glm::mat4 mvp = proj * view * model;
 
-        GPU_ShaderBlock block = GPU_LoadShaderBlock(shaderObj, "a_Position", "a_Texcoord", "v_vColour", nullptr);
-
         float lightPos[3];
-        lightPos[0] = position.x + lightingTexture->w * 0.5f + Renderer::unitSize * 0.5f;
-        lightPos[1] = -position.y + lightingTexture->h * 0.5f;
+        lightPos[0] = position.x;// * 0.25f; //+ lightingTexture->w * 0.5f + Renderer::unitSize * 0.5f;
+        lightPos[1] = -position.y;// * 0.25f;// + lightingTexture->h * 0.5f;
         lightPos[2] = position.z;
         float lightColor[4];
         lightColor[0] = 255;
         lightColor[1] = 255;
         lightColor[2] = 255;
         lightColor[3] = 255;
-        GPU_ActivateShaderProgram(shaderObj, &block);
+        shader->Bind();
         //GPU_SetUniformMatrixfv(GPU_GetUniformLocation(shaderObj, "u_MVPMatrix"), 1, 4, 4, false, glm::value_ptr(mvp));
         //GPU_SetUniformfv(GPU_GetUniformLocation(shaderObj, "lightpos"), 3, 1, lightPos);
-        glUniform3fv(GPU_GetUniformLocation(shaderObj, "lightpos"), 1, lightPos);
-        GPU_SetUniformfv(GPU_GetUniformLocation(shaderObj, "lightColor"), 4, 1, lightColor);
-        glUniformMatrix4fv(GPU_GetUniformLocation(shaderObj, "u_MVPMatrix"), 1, false, glm::value_ptr(mvp));
+        shader->SetFloat3("lightpos", lightPos);
+        shader->SetMat4("u_MVPMatrix", mvp);
+        shader->SetFloat4("lightColor", lightColor);
         //GPU_SetAttributefv(GPU_GetAttributeLocation(shaderObj, "a_Position"), 3, glm::value_ptr(position));
         //GPU_CircleFilled(lightingTarget, position.x, -position.y, intensity / 20.0f, { 255, 255, 255, 0 });
         glm::vec4 lightIntensity = { intensity, intensity, intensity, intensity };
-        glUniform4fv(GPU_GetUniformLocation(shaderObj, "lightIntensity"), 1, glm::value_ptr(lightIntensity));
+        shader->SetFloat4("lightIntensity", glm::value_ptr(lightIntensity));
 
         lightingTexture->w = Renderer::viewportTarget->w;
         lightingTexture->h = Renderer::viewportTarget->h;
@@ -145,11 +135,10 @@ namespace EpicGameEngine
         rect.h = lightingTexture->h;
         GPU_Flip(lightingTarget);
         //GPU_BlitRect(lightingTexture, nullptr, Renderer::viewportTarget, nullptr);
-        GPU_DeactivateShaderProgram();
+        shader->Unbind();
         GPU_SetActiveTarget(Renderer::viewportTarget);
-        GPU_ShaderBlock newBlock = GPU_LoadShaderBlock(shaderObj, "a_Position", "a_Texcoord", "v_vColour", "u_MVPMatrix");
-        GPU_ActivateShaderProgram(shaderObj, &newBlock);
+        GPU_ClearColor(lightingTarget, { 0, 0, 0, 0 });
         GPU_Blit(lightingTexture, nullptr, Renderer::viewportTarget, lightingTexture->w * 0.5f, lightingTexture->h * 0.5f);
-        GPU_DeactivateShaderProgram();
+        //shader->Unbind();
     }
 }

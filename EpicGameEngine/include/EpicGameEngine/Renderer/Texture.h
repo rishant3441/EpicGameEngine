@@ -35,9 +35,10 @@ namespace EpicGameEngine
             GPU_FreeImage(texture);
         }
 
-#undef LoadImage
+#undef LoadImage // Wonky Win32 API Interference
         int LoadImage(const std::string& filePath);
 
+        // Get Native Texture Handle/ID
         GPU_Image* GetTexture() { return texture; }
         void* GetTextureHandle() { return (void*) GPU_GetTextureHandle(texture); }
         operator GPU_Image*() { return texture; }

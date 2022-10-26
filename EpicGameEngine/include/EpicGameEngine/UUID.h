@@ -20,11 +20,13 @@ namespace EpicGameEngine
         UUID(const UUID&) = default;
 
         operator uint64_t() const { return uuid; }
+
     private:
         uint64_t uuid;
     };
 }
 
+// Hashing function for our UUID
 namespace std
 {
     template<>

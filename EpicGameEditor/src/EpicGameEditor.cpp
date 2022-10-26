@@ -6,7 +6,7 @@ namespace EpicGameEngine
 {
 	class EpicGameEditor : public Application
 	{
-	public:	
+	public:
 		EpicGameEditor(int argc, char** argv)
 		{
 			layers.PushLayer(new EditorLayer(argc, argv));

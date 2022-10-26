@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <string>
+
 namespace EpicGameEngine
 {
     class FileDialogs

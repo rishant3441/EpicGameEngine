@@ -8,6 +8,7 @@
 #pragma once
 
 #include <spdlog/spdlog.h>
+#include <EpicGameEngine/ege_pch.h>
 
 namespace EpicGameEngine
 {
@@ -26,10 +27,10 @@ namespace EpicGameEngine
 
             }
             template <typename... Args>
-             inline static void LogWarn(spdlog::format_string_t<Args...> text, Args&&... args)
-             {
-                 spdlog::info(text, std::forward<Args>(args)...);
-             }
+            inline static void LogWarn(spdlog::format_string_t<Args...> text, Args&&... args)
+            {
+                spdlog::info(text, std::forward<Args>(args)...);
+            }
             template <typename... Args>
             inline static void LogError(spdlog::format_string_t<Args...> text, Args&&... args)
             {

@@ -13,8 +13,7 @@
 namespace EpicGameEngine
 {
     GameObject::GameObject(entt::entity handle, Scene* newScene)
-
-            : entityHandle(handle), scene(newScene)
+            : scene(newScene), entityHandle(handle)
     {
 
     }

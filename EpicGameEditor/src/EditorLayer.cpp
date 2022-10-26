@@ -16,6 +16,7 @@ namespace EpicGameEngine
     static glm::mat4 cubeTransform;
     void EditorLayer::OnAttach()
 	{
+        // Initializes scripting engine with args
         if (argCount > 2)
         {
             Debug::Log::LogInfo("{}", args[2]);
@@ -25,18 +26,24 @@ namespace EpicGameEngine
         {
             ScriptingEngine::Init();
         }
+        // Activates logger
 	    ssink = dear_sink_mt();
 
+        // Creates editor camera and scene
         activeScene = std::make_shared<EpicGameEngine::Scene>();
         editorCamera = EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
 
+        // Sets camera viewport
         viewportSize.x = 1024;
         viewportSize.y = 576;
         activeScene->viewportSize.x = 1024;
         activeScene->viewportSize.y = 576;
         editorCamera.SetViewportSize(activeScene->viewportSize.x, activeScene->viewportSize.y);
+
+        // Sets renderer to render to a texture
 		Renderer::ToggleDrawingToTexture();
 
+// Testing Example
 #if 0
 		SDL_Color color;
 		color.a = 255;
@@ -124,6 +131,7 @@ namespace EpicGameEngine
 	void EditorLayer::OnUpdate(Timestep time)
     {
 
+        // Renders based on SceneState
         switch (sceneState)
         {
             case SceneState::Edit:
@@ -135,6 +143,7 @@ namespace EpicGameEngine
                 break;
         }
 
+        // Updates camera viewport if the size changes
         if (Renderer::target->w != viewportSize.x || Renderer::target->h != viewportSize.y)
         {
             Renderer::target->w = viewportSize.x;
@@ -360,9 +369,12 @@ namespace EpicGameEngine
 
     void EditorLayer::DefferedOnAttach()
     {
+        // Loads images here due to the
+        // renderer not being initialized
         playIcon->LoadImage("resources/icons/PlayButton.png");
         stopIcon->LoadImage("resources/icons/StopButton.png");
 
+        // Serializes any scene passed in as an argument
         if (argCount > 1)
         {
             activeScene = std::make_shared<Scene>();

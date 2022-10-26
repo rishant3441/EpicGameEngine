@@ -30,7 +30,7 @@ namespace EpicGameEngine
         gameObject.AddComponent<TransformComponent>();
         gameObject.AddComponent<NameComponent>(name.empty() ? "Empty Game Object" : name);
 
-        entityMap[uuid] = gameObject; 
+        entityMap[uuid] = gameObject;
 
         return gameObject;
     }

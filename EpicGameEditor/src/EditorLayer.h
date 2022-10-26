@@ -21,6 +21,7 @@ namespace EpicGameEngine
 		void OnImGuiRender() override;
         virtual void OnEvent(std::shared_ptr<Event> e) override;
 
+        // Used for the editor camera
         bool OnScrollEvent(MouseScrolledEvent& event);
 
         void Toolbar();

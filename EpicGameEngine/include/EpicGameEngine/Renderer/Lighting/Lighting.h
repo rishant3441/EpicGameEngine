@@ -7,7 +7,13 @@
 
 #pragma once
 
+#include <EpicGameEngine/ege_pch.h>
+#include <EpicGameEngine/Renderer/ShaderProgram.h>
 
+#include <glm/glm.hpp>
+#include <SDL_gpu.h>
+
+// TODO: Move shader specific code to a shader class in the future
 namespace EpicGameEngine
 {
     class Lighting
@@ -20,16 +26,16 @@ namespace EpicGameEngine
         void Shutdown();
 
         void Render();
+        // Renders a light at a specific coordinate with a specific intensity.
+        // TODO: Add more options in the future
         void RenderAt(glm::vec3 position, float intensity = 1);
 
     private:
+        // Renderer Targets
         GPU_Target* lightingTarget;
         GPU_Image* lightingTexture;
-        std::string vertexShader;
-        std::string fragmentShader;
-        uint32_t shader;
-        uint32_t vShader;
-        uint32_t shaderObj;
+
+        Ref<ShaderProgram> shader;
     };
 }
 
