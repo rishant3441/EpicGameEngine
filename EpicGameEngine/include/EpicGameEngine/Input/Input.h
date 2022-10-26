@@ -32,6 +32,7 @@ namespace EpicGameEngine
 		static float GetMouseX();
 		/// \brief Returns Mouse Y Position.
 		static float GetMouseY();
+
 	private:
 		bool OnMouseReleased(MouseReleasedEvent& e);
 		bool OnMousePressed(MousePressedEvent& e);
