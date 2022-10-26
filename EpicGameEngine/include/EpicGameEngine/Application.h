@@ -9,6 +9,8 @@
 #include <EpicGameEngine/Renderer/Lighting/Lighting.h>
 #include <EpicGameEngine/Timestep.h>
 #include <EpicGameEngine/ege_pch.h>
+#include <EpicGameEngine/CoreLib/CoreLib.h>
+
 namespace EpicGameEngine
 {
 	class EPICGAMEENGINE_API Application
@@ -18,16 +20,18 @@ namespace EpicGameEngine
 		virtual ~Application();
 
 		virtual void Run(int argc, char** argv);
-        void GameLoop();
-        void RenderLoop();
         void Shutdown();
-        void OnEvent(std::shared_ptr<Event> e);
 		void Close();
 
+        // Singleton Instance Getter
 		static Application& Get() { return *Instance;  }
 
+        // Args
         int ArgCount = 0;
         char* Args = nullptr;
+
+        // Events
+        void OnEvent(std::shared_ptr<Event> e);
 
         SDL_Event sdlEvent{};
         std::shared_ptr<Event> event = nullptr;
@@ -50,10 +54,12 @@ namespace EpicGameEngine
 		CoreLib::BumpAllocator FrameAllocator = CoreLib::BumpAllocator(1024 * 1024);
 
 	private:
+        void GameLoop();
+        void RenderLoop();
 		void PollEvents(SDL_Event e);
 
 	private:
-		static Application* Instance;
+		static Application* Instance; // Singleton Instance
 		float lastFrameTime = 0.0f;
 	};
 

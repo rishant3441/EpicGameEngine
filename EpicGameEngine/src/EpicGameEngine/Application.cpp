@@ -1,3 +1,4 @@
+// TODO: Clean up all these headers
 #include <EpicGameEngine/Application.h>
 #ifdef EGE_PLATFORM_WINDOWS
 #include "EpicGameEngine/Window/Window.h"
@@ -19,6 +20,7 @@
 #include <omp.h>
 
 #include <ranges>
+#include <EpicGameEngine/CoreLib/CoreLib.h>
 
 namespace EpicGameEngine
 {
@@ -75,6 +77,7 @@ namespace EpicGameEngine
         Renderer::Shutdown();
     }
 
+    // Application Startup
     void Application::Run(int argc, char** argv)
 	{
 	    // Stores arguments passed through
@@ -82,7 +85,7 @@ namespace EpicGameEngine
 	    Args = *argv;
 
 	    // Creates a window
-		window = std::shared_ptr<Window>(Window::CreateWindow());
+        window = std::shared_ptr<Window>(Window::CreateWindow());
 
 		// Creates the seperate ImGui Layer
 		m_ImGuiLayer = MainAllocator.Allocate<ImGuiLayer>();
@@ -91,9 +94,6 @@ namespace EpicGameEngine
 		// Initializes Lighting System
 		lightingSystem = MainAllocator.Allocate<Lighting>();
 		lightingSystem->Init();
-
-		// Constructs SDL_Event that is necessary for event loop
-		SDL_Event event{};
 
 		// First render to initialize stuff
 		window->OnRender();
@@ -160,7 +160,7 @@ namespace EpicGameEngine
 
 			// Calls the Application's OnEvent
 			Application::OnEvent(event);
-		}	
+		}
 	}
 
 	void Application::OnEvent(std::shared_ptr<Event> e)
