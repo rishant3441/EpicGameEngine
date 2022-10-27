@@ -26,6 +26,26 @@ namespace CoreLib
                 : failure(failure)
                 {}
 
+            bool has_value()
+            {
+                return success.has_value();
+            }
+
+            bool has_error()
+            {
+                return failure.has_value();
+            }
+
+            successT as_value()
+            {
+                return success.value();
+            }
+
+            failureT as_value()
+            {
+                return failure.value();
+            }
+
             using SuccessType = successT;
             using FailureType = failureT;
 
@@ -44,6 +64,16 @@ namespace CoreLib
                 {}
 
             using FailureType = failureT;
+
+            bool has_value()
+            {
+                return !failure.has_value();
+            }
+
+            bool has_error()
+            {
+                return failure.has_value();
+            }
 
             void as_value()
             {
