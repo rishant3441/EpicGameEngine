@@ -72,8 +72,8 @@ namespace EpicGameEngine
     void Application::Shutdown()
     {
 	    Debug::Log::LogInfo("Epic Game Engine Shutting Down...");
-        MainAllocator.Clear();
-        FrameAllocator.Clear();
+        MainAllocator.clear();
+        FrameAllocator.clear();
         Renderer::Shutdown();
     }
 
@@ -88,11 +88,11 @@ namespace EpicGameEngine
         window = std::shared_ptr<Window>(Window::CreateWindow());
 
 		// Creates the seperate ImGui Layer
-		m_ImGuiLayer = MainAllocator.Allocate<ImGuiLayer>();
+		m_ImGuiLayer = MainAllocator.allocate<ImGuiLayer>();
 		m_ImGuiLayer->OnAttach();
 
 		// Initializes Lighting System
-		lightingSystem = MainAllocator.Allocate<Lighting>();
+		lightingSystem = MainAllocator.allocate<Lighting>();
 		lightingSystem->Init();
 
 		// First render to initialize stuff
@@ -113,7 +113,7 @@ namespace EpicGameEngine
         while (window->running)
 		{
             // Reset Frame Allocator
-            FrameAllocator.Clear();
+            FrameAllocator.clear();
 
             // Runs Event Loop
 			Application::PollEvents(sdlEvent);

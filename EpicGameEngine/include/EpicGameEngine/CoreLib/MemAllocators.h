@@ -27,7 +27,7 @@ namespace CoreLib
         BumpAllocator(size_t size = 1024)
         {
            pool = BumpMemPool();
-           Realloc(size);
+            realloc(size);
         }
 
         BumpAllocator(BumpMemPool& newPool, size_t size = 1024)
@@ -37,7 +37,7 @@ namespace CoreLib
             // Creates a new self-managed pool.
             if (pool.startPtr == nullptr)
             {
-                Realloc(size);
+                realloc(size);
             }
         }
         ~BumpAllocator()
@@ -46,11 +46,11 @@ namespace CoreLib
         }
 
         template<typename T, typename... Args>
-        T* Allocate(size_t amountOfType = 1, Args&&... args)
+        T* allocate(size_t amountOfType = 1, Args&&... args)
         {
             if (pool.size - pool.filledSize < sizeof(T) * amountOfType)
             {
-                ReallocAndCopy((pool.size * 2) + sizeof(T) * amountOfType);
+                realloc_and_copy((pool.size * 2) + sizeof(T) * amountOfType);
             }
 
             void* newPtr = pool.offset;
@@ -61,13 +61,13 @@ namespace CoreLib
         }
 
         template<typename T>
-        void DeAllocate(T* p, std::size_t n)
+        void deallocate(T* p, std::size_t n)
         {
             // Not a proper deallocation due to how simple this type of allocator is
             memset(p, 0, n);
         }
 
-        void Realloc(std::size_t newSize = 1024)
+        void realloc(std::size_t newSize = 1024)
         {
             pool.size = newSize;
             pool.filledSize = 0;
@@ -77,7 +77,7 @@ namespace CoreLib
             pool.endPtr = (char*) pool.startPtr + pool.size;
         }
 
-        void ReallocAndCopy(std::size_t newSize)
+        void realloc_and_copy(std::size_t newSize)
         {
             void* newAlloc = malloc(newSize);
             memcpy(newAlloc, pool.startPtr, pool.size);
@@ -86,7 +86,7 @@ namespace CoreLib
             pool.startPtr = newAlloc;
         }
 
-        void Clear()
+        void clear()
         {
             memset(pool.startPtr, 0, pool.size);
 
