@@ -45,6 +45,8 @@ namespace EpicGameEngine
 
 		Timestep timestep = 0.0013f;
 
+		CoreLib::RNG randomGen;
+
 		ImGuiLayer* m_ImGuiLayer;
 
 		Lighting* lightingSystem;

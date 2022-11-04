@@ -3679,7 +3679,7 @@ using hasher = Hash;
 using key_equal = KeyEqual;
 /*! @brief Allocator type. */
 using allocator_type = Allocator;
-/*! @brief Random access iterator type. */
+/*! @brief RNG access iterator type. */
 using iterator = internal::dense_set_iterator<typename packed_container_type::iterator>;
 /*! @brief Constant random access iterator type. */
 using const_iterator = internal::dense_set_iterator<typename packed_container_type::const_iterator>;
@@ -14001,7 +14001,7 @@ virtual void swap_at(const std::size_t, const std::size_t) {}
 virtual void move_element(const std::size_t, const std::size_t) {}
 
 protected:
-/*! @brief Random access iterator type. */
+/*! @brief RNG access iterator type. */
 using basic_iterator = internal::sparse_set_iterator<packed_container_type>;
 
 /**
@@ -14065,7 +14065,7 @@ using version_type = typename entity_traits::version_type;
 using size_type = typename packed_container_type::size_type;
 /*! @brief Pointer type to contained entities. */
 using pointer = typename packed_container_type::const_pointer;
-/*! @brief Random access iterator type. */
+/*! @brief RNG access iterator type. */
 using iterator = basic_iterator;
 /*! @brief Constant random access iterator type. */
 using const_iterator = iterator;
@@ -17455,7 +17455,7 @@ using size_type = std::size_t;
 using pointer = typename container_type::pointer;
 /*! @brief Constant pointer type to contained elements. */
 using const_pointer = typename alloc_traits::template rebind_traits<typename alloc_traits::const_pointer>::const_pointer;
-/*! @brief Random access iterator type. */
+/*! @brief RNG access iterator type. */
 using iterator = internal::storage_iterator<container_type>;
 /*! @brief Constant random access iterator type. */
 using const_iterator = internal::storage_iterator<const container_type>;
@@ -18088,7 +18088,7 @@ using entity_type = Entity;
 using size_type = std::size_t;
 /*! @brief Common type among all storage types. */
 using base_type = basic_common_type;
-/*! @brief Random access iterator type. */
+/*! @brief RNG access iterator type. */
 using iterator = typename base_type::iterator;
 /*! @brief Reversed iterator type. */
 using reverse_iterator = typename base_type::reverse_iterator;
@@ -18556,7 +18556,7 @@ using entity_type = Entity;
 using size_type = std::size_t;
 /*! @brief Common type among all storage types. */
 using base_type = basic_common_type;
-/*! @brief Random access iterator type. */
+/*! @brief RNG access iterator type. */
 using iterator = typename base_type::iterator;
 /*! @brief Reversed iterator type. */
 using reverse_iterator = typename base_type::reverse_iterator;
@@ -22391,7 +22391,7 @@ using entity_type = Entity;
 using size_type = std::size_t;
 /*! @brief Common type among all storage types. */
 using base_type = basic_common_type;
-/*! @brief Random access iterator type. */
+/*! @brief RNG access iterator type. */
 using iterator = typename base_type::iterator;
 /*! @brief Reversed iterator type. */
 using reverse_iterator = typename base_type::reverse_iterator;
@@ -22859,7 +22859,7 @@ using entity_type = Entity;
 using size_type = std::size_t;
 /*! @brief Common type among all storage types. */
 using base_type = basic_common_type;
-/*! @brief Random access iterator type. */
+/*! @brief RNG access iterator type. */
 using iterator = typename base_type::iterator;
 /*! @brief Reversed iterator type. */
 using reverse_iterator = typename base_type::reverse_iterator;
@@ -24007,7 +24007,7 @@ using entity_type = Entity;
 using size_type = std::size_t;
 /*! @brief Common type among all storage types. */
 using base_type = typename storage_type::base_type;
-/*! @brief Random access iterator type. */
+/*! @brief RNG access iterator type. */
 using iterator = typename base_type::iterator;
 /*! @brief Reversed iterator type. */
 using reverse_iterator = typename base_type::reverse_iterator;
@@ -26890,7 +26890,7 @@ public:
 using entity_type = Entity;
 /*! @brief Unsigned integer type. */
 using size_type = std::size_t;
-/*! @brief Random access iterator type. */
+/*! @brief RNG access iterator type. */
 using iterator = typename basic_sparse_set<Entity>::iterator;
 
 /*! @brief Default constructor. */
@@ -30496,7 +30496,7 @@ virtual void swap_at(const std::size_t, const std::size_t) {}
 virtual void move_element(const std::size_t, const std::size_t) {}
 
 protected:
-/*! @brief Random access iterator type. */
+/*! @brief RNG access iterator type. */
 using basic_iterator = internal::sparse_set_iterator<packed_container_type>;
 
 /**
@@ -30560,7 +30560,7 @@ using version_type = typename entity_traits::version_type;
 using size_type = typename packed_container_type::size_type;
 /*! @brief Pointer type to contained entities. */
 using pointer = typename packed_container_type::const_pointer;
-/*! @brief Random access iterator type. */
+/*! @brief RNG access iterator type. */
 using iterator = basic_iterator;
 /*! @brief Constant random access iterator type. */
 using const_iterator = iterator;
@@ -31628,7 +31628,7 @@ using size_type = std::size_t;
 using pointer = typename container_type::pointer;
 /*! @brief Constant pointer type to contained elements. */
 using const_pointer = typename alloc_traits::template rebind_traits<typename alloc_traits::const_pointer>::const_pointer;
-/*! @brief Random access iterator type. */
+/*! @brief RNG access iterator type. */
 using iterator = internal::storage_iterator<container_type>;
 /*! @brief Constant random access iterator type. */
 using const_iterator = internal::storage_iterator<const container_type>;
@@ -32755,7 +32755,7 @@ using entity_type = Entity;
 using size_type = std::size_t;
 /*! @brief Common type among all storage types. */
 using base_type = typename storage_type::base_type;
-/*! @brief Random access iterator type. */
+/*! @brief RNG access iterator type. */
 using iterator = typename base_type::iterator;
 /*! @brief Reversed iterator type. */
 using reverse_iterator = typename base_type::reverse_iterator;
@@ -36871,7 +36871,7 @@ using hasher = Hash;
 using key_equal = KeyEqual;
 /*! @brief Allocator type. */
 using allocator_type = Allocator;
-/*! @brief Random access iterator type. */
+/*! @brief RNG access iterator type. */
 using iterator = internal::dense_set_iterator<typename packed_container_type::iterator>;
 /*! @brief Constant random access iterator type. */
 using const_iterator = internal::dense_set_iterator<typename packed_container_type::const_iterator>;

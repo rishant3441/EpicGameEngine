@@ -18,6 +18,7 @@
 #include <atomic>
 #include <algorithm>
 #include <execution>
+#include <random>
 #include <SDL.h>
 #include <SDL_gpu.h>
 #include <glm/glm.hpp>
