@@ -8,97 +8,91 @@
 #pragma once
 
 #include <optional>
+#include <type_traits>
+
+#include "Error.h"
 
 // TODO: Dysfunctional
 
 namespace CoreLib
 {
-    namespace result
+    template <typename T, typename E>
+    class Result
     {
-        template <typename successT, typename failureT>
-        class Result
+    public:
+        using value_type = T;
+        using error_type = E;
+        using unexpected_type = Error<E>;
+        template <class U>
+        using rebind = Result<U, error_type>;
+
+        Result()
         {
-        public:
-            Result(successT& sucess)
-            : success(sucess)
-            {}
-            Result(failureT& failure)
-                : failure(failure)
-                {}
-
-            bool has_value()
-            {
-                return success.has_value();
-            }
-
-            bool has_error()
-            {
-                return failure.has_value();
-            }
-
-            successT as_value()
-            {
-                return success.value();
-            }
-
-            failureT as_value()
-            {
-                return failure.value();
-            }
-
-            using SuccessType = successT;
-            using FailureType = failureT;
-
-        private:
-            std::optional<SuccessType> success;
-            std::optional<FailureType> failure;
-        };
-
-        template<typename failureT>
-        class Result<void, failureT>
-        {
-        public:
-            Result() = default;
-            Result(failureT& failure)
-                : failure(failure)
-                {}
-
-            using FailureType = failureT;
-
-            bool has_value()
-            {
-                return !failure.has_value();
-            }
-
-            bool has_error()
-            {
-                return failure.has_value();
-            }
-
-            void as_value()
-            {
-               return;
-            }
-
-            failureT as_error()
-            {
-               return failure;
-            }
-        private:
-            std::optional<failureT> failure;
-        };
-
-        template <typename successT, typename failureT, typename... Args>
-        Result<successT, failureT> Ok(Args... args)
-        {
-            return Result<successT, failureT>(successT(std::forward<Args>(args)...));
+            valueT = value_type();
+            hasValue = true;
         }
 
-        template<>
-        Result<void, int> Ok()
+        template<typename... Args>
+        Result(Args... args)
         {
-            return {};
+            valueT = value_type(std::forward<Args>(args)...);
+            hasValue = true;
         }
+
+        template <class G>
+        constexpr explicit(!std::is_convertible_v<const G&, E>) Result(Error<G>& e)
+        {
+            errorT = e.error();
+        }
+
+        template <class G>
+        constexpr explicit(!std::is_convertible_v<const G&, E>) Result(Error<G>&& e)
+        {
+            errorT = e.error();
+        }
+
+        ~Result()
+        {
+
+        }
+
+        constexpr Result& operator=(const Result& other)
+        {
+
+        }
+
+        bool has_value()
+        {
+            return hasValue;
+        }
+
+        constexpr value_type& value() &
+        {
+            return valueT;
+        }
+
+        constexpr E& error()
+        {
+            return errorT;
+        }
+
+        template <class U>
+        constexpr T value_or(U&& default_value)
+        {
+            if (hasValue)
+            {
+                return valueT;
+            }
+            else
+            {
+                return default_value;
+            }
+        }
+
+    private:
+        bool hasValue = false;
+        value_type valueT;
+        error_type errorT;
+
     };
-
 }
