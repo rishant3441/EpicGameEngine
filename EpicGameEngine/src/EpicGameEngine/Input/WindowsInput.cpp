@@ -13,7 +13,6 @@ namespace EpicGameEngine
 	// TODO: Rewrite this to use our Event system instead of unreadable SDL code
 	auto Input::isMouseButtonPressed(const MouseCode button) -> bool
 	{
-
 		int x, y;
 		Uint32 buttons = SDL_GetMouseState(&x, &y);
 		if (button == 0 && (buttons & SDL_BUTTON_LMASK) != 0)
