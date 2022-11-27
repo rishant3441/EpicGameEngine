@@ -76,7 +76,7 @@ namespace EpicGameEngine
     }
 
     void Lighting::RenderAt(glm::vec3 position, float intensity)
-    {
+    /*{
         GPU_SetActiveTarget(Renderer::target);
         glm::mat4 proj = glm::make_mat4(GPU_GetProjection());
         glm::mat4 view = glm::make_mat4(GPU_GetView());
@@ -140,5 +140,9 @@ namespace EpicGameEngine
         GPU_ClearColor(lightingTarget, { 0, 0, 0, 0 });
         GPU_Blit(lightingTexture, nullptr, Renderer::viewportTarget, lightingTexture->w * 0.5f, lightingTexture->h * 0.5f);
         //shader->Unbind();
+    }
+    */
+    {
+
     }
 }
