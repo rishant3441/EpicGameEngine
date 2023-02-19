@@ -4,6 +4,9 @@
 #include "EpicGameEngine/Window/Window.h"
 #include "EpicGameEngine/Window/WindowsWindow.h"
 #endif
+#ifdef EGE_PLATFORM_LINUX
+#include "EpicGameEngine/Window/Window.h"
+#endif
 #include <spdlog/spdlog.h>
 #include <EpicGameEngine/Events/Event.h>
 #include <EpicGameEngine/Events/EventConversion.h>
