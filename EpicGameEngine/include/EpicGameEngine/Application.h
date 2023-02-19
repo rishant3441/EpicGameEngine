@@ -58,7 +58,7 @@ namespace EpicGameEngine
 	private:
         void GameLoop();
         void RenderLoop();
-		void PollEvents(SDL_Event e);
+		void PollEvents(SDL_Event& e);
 
 	private:
 		static Application* Instance; // Singleton Instance

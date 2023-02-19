@@ -158,10 +158,15 @@ namespace EpicGameEngine
 
         {
             auto view = registry.view<TransformComponent, LightEmitterComponent>();
+            auto view2 = registry.view<TransformComponent, CameraComponent>();
             for_each(std::execution::par, view.begin(), view.end(), [&](auto gameobject){
                 auto& transform = view.get<TransformComponent>(gameobject);
                 auto& lec = view.get<LightEmitterComponent>(gameobject);
-                Application::Get().lightingSystem->RenderAt(transform.Position, lec.lightRadius);
+                TransformComponent camPos;
+                for_each(std::execution::par, view2.begin(), view2.end(), [&](auto gameobject2) {
+                   camPos = view2.get<TransformComponent>(gameobject2);
+                });
+                Application::Get().lightingSystem->RenderAt(transform.Position, lec.lightRadius, camPos.Position);
             });
         }
     }
@@ -209,10 +214,15 @@ namespace EpicGameEngine
         }
 
         auto view = registry.view<TransformComponent, LightEmitterComponent>();
+        auto view2 = registry.view<TransformComponent, CameraComponent>();
         for_each(std::execution::par, view.begin(), view.end(), [&](auto gameobject){
             auto& transform = view.get<TransformComponent>(gameobject);
             auto& lec = view.get<LightEmitterComponent>(gameobject);
-            Application::Get().lightingSystem->RenderAt(transform.Position, lec.lightRadius);
+            TransformComponent camPos;
+            for_each(std::execution::par, view2.begin(), view2.end(), [&](auto gameobject2) {
+               camPos = view2.get<TransformComponent>(gameobject2);
+            });
+            Application::Get().lightingSystem->RenderAt(transform.Position, lec.lightRadius, camPos.Position);
         });
     }
 

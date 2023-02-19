@@ -118,9 +118,6 @@ namespace EpicGameEngine
             if (showAddProject)
                 AddProject();
 
-            static bool demo = true;
-            ImGui::ShowDemoWindow(&demo);
-
             ImGui::End();
         }
     }

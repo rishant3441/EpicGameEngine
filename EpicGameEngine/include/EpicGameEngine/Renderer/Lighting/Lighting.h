@@ -28,7 +28,7 @@ namespace EpicGameEngine
         void Render();
         // Renders a light at a specific coordinate with a specific intensity.
         // TODO: Add more options in the future
-        void RenderAt(glm::vec3 position, float intensity = 1);
+        void RenderAt(glm::vec3 position, float intensity = 1, glm::vec3 camPos = { 0, 0, 0 });
 
     private:
         // Renderer Targets

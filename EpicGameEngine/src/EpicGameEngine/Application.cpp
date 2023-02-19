@@ -31,6 +31,7 @@ namespace EpicGameEngine
 	{
 		Instance = this;
 	}
+
 	Application::~Application()
 	{
 	}
@@ -136,7 +137,7 @@ namespace EpicGameEngine
         Shutdown();
 	}
 
-	void Application::PollEvents(SDL_Event e)
+	void Application::PollEvents(SDL_Event& e)
 	{
 		if (SDL_PollEvent(&e))
 		{

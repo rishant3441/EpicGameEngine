@@ -252,7 +252,7 @@ namespace EpicGameEngine
                 uint64_t uuid = gameObject["GameObject"].as<uint64_t>();
 
                 std::string name;
-                uto nameComponent = gameObject["NameComponent"];
+                auto nameComponent = gameObject["NameComponent"];
                 if (nameComponent)
                     name = nameComponent["Name"].as<std::string>();
 

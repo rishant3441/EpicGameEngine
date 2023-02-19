@@ -12,8 +12,6 @@
 
 #include "Error.h"
 
-// TODO: Dysfunctional
-
 namespace CoreLib
 {
     template <typename T, typename E>
@@ -93,6 +91,5 @@ namespace CoreLib
         bool hasValue = false;
         value_type valueT;
         error_type errorT;
-
     };
 }

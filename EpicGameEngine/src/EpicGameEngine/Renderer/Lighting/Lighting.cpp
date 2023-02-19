@@ -24,7 +24,7 @@ namespace EpicGameEngine
         GPU_EnableCamera(lightingTarget, false);
         GPU_SetCamera(lightingTarget, nullptr);
 
-        std::string vertexShader = "#version 110\n"
+        /*std::string vertexShader = "#version 110\n"
                        "uniform mat4 u_MVPMatrix;      // A constant representing the combined model/view/projection matrix.\n"
                        " \n"
                        "in vec4 a_Position;     // Per-vertex position information we will pass in.\n"
@@ -51,7 +51,18 @@ namespace EpicGameEngine
                          "{\n"
                          "vec4 tempColor = lightColor * 1.0/(distance(lightpos, vec3(v_Position.x, v_Position.y, v_Position.z)) * 20) * lightIntensity/10000;\n"
                          "fragColor = vec4(tempColor.x, tempColor.y, tempColor.z, 255);"
-                         "}";
+                         "}";*/
+        std::string vertexShader;
+        std::string fragmentShader;
+        std::ifstream t("lighting.vert");
+        std::stringstream buffer;
+        buffer << t.rdbuf();
+        vertexShader = buffer.str();
+        std::ifstream t2("lighting.frag");
+        std::stringstream buffer2;
+        buffer2 << t2.rdbuf();
+        fragmentShader = buffer2.str();
+        Debug::Log::LogInfo("{}", fragmentShader);
         shader = CreateRef<ShaderProgram>(vertexShader, fragmentShader, "a_Position", "v_vTexCoord", "", "");
     }
 
@@ -75,7 +86,7 @@ namespace EpicGameEngine
         GPU_DeactivateShaderProgram();
     }
 
-    void Lighting::RenderAt(glm::vec3 position, float intensity)
+    void Lighting::RenderAt(glm::vec3 position, float intensity, glm::vec3 camPos)
     /*{
         GPU_SetActiveTarget(Renderer::target);
         glm::mat4 proj = glm::make_mat4(GPU_GetProjection());
@@ -143,6 +154,28 @@ namespace EpicGameEngine
     }
     */
     {
+        glm::mat4 mvp;
+        GPU_GetModelViewProjection(glm::value_ptr(mvp));
+        GPU_SetActiveTarget(lightingTarget);
 
+        float lightPos[3] = { position.x, -position.y, position.z };
+        float lightColor[4] = { 255, 255, 255, 255 };
+        float lightIntensity[4] = { 255, 255, 255, 255 };
+
+        shader->SetFloat3("lightpos", lightPos);
+        shader->SetFloat4("lightColor", lightColor);
+        shader->SetFloat4("lightIntensity", lightIntensity);
+        shader->SetFloat3("viewPos", glm::value_ptr(camPos));
+
+        GPU_SetBlending(lightingTexture, true);
+        GPU_SetBlendMode(lightingTexture, GPU_BLEND_ADD);
+        GPU_SetImageFilter(lightingTexture, GPU_FILTER_LINEAR_MIPMAP);
+
+        shader->Bind();
+        GPU_Flip(lightingTarget);
+        //shader->Unbind();
+        GPU_SetActiveTarget(Renderer::viewportTarget);
+        GPU_ClearColor(lightingTarget, { 0, 0, 0, 0 });
+        GPU_Blit(lightingTexture, nullptr, Renderer::viewportTarget, lightingTexture->w * 0.5f, lightingTexture->h * 0.5f);
     }
 }
