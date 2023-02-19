@@ -91,3 +91,11 @@ if (MSVC)
 	)
 endif()
 
+if (LINUX)
+	target_compile_definitions(
+		EpicGameEngine
+		PUBLIC
+		EGE_PLATFORM_LINUX
+		)
+endif()
+
