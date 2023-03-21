@@ -8,6 +8,7 @@
 #include "GameObjectsPanel.h"
 #include <EpicGameEngine.h>
 #include <EpicGameEngine/Scripting/ScriptingEngine.h>
+#include <EpicGameEngine/PlatformUtils.h>
 #include <imgui.h>
 #include <map>
 #include <unordered_map>
@@ -337,6 +338,11 @@ namespace EpicGameEngine
             component.Color.g = color[1] * 255.0;
             component.Color.b = color[2] * 255.0;
             component.Color.a = color[3] * 255.0;
+            if (ImGui::Button("Select File"))
+            {
+               std::string filePath = FileDialogs::OpenFile("PNG Image File (*.png)\0*.png\0");
+               component.Texture.LoadImage(filePath);
+            }
         });
 
         DrawComponent<CSharpScriptComponent>("CSharp Script", selection, [](auto& component) {

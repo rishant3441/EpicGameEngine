@@ -44,8 +44,10 @@ namespace EpicGameEngine
         operator GPU_Image*() { return texture; }
         operator GPU_Image*() const { return texture; }
 
+        bool active = false;
+
     private:
-        GPU_Image* texture;
+        GPU_Image* texture = nullptr;
     };
 }
 

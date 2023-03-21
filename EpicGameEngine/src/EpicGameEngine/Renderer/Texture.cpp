@@ -8,6 +8,7 @@
 #include <EpicGameEngine/Renderer/Texture.h>
 #include <EpicGameEngine/ege_pch.h>
 #include <EpicGameEngine/Debug.h>
+#include <EpicGameEngine/CoreLib/Result.h>
 #include <SDL_gpu.h>
 
 namespace EpicGameEngine
@@ -17,10 +18,13 @@ namespace EpicGameEngine
     {
         GPU_SetDebugLevel(GPU_DEBUG_LEVEL_MAX);
         Debug::Log::LogInfo("Image creation");
-        texture = nullptr;
+        GPU_CreateImage(32, 32, GPU_FORMAT_RGBA);
         texture = GPU_LoadImage(filePath.c_str());
         if (texture != nullptr)
+        {
+            active = true;
             return 0;
+        }
         else
         {
             Debug::Log::LogError("TEXTURE: LoadImage() returned nullptr: {}", filePath);

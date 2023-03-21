@@ -79,7 +79,7 @@ namespace EpicGameEngine
     struct SpriteRendererComponent
     {
         SDL_Color Color{255, 255, 255, 255};
-        std::shared_ptr<Texture> Texture;
+        Texture Texture;
 
         SpriteRendererComponent() = default;
         SpriteRendererComponent(const SpriteRendererComponent&) = default;

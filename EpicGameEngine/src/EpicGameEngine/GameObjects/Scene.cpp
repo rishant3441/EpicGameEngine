@@ -127,30 +127,38 @@ namespace EpicGameEngine
             for_each(std::execution::par, view.begin(), view.end(), [&](auto gameobject){
                 auto [transform, sprite] = view.get<TransformComponent, SpriteRendererComponent>(gameobject);
 
-                if(sprite.Texture != nullptr)
+                if(sprite.Texture.active == true)
                 {
-                    Renderer::DrawTexturedRect(transform.Position.x, transform.Position.y, (float) transform.Scale.x * Renderer::unitSize, (float) transform.Scale.y * Renderer::unitSize, *sprite.Texture, 0, sprite.Color);
-                }
-                else
-                {
-                    //std::lock_guard<std::mutex> lock(mtx);
+                    Renderer::unitSize = 1.0f;
                     GPU_SetActiveTarget(Renderer::target);
-
-                    //GPU_MatrixMode(Renderer::target, GPU_MODEL);
-                    //GPU_LoadIdentity();
-
+                    GPU_MatrixMode(Renderer::target, GPU_MODEL);
+                    GPU_LoadIdentity();
                     float xCenter, yCenter;
                     xCenter = transform.Position.x + (transform.Scale.x * Renderer::unitSize / 2);
                     yCenter = transform.Position.y + (transform.Scale.y * Renderer::unitSize / 2);
-
-                    glm::mat4 model = glm::make_mat4(GPU_GetCurrentMatrix());
-                    glm::translate(model, { xCenter, yCenter, 0 });
-                    glm::translate(model, { 0, 0, transform.Position.z });
-                    model = transform.GetRotation() * model;
-                    glm::scale(model, { 1, 1, Renderer::unitSize * transform.Scale.z });
-                    glm::translate(model, { -xCenter, -yCenter, 0 });
-
-                    GPU_MatrixCopy(GPU_GetModel(), glm::value_ptr(model));
+                    GPU_Translate(xCenter, yCenter, 0);
+                    GPU_Translate(0, 0, transform.Position.z);
+                    GPU_MultiplyAndAssign(GPU_GetCurrentMatrix(), glm::value_ptr(transform.GetRotation()));
+                    GPU_Scale(1, 1, Renderer::unitSize * transform.Scale.z);
+                    GPU_Translate(-xCenter, -yCenter, 0);
+                    GPU_MatrixCopy(GPU_GetModel(), GPU_GetCurrentMatrix());
+                    Renderer::DrawTexturedRect(transform.Position.x, -transform.Position.y, (float) transform.Scale.x * Renderer::unitSize, (float) transform.Scale.y * Renderer::unitSize, sprite.Texture, 0, sprite.Color);
+                }
+                else
+                {
+                    Renderer::unitSize = 1.0f;
+                    GPU_SetActiveTarget(Renderer::target);
+                    GPU_MatrixMode(Renderer::target, GPU_MODEL);
+                    GPU_LoadIdentity();
+                    float xCenter, yCenter;
+                    xCenter = transform.Position.x + (transform.Scale.x * Renderer::unitSize / 2);
+                    yCenter = transform.Position.y + (transform.Scale.y * Renderer::unitSize / 2);
+                    GPU_Translate(xCenter, yCenter, 0);
+                    GPU_Translate(0, 0, transform.Position.z);
+                    GPU_MultiplyAndAssign(GPU_GetCurrentMatrix(), glm::value_ptr(transform.GetRotation()));
+                    GPU_Scale(1, 1, Renderer::unitSize * transform.Scale.z);
+                    GPU_Translate(-xCenter, -yCenter, 0);
+                    GPU_MatrixCopy(GPU_GetModel(), GPU_GetCurrentMatrix());
                     Renderer::DrawFilledRect(transform.Position.x, -transform.Position.y, (float) transform.Scale.x * Renderer::unitSize, (float) transform.Scale.y * Renderer::unitSize, 0, sprite.Color);
                 }
                 });
@@ -185,9 +193,22 @@ namespace EpicGameEngine
         {
             auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(gameobject);
 
-            if(sprite.Texture != nullptr)
+            if(sprite.Texture.active == true)
             {
-                Renderer::DrawTexturedRect(transform.Position.x, transform.Position.y, (float) transform.Scale.x * Renderer::unitSize, (float) transform.Scale.y * Renderer::unitSize, *sprite.Texture, 0, sprite.Color);
+                Renderer::unitSize = 1.0f;
+                GPU_SetActiveTarget(Renderer::target);
+                GPU_MatrixMode(Renderer::target, GPU_MODEL);
+                GPU_LoadIdentity();
+                float xCenter, yCenter;
+                xCenter = transform.Position.x + (transform.Scale.x * Renderer::unitSize / 2);
+                yCenter = transform.Position.y + (transform.Scale.y * Renderer::unitSize / 2);
+                GPU_Translate(xCenter, yCenter, 0);
+                GPU_Translate(0, 0, transform.Position.z);
+                GPU_MultiplyAndAssign(GPU_GetCurrentMatrix(), glm::value_ptr(transform.GetRotation()));
+                GPU_Scale(1, 1, Renderer::unitSize * transform.Scale.z);
+                GPU_Translate(-xCenter, -yCenter, 0);
+                GPU_MatrixCopy(GPU_GetModel(), GPU_GetCurrentMatrix());
+                Renderer::DrawTexturedRect(transform.Position.x, -transform.Position.y, (float) transform.Scale.x * Renderer::unitSize, (float) transform.Scale.y * Renderer::unitSize, sprite.Texture, 0, sprite.Color);
             }
             else
             {
