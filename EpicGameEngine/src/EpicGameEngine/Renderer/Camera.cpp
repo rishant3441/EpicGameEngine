@@ -5,23 +5,20 @@
 // SPDX-License-Identifier: MIT
 //
 
-#include <EpicGameEngine/Renderer/Camera/Camera.h>
-#include <EpicGameEngine/Timestep.h>
-#include <EpicGameEngine/Renderer/Renderer.h>
-#include <EpicGameEngine/Input/Input.h>
+#include "EpicGameEngine/Renderer/Camera.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <EpicGameEngine/Timestep.h>
 
-#include <spdlog/spdlog.h>
 
 namespace EpicGameEngine
 {
     OrthographicCamera::OrthographicCamera(float left, float right, float bottom, float top)
-        : projectionMatrix(glm::ortho(left, right, bottom, top, -1.0f, 1.0f))
+            : projectionMatrix(glm::ortho(left, right, bottom, top, -1.0f, 1.0f))
     {
         viewProjectionMatrix = projectionMatrix * viewMatrix;
     }
@@ -35,7 +32,7 @@ namespace EpicGameEngine
     void OrthographicCamera::recalculateViewMatrix()
     {
         glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) *
-                glm::rotate(glm::mat4(1.0f), glm::radians(rotation), glm::vec3(0, 0, 1));
+                              glm::rotate(glm::mat4(1.0f), glm::radians(rotation), glm::vec3(0, 0, 1));
 
         viewMatrix = glm::inverse(transform);
         viewProjectionMatrix = projectionMatrix * viewMatrix;
@@ -84,6 +81,17 @@ namespace EpicGameEngine
         right = width/2;
         top = -height/2;
         bottom = height/2;
+
+        aspectRatio = (float) width / height;
+
+        if (projectionType == ProjectionType::Perspective)
+        {
+            projection = glm::perspective(perspectiveVerticalFOV, aspectRatio, perspectiveNear, perspectiveFar);
+        }
+        else
+        {
+            projection = glm::ortho(left, right, bottom, top, orthographicNear, orthographicFar);
+        }
     }
 
     void SceneCamera::SetPerspectiveFOV(float fov)
@@ -107,24 +115,9 @@ namespace EpicGameEngine
     }
 
     EditorCamera::EditorCamera(float fov, float aspectRatio, float nearClip, float farClip)
-        : fov(fov), aspectRatio(aspectRatio), nearClip(nearClip), farClip(farClip)
+            : fov(fov), aspectRatio(aspectRatio), nearClip(nearClip), farClip(farClip)
     {
-       UpdateView();
-    }
-
-    void EditorCamera::OnUpdate(Timestep ts)
-    {
-        if (Input::isKeyPressed(Keyboard::LeftAlt))
-        {
-            const glm::vec2 mouse{ Input::GetMouseX(), Input::GetMouseY() };
-            glm::vec2 delta = (mouse - initialMousePos) * 0.0045f;
-            initialMousePos = mouse;
-
-            if (Input::isMouseButtonPressed(Mouse::ButtonMiddle))
-            {
-                MousePan(delta);
-            }
-        }
+        UpdateView();
     }
 
     glm::vec3 EditorCamera::GetForwardDirection() const
@@ -174,12 +167,12 @@ namespace EpicGameEngine
     void EditorCamera::OnEvent(std::shared_ptr<Event> e)
     {
         EventDispatcher dispatcher(e);
-        dispatcher.Dispatch<MouseScrolledEvent>(EGE_BIND_EVENT_FN(EditorCamera::OnMouseScroll));
+        dispatcher.Dispatch<MouseScrolledEvent>(EGE_BIND_EVENT_FN(OnMouseScroll));
     }
 
     bool EditorCamera::OnMouseScroll(MouseScrolledEvent& e)
     {
-        float delta = e.yScrolled * 0.3f;
+        float delta = e.yScrolled * 0.1f;
         MouseZoom(delta);
         UpdateView();
         return false;
@@ -196,11 +189,34 @@ namespace EpicGameEngine
         return { xFactor, yFactor };
     }
 
+    void EditorCamera::OnUpdate(Timestep timestep)
+    {
+        if (Input::isKeyPressed(Keyboard::LeftAlt))
+        {
+            const glm::vec2& mouse{ Input::GetMouseX(), Input::GetMouseY() };
+            glm::vec2 delta = (mouse - initialMousePos) * 0.003f;
+            initialMousePos = mouse;
+
+            if (Input::isMouseButtonPressed(Mouse::ButtonMiddle))
+                MousePan(delta);
+            else if (Input::isMouseButtonPressed(Mouse::ButtonLeft))
+                MouseRotate(delta);
+            else if (Input::isMouseButtonPressed(Mouse::ButtonRight))
+                MouseZoom(delta.y);
+        }
+    }
+
     void EditorCamera::MousePan(const glm::vec2& delta)
     {
         auto [xSpeed, ySpeed] = PanSpeed();
         FocalPoint += -GetRightDirection() * delta.x * xSpeed * distance;
-        FocalPoint += -GetUpDirection() * delta.y * ySpeed * distance;
-        UpdateView();
+        FocalPoint += GetUpDirection() * delta.y * ySpeed * distance;
+    }
+
+    void EditorCamera::MouseRotate(const glm::vec2& delta)
+    {
+        float yawSign = GetUpDirection().y < 0 ? -1.0f : 1.0f;
+        yaw += yawSign * delta.x * 0.8f;
+        pitch += delta.y * 0.8f;
     }
 }

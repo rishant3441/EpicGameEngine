@@ -1,42 +1,31 @@
+//
+// Created by Rishan Thangaraj on 3/24/2023.
+//
+// Copyright (c) 2023, Rishan Thangaraj <rishanthangaraj@gmail.com> All rights reserved.
+// SPDX-License-Identifier: MIT
+//
+
 #pragma once
-#include <EpicGameEngine/ege_pch.h>
-#include <EpicGameEngine/Core.h>
-#include <EpicGameEngine/Window/Window.h>
-#include <EpicGameEngine/Renderer/Texture.h>
+
+#include "EpicGameEngine/Renderer/VertexArray.h"
+#include "EpicGameEngine/Renderer/RendererAPI.h"
+#include <EpicGameEngine/Renderer/Framebuffer.h>
 
 namespace EpicGameEngine
 {
-    // TODO: Make this not fully static and create a instance in Application
-    class EPICGAMEENGINE_API Renderer
+    class Renderer
     {
     public:
-        static void Init(const WindowData& data);
+        static void Init();
         static void Shutdown();
-        static auto GetTarget() -> GPU_Target*;
-        
-        static void Render(); 
 
-        static void ToggleDrawingToTexture()
-        {
-            if (enableDrawingToTexture == false)
-            {
-                enableDrawingToTexture = true;
-            }
-            else
-                enableDrawingToTexture = false;
-        }
+        static void DrawIndicies(const std::shared_ptr<VertexArray>& va, uint32_t indexCount = 0);
 
-        static void DrawRect(double x, double y, double w, double h, double rot = 0, SDL_Color color = { 255, 0, 0, 255 });
-        static void DrawTexturedRect(double x, double y, double w, double h, const Texture& texture, double rot = 0, SDL_Color color = { 255, 0, 0, 255 }, float pivot_x = 0, float pivot_y = 0);
-        static void DrawFilledRect(double x, double y, double w, double h, double rot = 0, SDL_Color color = { 255, 0, 0, 255 });
+        static void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
+        static void SetClearColor(const glm::vec4& color);
+        static void Clear();
 
-        // TODO: Don't make all of these public and have getters
-        inline static GPU_Target* target;
-        inline static GPU_Target* window = nullptr;
-        inline static GPU_Target* viewportTarget;
-        inline static GPU_Image* viewport;
-        inline static GPU_Image* texture;
-        inline static bool enableDrawingToTexture = false;
-        inline static float unitSize;
+    private:
+        static std::unique_ptr<RendererAPI> rendererAPI;
     };
 }

@@ -8,7 +8,7 @@
 #include <EpicGameEngine/ege_pch.h>
 #include <EpicGameEngine/Timestep.h>
 #include <EpicGameEngine/UUID.h>
-#include <EpicGameEngine/Renderer/Camera/Camera.h>
+#include <EpicGameEngine/Renderer/Camera.h>
 
 namespace EpicGameEngine
 {

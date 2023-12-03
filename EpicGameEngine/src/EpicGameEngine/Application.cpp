@@ -10,7 +10,6 @@
 #include <EpicGameEngine/Renderer/Renderer.h>
 #include <EpicGameEngine/ImGui/ImGuiLayer.h>
 #include <EpicGameEngine/Input/Input.h>
-#include <EpicGameEngine/Renderer/Camera/CameraController.h>
 #include <imgui.h>
 #include <imgui_impl_sdl.h>
 #include <SDL_gpu.h>
@@ -46,15 +45,10 @@ namespace EpicGameEngine
             std::for_each(std::execution::par, layers.layers.begin(), layers.layers.end(), [&](auto l){
                 l->OnUpdate(timestep);
             });
-
-            //lightingSystem->Render();
 	}
 
 	void Application::RenderLoop()
     {
-        // Needed for ImGui
-        GPU_FlushBlitBuffer();
-
         // ImGui Rendering
         m_ImGuiLayer->BeginFrame();
 
@@ -91,10 +85,6 @@ namespace EpicGameEngine
 		m_ImGuiLayer = MainAllocator.allocate<ImGuiLayer>();
 		m_ImGuiLayer->OnAttach();
 
-		// Initializes Lighting System
-		lightingSystem = MainAllocator.allocate<Lighting>();
-		lightingSystem->Init();
-
 		// First render to initialize stuff
 		window->OnRender();
 
@@ -119,11 +109,7 @@ namespace EpicGameEngine
 			Application::PollEvents(sdlEvent);
 
 			// Set Background Color. TODO: Set a way to change this in the editor perhaps?
-			GPU_ClearRGBA(Renderer::GetTarget(), 0, 0, 0, 255);
-			if (Renderer::enableDrawingToTexture)
-			{
-				GPU_ClearRGBA(Renderer::window, 0, 0, 0, 255);
-			}
+            //Renderer::SetClearColor({0.0f, 0.0f, 0.0f, 1.0f});
 
 			// Game Loop - Updating objects, layers, etc.
             GameLoop();

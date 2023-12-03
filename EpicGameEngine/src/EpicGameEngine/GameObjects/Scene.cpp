@@ -7,6 +7,7 @@
 #include <EpicGameEngine/GameObjects/GameObject.h>
 #include <EpicGameEngine/GameObjects/Components.h>
 #include <EpicGameEngine/Renderer/Renderer.h>
+#include <EpicGameEngine/Renderer/Renderer2D.h>
 #include <EpicGameEngine/Scripting/ScriptingEngine.h>
 #include <EpicGameEngine/Application.h>
 #include <EpicGameEngine/UUID.h>
@@ -15,6 +16,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <EpicGameEngine/Debug.h>
 
 namespace EpicGameEngine
 {
@@ -64,7 +66,6 @@ namespace EpicGameEngine
 
         SceneCamera* mainCamera = nullptr;
         TransformComponent* cameraTransform;
-
         {
             auto view = registry.view<TransformComponent, CameraComponent>();
             for_each(std::execution::par, view.begin(), view.end(), [&](auto gameObject){
@@ -74,93 +75,19 @@ namespace EpicGameEngine
                 {
                     mainCamera = &camera.Camera;
                     cameraTransform = &transform;
-
-                    if (mainCamera != nullptr && camera.Primary == true)
-                    {
-                        /*GPU_MatrixMode(Renderer::target, GPU_PROJECTION);
-                        GPU_LoadIdentity();
-                        GPU_Ortho(mainCamera->GetLeft(), mainCamera->GetRight(), mainCamera->GetBottom(), mainCamera->GetTop(), mainCamera->orthographicNear, mainCamera->orthographicFar);
-                        GPU_MatrixMode(Renderer::target, GPU_MODEL);
-                        GPU_SetCamera(Renderer::target, nullptr);*/
-                        if (mainCamera->projectionType == SceneCamera::ProjectionType::Orthographic)
-                        {
-                            GPU_SetActiveTarget(Renderer::target);
-                            GPU_MatrixMode(Renderer::target, GPU_PROJECTION);
-                            GPU_LoadIdentity();
-                            GPU_Ortho(mainCamera->GetLeft(), mainCamera->GetRight(), mainCamera->GetTop(), mainCamera->GetBottom(), mainCamera->orthographicNear, mainCamera->orthographicFar);
-                            GPU_Translate(-cameraTransform->Position.x, cameraTransform->Position.y, cameraTransform->Position.z);
-                            // TODO: Implement Rotation
-                            GPU_Scale(cameraTransform->Scale.x, cameraTransform->Scale.y, 1);
-                            GPU_MatrixCopy(GPU_GetProjection(), GPU_GetCurrentMatrix());
-                            GPU_MatrixMode(Renderer::target, GPU_MODEL);
-                        }
-                        if (mainCamera->projectionType == SceneCamera::ProjectionType::Perspective)
-                        {
-                            Renderer::target->use_camera = false;
-                            glm::mat4 viewMatrix;
-                            glm::mat4 projectionMatrix;
-
-                            viewMatrix = cameraTransform->GetTransform();
-                            viewMatrix = glm::inverse(viewMatrix);
-                            projectionMatrix = glm::perspective(glm::radians(mainCamera->perspectiveVerticalFOV), mainCamera->aspectRatio, mainCamera->perspectiveNear, mainCamera->perspectiveFar);
-                            GPU_SetActiveTarget(Renderer::target);
-                            GPU_MatrixMode(Renderer::target, GPU_PROJECTION);
-                            GPU_LoadIdentity();
-                            GPU_MatrixCopy(GPU_GetProjection(), glm::value_ptr(projectionMatrix));
-                            GPU_MatrixMode(Renderer::target, GPU_VIEW);
-                            GPU_LoadIdentity();
-                            GPU_MatrixCopy(GPU_GetView(), glm::value_ptr(viewMatrix));
-                            GPU_MatrixMode(Renderer::target, GPU_MODEL);
-                        }
-                    }
-
                 }
             });
         }
 
-        Renderer::unitSize = 1.0f;
+        Renderer2D::BeginScene(*mainCamera, cameraTransform->GetTransform());
         // TODO: Clean this up - probably put into DrawRect function
         // TODO: NEXT TIME TRY A VIEW TO MAKE MULTITHREADINGGGGGGGGG
         {
-            auto view = registry.view<TransformComponent, SpriteRendererComponent>();
+            auto group = registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
             std::mutex mtx;
-            for_each(std::execution::par, view.begin(), view.end(), [&](auto gameobject){
-                auto [transform, sprite] = view.get<TransformComponent, SpriteRendererComponent>(gameobject);
-
-                if(sprite.Texture.active == true)
-                {
-                    Renderer::unitSize = 1.0f;
-                    GPU_SetActiveTarget(Renderer::target);
-                    GPU_MatrixMode(Renderer::target, GPU_MODEL);
-                    GPU_LoadIdentity();
-                    float xCenter, yCenter;
-                    xCenter = transform.Position.x + (transform.Scale.x * Renderer::unitSize / 2);
-                    yCenter = transform.Position.y + (transform.Scale.y * Renderer::unitSize / 2);
-                    GPU_Translate(xCenter, yCenter, 0);
-                    GPU_Translate(0, 0, transform.Position.z);
-                    GPU_MultiplyAndAssign(GPU_GetCurrentMatrix(), glm::value_ptr(transform.GetRotation()));
-                    GPU_Scale(1, 1, Renderer::unitSize * transform.Scale.z);
-                    GPU_Translate(-xCenter, -yCenter, 0);
-                    GPU_MatrixCopy(GPU_GetModel(), GPU_GetCurrentMatrix());
-                    Renderer::DrawTexturedRect(transform.Position.x, -transform.Position.y, (float) transform.Scale.x * Renderer::unitSize, (float) transform.Scale.y * Renderer::unitSize, sprite.Texture, 0, sprite.Color);
-                }
-                else
-                {
-                    Renderer::unitSize = 1.0f;
-                    GPU_SetActiveTarget(Renderer::target);
-                    GPU_MatrixMode(Renderer::target, GPU_MODEL);
-                    GPU_LoadIdentity();
-                    float xCenter, yCenter;
-                    xCenter = transform.Position.x + (transform.Scale.x * Renderer::unitSize / 2);
-                    yCenter = transform.Position.y + (transform.Scale.y * Renderer::unitSize / 2);
-                    GPU_Translate(xCenter, yCenter, 0);
-                    GPU_Translate(0, 0, transform.Position.z);
-                    GPU_MultiplyAndAssign(GPU_GetCurrentMatrix(), glm::value_ptr(transform.GetRotation()));
-                    GPU_Scale(1, 1, Renderer::unitSize * transform.Scale.z);
-                    GPU_Translate(-xCenter, -yCenter, 0);
-                    GPU_MatrixCopy(GPU_GetModel(), GPU_GetCurrentMatrix());
-                    Renderer::DrawFilledRect(transform.Position.x, -transform.Position.y, (float) transform.Scale.x * Renderer::unitSize, (float) transform.Scale.y * Renderer::unitSize, 0, sprite.Color);
-                }
+            for_each(std::execution::par, group.begin(), group.end(), [&](auto gameobject){
+                auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(gameobject);
+                    Renderer2D::DrawQuad(transform.GetTransform(), sprite.Color);
                 });
         }
 
@@ -169,72 +96,31 @@ namespace EpicGameEngine
             for_each(std::execution::par, view.begin(), view.end(), [&](auto gameobject){
                 auto& transform = view.get<TransformComponent>(gameobject);
                 auto& lec = view.get<LightEmitterComponent>(gameobject);
-                Application::Get().lightingSystem->RenderAt(transform.Position, lec.lightRadius);
+                // Application::Get().lightingSystem->RenderAt(transform.Position, lec.lightRadius);
             });
         }
+        Renderer2D::EndScene();
     }
 
     void Scene::OnEditorUpdate(Timestep ts, EditorCamera& camera)
     {
-        GPU_SetActiveTarget(Renderer::target);
-        GPU_SetCamera(Renderer::target, nullptr);
-        Renderer::target->use_camera = false;
-        GPU_MatrixMode(Renderer::target, GPU_PROJECTION);
-        GPU_LoadIdentity();
-        GPU_MatrixCopy(GPU_GetProjection(), glm::value_ptr(camera.GetProjectionMatrix()));
-        GPU_MatrixMode(Renderer::target, GPU_VIEW);
-        GPU_LoadIdentity();
-        GPU_MatrixCopy(GPU_GetView(), glm::value_ptr(camera.GetViewMatrix()));
-        GPU_MatrixMode(Renderer::target, GPU_MODEL);
-
+        Renderer2D::BeginScene(camera);
         // TODO: Clean this up - probably put into DrawRect function
         auto group = registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
         for (auto gameobject : group)
         {
             auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(gameobject);
 
-            if(sprite.Texture.active == true)
-            {
-                Renderer::unitSize = 1.0f;
-                GPU_SetActiveTarget(Renderer::target);
-                GPU_MatrixMode(Renderer::target, GPU_MODEL);
-                GPU_LoadIdentity();
-                float xCenter, yCenter;
-                xCenter = transform.Position.x + (transform.Scale.x * Renderer::unitSize / 2);
-                yCenter = transform.Position.y + (transform.Scale.y * Renderer::unitSize / 2);
-                GPU_Translate(xCenter, yCenter, 0);
-                GPU_Translate(0, 0, transform.Position.z);
-                GPU_MultiplyAndAssign(GPU_GetCurrentMatrix(), glm::value_ptr(transform.GetRotation()));
-                GPU_Scale(1, 1, Renderer::unitSize * transform.Scale.z);
-                GPU_Translate(-xCenter, -yCenter, 0);
-                GPU_MatrixCopy(GPU_GetModel(), GPU_GetCurrentMatrix());
-                Renderer::DrawTexturedRect(transform.Position.x, -transform.Position.y, (float) transform.Scale.x * Renderer::unitSize, (float) transform.Scale.y * Renderer::unitSize, sprite.Texture, 0, sprite.Color);
-            }
-            else
-            {
-                Renderer::unitSize = 1.0f;
-                GPU_SetActiveTarget(Renderer::target);
-                GPU_MatrixMode(Renderer::target, GPU_MODEL);
-                GPU_LoadIdentity();
-                float xCenter, yCenter;
-                xCenter = transform.Position.x + (transform.Scale.x * Renderer::unitSize / 2);
-                yCenter = transform.Position.y + (transform.Scale.y * Renderer::unitSize / 2);
-                GPU_Translate(xCenter, yCenter, 0);
-                GPU_Translate(0, 0, transform.Position.z);
-                GPU_MultiplyAndAssign(GPU_GetCurrentMatrix(), glm::value_ptr(transform.GetRotation()));
-                GPU_Scale(1, 1, Renderer::unitSize * transform.Scale.z);
-                GPU_Translate(-xCenter, -yCenter, 0);
-                GPU_MatrixCopy(GPU_GetModel(), GPU_GetCurrentMatrix());
-                Renderer::DrawFilledRect(transform.Position.x, -transform.Position.y, (float) transform.Scale.x * Renderer::unitSize, (float) transform.Scale.y * Renderer::unitSize, 0, sprite.Color);
-            }
+            Renderer2D::DrawQuad(transform.GetTransform(), sprite.Color);
         }
 
         auto view = registry.view<TransformComponent, LightEmitterComponent>();
         for_each(std::execution::par, view.begin(), view.end(), [&](auto gameobject){
             auto& transform = view.get<TransformComponent>(gameobject);
             auto& lec = view.get<LightEmitterComponent>(gameobject);
-            Application::Get().lightingSystem->RenderAt(transform.Position, lec.lightRadius);
+            //Application::Get().lightingSystem->RenderAt(transform.Position, lec.lightRadius);
         });
+        Renderer2D::EndScene();
     }
 
     void Scene::OnViewportResize(uint32_t width, uint32_t height)

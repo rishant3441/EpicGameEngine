@@ -39,7 +39,8 @@
 
 // RENDERING:
 #include <EpicGameEngine/Renderer/Renderer.h>
-#include <EpicGameEngine/Renderer/Camera/CameraController.h>
+#include <EpicGameEngine/Renderer/Renderer2D.h>
+#include <EpicGameEngine/Renderer/Texture.h>
 
 // TIME
 #include <EpicGameEngine/Timestep.h>

@@ -17,3 +17,10 @@
 [submodule "EpicGameEngine/dependencies/sdl-gpu"]
 	path = EpicGameEngine/dependencies/sdl-gpu
 	url = https://github.com/rishant3441/sdl-gpu/
+[submodule "EpicGameEngine/dependencies/SDL2"]
+	path = EpicGameEngine/dependencies/SDL2
+	url = https://github.com/rishant3441/SDL.git
+	branch = SDL2
+[submodule "EpicGameEngine/dependencies/glew-cmake"]
+	path = EpicGameEngine/dependencies/glew-cmake
+	url = https://github.com/Perlmint/glew-cmake

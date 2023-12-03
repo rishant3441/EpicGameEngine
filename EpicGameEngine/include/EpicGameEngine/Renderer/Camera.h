@@ -1,17 +1,17 @@
 //
-// Created by Rishan Thangaraj on 7/19/2022.
+// Created by Rishan Thangaraj on 3/26/2023.
 //
-// Copyright (c) 2022, Rishan Thangaraj <rishanthangaraj@gmail.com> All rights reserved.
+// Copyright (c) 2023, Rishan Thangaraj <rishanthangaraj@gmail.com> All rights reserved.
 // SPDX-License-Identifier: MIT
 //
 
 #pragma once
 
 #include <glm/glm.hpp>
-#include <EpicGameEngine/Events/Event.h>
-#include <EpicGameEngine/Events/InputEvent.h>
+#include <EpicGameEngine/ege_pch.h>
+
+#include <EpicGameEngine/Input/Input.h>
 #include <EpicGameEngine/Timestep.h>
-#include <EpicGameEngine/Debug.h>
 
 namespace EpicGameEngine
 {
@@ -21,7 +21,7 @@ namespace EpicGameEngine
         Camera() = default;
 
         Camera(const glm::mat4& newProjection)
-            : projection(newProjection)
+                : projection(newProjection)
         {}
         virtual ~Camera() = default;
 
@@ -103,10 +103,6 @@ namespace EpicGameEngine
         EditorCamera() = default;
         EditorCamera(float fov, float aspectRatio, float nearClip, float farClip);
 
-        void OnUpdate(Timestep ts);
-        // TODO: On Event
-        void OnEvent(std::shared_ptr<Event> e);
-
         inline void SetViewportSize(float width, float height)
         {
             viewportWidth = width;
@@ -129,7 +125,7 @@ namespace EpicGameEngine
             return projection;
         }
 
-        const glm::mat4 GetViewProjectionMatrix() const { return viewMatrix * projection; }
+        glm::mat4 GetViewProjectionMatrix() const { return projection * viewMatrix; }
 
         const glm::vec3& GetPosition() const
         {
@@ -150,6 +146,10 @@ namespace EpicGameEngine
         glm::vec3 GetRightDirection() const;
         glm::vec3 GetUpDirection() const;
         glm::quat GetOrientation() const;
+        bool OnMouseScroll(MouseScrolledEvent& e);
+
+        void OnUpdate(Timestep timestep);
+        void OnEvent(std::shared_ptr<Event> e);
 
     private:
 
@@ -157,10 +157,10 @@ namespace EpicGameEngine
         void UpdateView();
         void MouseZoom(float delta);
         void MousePan(const glm::vec2& delta);
+        void MouseRotate(const glm::vec2& delta);
 
         float ZoomSpeed();
         std::pair<float, float> PanSpeed() const;
-        bool OnMouseScroll(MouseScrolledEvent& e);
 
 
         float fov = 45.0f, aspectRatio = 1.778f, nearClip = 0.1f, farClip = 1000.0f;
@@ -178,4 +178,3 @@ namespace EpicGameEngine
 
     };
 }
-

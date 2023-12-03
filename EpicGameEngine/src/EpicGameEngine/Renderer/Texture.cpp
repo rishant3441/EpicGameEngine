@@ -1,34 +1,36 @@
-//
-// Created by Rishan Thangaraj on 7/7/2022.
-//
-// Copyright (c) 2022, Rishan Thangaraj <rishanthangaraj@gmail.com> All rights reserved.
-// SPDX-License-Identifier: MIT
-//
-
+#include <EpicGameEngine/Renderer/RendererAPI.h>
 #include <EpicGameEngine/Renderer/Texture.h>
-#include <EpicGameEngine/ege_pch.h>
-#include <EpicGameEngine/Debug.h>
-#include <EpicGameEngine/CoreLib/Result.h>
-#include <SDL_gpu.h>
+#include <EpicGameEngine/Renderer/OpenGL/OpenGLTexture.h>
 
-namespace EpicGameEngine
-{
-    /// Loads an image from the filepath. Returns non-zero if the file doesn't load properly.
-    int Texture::LoadImage(const std::string& filePath)
+namespace EpicGameEngine {
+
+    Ref<Texture2D> Texture2D::Create(const TextureSpecification& specification)
     {
-        GPU_SetDebugLevel(GPU_DEBUG_LEVEL_MAX);
-        Debug::Log::LogInfo("Image creation");
-        GPU_CreateImage(32, 32, GPU_FORMAT_RGBA);
-        texture = GPU_LoadImage(filePath.c_str());
-        if (texture != nullptr)
+
+        RendererAPI::Backend currBackend = RendererAPI::GetBackend();
+        switch (currBackend)
         {
-            active = true;
-            return 0;
+            case RendererAPI::Backend::None:
+                std::cout << "None not implemented!" << std::endl;
+                break;
+            case RendererAPI::Backend::OpenGL:
+                return std::make_shared<OpenGLTexture2D>(specification);
         }
-        else
-        {
-            Debug::Log::LogError("TEXTURE: LoadImage() returned nullptr: {}", filePath);
-            return -1;
-        }
+        return nullptr;
     }
+
+    Ref<Texture2D> Texture2D::Create(const std::string& path)
+    {
+        RendererAPI::Backend currBackend = RendererAPI::GetBackend();
+        switch (currBackend)
+        {
+            case RendererAPI::Backend::None:
+                std::cout << "None not implemented!" << std::endl;
+                break;
+            case RendererAPI::Backend::OpenGL:
+                return std::make_shared<OpenGLTexture2D>(path);
+        }
+        return nullptr;
+    }
+
 }

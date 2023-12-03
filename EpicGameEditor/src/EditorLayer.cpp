@@ -1,6 +1,5 @@
 #include "EditorLayer.h"
 #include <imgui.h>
-#include <SDL_gpu_OpenGL_4.h>
 #include <cassert>
 
 #include <EpicGameEngine/PlatformUtils.h>
@@ -9,6 +8,9 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
+
+#include <EpicGameEngine/ege_pch.h>
+#include <EpicGameEngine/Debug.h>
 
 
 namespace EpicGameEngine
@@ -33,15 +35,6 @@ namespace EpicGameEngine
         activeScene = std::make_shared<EpicGameEngine::Scene>();
         editorCamera = EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
 
-        // Sets camera viewport
-        viewportSize.x = 1024;
-        viewportSize.y = 576;
-        activeScene->viewportSize.x = 1024;
-        activeScene->viewportSize.y = 576;
-        editorCamera.SetViewportSize(activeScene->viewportSize.x, activeScene->viewportSize.y);
-
-        // Sets renderer to render to a texture
-		Renderer::ToggleDrawingToTexture();
 
 // Testing Example
 #if 0
@@ -125,11 +118,23 @@ namespace EpicGameEngine
 
 	EditorLayer::~EditorLayer()
 	{
-		GPU_FreeImage(Renderer::texture);
 	}
 
 	void EditorLayer::OnUpdate(Timestep time)
     {
+        // Updates camera viewport if the size changes
+        if (FramebufferSpecification spec = frameBuffer->GetSpecification(); viewportSize.x > 0.0f && viewportSize.y > 0.0f &&
+                                                                             (spec.Width != viewportSize.x || spec.Height != viewportSize.y))
+        {
+            frameBuffer->Resize((uint32_t) viewportSize.x, (uint32_t) viewportSize.y);
+            editorCamera.SetViewportSize(viewportSize.x, viewportSize.y);
+        }
+
+        frameBuffer->Bind();
+        Renderer::SetClearColor({ 0.0f, 0.0f, 0.0f, 1.0f});
+        Renderer::Clear();
+
+        frameBuffer->ClearAttachment(1, -1);
 
         // Renders based on SceneState
         switch (sceneState)
@@ -143,14 +148,7 @@ namespace EpicGameEngine
                 break;
         }
 
-        // Updates camera viewport if the size changes
-        if (Renderer::target->w != viewportSize.x || Renderer::target->h != viewportSize.y)
-        {
-            Renderer::target->w = viewportSize.x;
-            Renderer::target->h = viewportSize.y;
-            editorCamera.SetViewportSize(viewportSize.x, viewportSize.y);
-            activeScene->OnViewportResize(viewportSize.x, viewportSize.y);
-        }
+        frameBuffer->Unbind();
 	}
 	void EditorLayer::OnImGuiRender()
 	{
@@ -263,10 +261,10 @@ namespace EpicGameEngine
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0.0f, 0.0f});
 			// TODO: Disallow focusing the viewport and hovering effects
 			ImGui::Begin("Viewport");
-			void* textureID = (void*) GPU_GetTextureHandle(Renderer::viewport);
+			uint64_t textureID = frameBuffer->GetColorAttachmentRendererID();
 			ImVec2 imGuiViewportSize = ImGui::GetContentRegionAvail();
 			viewportSize = { imGuiViewportSize.x, imGuiViewportSize.y };
-			ImGui::Image(textureID, ImVec2{ static_cast<float>(viewportSize.x), static_cast<float>(viewportSize.y) });
+			ImGui::Image(reinterpret_cast<void*>(textureID), ImVec2{ static_cast<float>(viewportSize.x), static_cast<float>(viewportSize.y) }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 
 			GameObject selectedGameObject = gameObjectsPanel.GetSelectedGameObject();
             if (selectedGameObject.operator bool())
@@ -350,7 +348,7 @@ namespace EpicGameEngine
         float size = ImGui::GetWindowHeight() - 4.0f;
         Ref<Texture> icon = (sceneState == SceneState::Edit) ? playIcon : stopIcon;
         ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size - 0.5f));
-        if (ImGui::ImageButton((ImTextureID)icon->GetTextureHandle(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.0f, 0.0f, 0.0f)))
+        if (ImGui::ImageButton((ImTextureID)icon->GetRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.0f, 0.0f, 0.0f)))
         {
             if (sceneState == SceneState::Edit)
             {
@@ -369,11 +367,19 @@ namespace EpicGameEngine
 
     void EditorLayer::DefferedOnAttach()
     {
+        // Sets camera viewport
+        FramebufferSpecification spec;
+        spec.Width = 1024;
+        spec.Height = 576;
+        spec.attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RED_INTEGER, FramebufferTextureFormat::Depth };
+        frameBuffer = Framebuffer::Create(spec);
+
+        editorCamera.SetViewportSize(1024, 576);
+
+        playIcon = Texture2D::Create("resources/icons/PlayButton.png");
+        stopIcon = Texture2D::Create("resources/icons/StopButton.png");
         // Loads images here due to the
         // renderer not being initialized
-        playIcon->LoadImage("resources/icons/PlayButton.png");
-        stopIcon->LoadImage("resources/icons/StopButton.png");
-
         // Serializes any scene passed in as an argument
         if (argCount > 1)
         {

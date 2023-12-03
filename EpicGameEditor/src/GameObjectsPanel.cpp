@@ -331,17 +331,12 @@ namespace EpicGameEngine
 
         DrawComponent<SpriteRendererComponent>("Sprite Renderer", selection, [](auto& component)
         {
-            float color[4] = { static_cast<float>((float) component.Color.r / 255.0f), static_cast<float>((float) component.Color.g / 255.0f), static_cast<float>((float) component.Color.b / 255.0f), static_cast<float>((float) component.Color.a / 255.0f)};
-            ImGui::ColorEdit4("Color", color);
+            ImGui::ColorEdit4("Color", glm::value_ptr(component.Color));
 
-            component.Color.r = color[0] * 255.0;
-            component.Color.g = color[1] * 255.0;
-            component.Color.b = color[2] * 255.0;
-            component.Color.a = color[3] * 255.0;
             if (ImGui::Button("Select File"))
             {
                std::string filePath = FileDialogs::OpenFile("PNG Image File (*.png)\0*.png\0");
-               component.Texture.LoadImage(filePath);
+               component.Texture = Texture2D::Create(filePath);
             }
         });
 

@@ -16,10 +16,15 @@
 #include <cassert>
 #include <thread>
 #include <atomic>
+#include <stdexcept>
+#include <strstream>
+#include <sstream>
 #include <algorithm>
 #include <execution>
 #include <random>
+#include <initializer_list>
 #include <SDL.h>
-#include <SDL_gpu.h>
+#include <glew.h>
+#include <SDL_opengl.h>
 #include <glm/glm.hpp>
 #include "Core.h"

@@ -44,12 +44,7 @@ namespace EpicGameEngine
         io.FontDefault = io.Fonts->AddFontFromFileTTF("assets/fonts/opensans/OpenSans-Regular.ttf", 18.0f);
 
         // Set Rendering to either a framebuffer or the screen
-        if (Renderer::enableDrawingToTexture)
-            ImGui_ImplSDL2_InitForOpenGL(WindowsWindow::window, Renderer::window->context->context);
-        else
-        {
-            ImGui_ImplSDL2_InitForOpenGL(WindowsWindow::window, SDL_GL_GetCurrentContext());
-        }
+        ImGui_ImplSDL2_InitForOpenGL(WindowsWindow::window, SDL_GL_GetCurrentContext());
 
         ImGui_ImplOpenGL3_Init("#version 430 core");
     }
@@ -62,8 +57,8 @@ namespace EpicGameEngine
     }
     void ImGuiLayer::BeginFrame()
     {
-        ImGui_ImplSDL2_NewFrame();
         ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplSDL2_NewFrame();
 
         ImGui::NewFrame();
         // Transformation Guizmos
@@ -76,20 +71,10 @@ namespace EpicGameEngine
     void ImGuiLayer::EndFrame()
     {
         // ImGui Rendering Code
-        if (Renderer::enableDrawingToTexture)
-            GPU_SetActiveTarget(Renderer::window);
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         SDL_Window* backup_current_window = WindowsWindow::window;
-        SDL_GLContext backup_current_context;
-        if (Renderer::enableDrawingToTexture)
-        {
-            backup_current_context = SDL_GL_GetCurrentContext();
-        }
-        else
-        {
-            backup_current_context = SDL_GL_GetCurrentContext();
-        }
+        SDL_GLContext backup_current_context = SDL_GL_GetCurrentContext();
 		ImGui::UpdatePlatformWindows();
 		ImGui::RenderPlatformWindowsDefault();
 		SDL_GL_MakeCurrent(backup_current_window, backup_current_context);

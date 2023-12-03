@@ -302,7 +302,7 @@ namespace EpicGameEngine
                 if (spriteRendererComponent)
                 {
                     auto& src = deserializedGameObject.AddComponent<SpriteRendererComponent>();
-                    src.Color = spriteRendererComponent["Color"].as<SDL_Color>();
+                    src.Color = spriteRendererComponent["Color"].as<glm::vec4>();
                 }
             }
         }

@@ -6,7 +6,6 @@
 #include <EpicGameEngine/Events/Event.h>
 #include <EpicGameEngine/Input/Input.h>
 #include <EpicGameEngine/ImGui/ImGuiLayer.h>
-#include <EpicGameEngine/Renderer/Lighting/Lighting.h>
 #include <EpicGameEngine/Timestep.h>
 #include <EpicGameEngine/ege_pch.h>
 #include <EpicGameEngine/CoreLib/CoreLib.h>
@@ -48,8 +47,6 @@ namespace EpicGameEngine
 		CoreLib::RNG randomGen;
 
 		ImGuiLayer* m_ImGuiLayer;
-
-		Lighting* lightingSystem;
 
 		// Allocators
 		CoreLib::BumpAllocator MainAllocator = CoreLib::BumpAllocator(1024 * 1024);

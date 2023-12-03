@@ -7,9 +7,8 @@
 
 #pragma once
 #include <EpicGameEngine/ege_pch.h>
-#include <EpicGameEngine/Renderer/Texture.h>
 #include <EpicGameEngine/GameObjects/GameObject.h>
-#include <EpicGameEngine/Renderer/Camera/Camera.h>
+#include <EpicGameEngine/Renderer/Camera.h>
 #include <EpicGameEngine/UUID.h>
 
 #include <glm/glm.hpp>
@@ -17,6 +16,7 @@
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
+#include <EpicGameEngine/Renderer/Texture.h>
 
 namespace EpicGameEngine
 {
@@ -66,7 +66,7 @@ namespace EpicGameEngine
         {
             return glm::toMat4(glm::quat(Rotation));
         }
-        [[nodiscard]] glm::mat4 GetTransform() const
+        [[nodiscard]] const glm::mat4 GetTransform() const
         {
             glm::mat4 rotation = glm::toMat4(glm::quat(Rotation));
 
@@ -78,12 +78,12 @@ namespace EpicGameEngine
 
     struct SpriteRendererComponent
     {
-        SDL_Color Color{255, 255, 255, 255};
-        Texture Texture;
+        glm::vec4 Color{255, 255, 255, 255};
+        Ref<Texture2D> Texture;
 
         SpriteRendererComponent() = default;
         SpriteRendererComponent(const SpriteRendererComponent&) = default;
-        SpriteRendererComponent(const SDL_Color& color)
+        SpriteRendererComponent(const glm::vec4& color)
             : Color(color)
         {}
     };

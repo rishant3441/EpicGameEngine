@@ -36,6 +36,5 @@ namespace EpicGameEngine
 	public:
         // Renderer Targets
 		inline static SDL_Window* window;
-		inline static GPU_Target* target;
 	};
 }
