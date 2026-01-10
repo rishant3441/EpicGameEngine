@@ -27,7 +27,7 @@ namespace CoreLib
         BumpAllocator(size_t size = 1024)
         {
            pool = BumpMemPool();
-            realloc(size);
+           realloc(size);
         }
 
         BumpAllocator(BumpMemPool& newPool, size_t size = 1024)

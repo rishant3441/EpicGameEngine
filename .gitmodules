@@ -24,3 +24,6 @@
 [submodule "EpicGameEngine/dependencies/glew-cmake"]
 	path = EpicGameEngine/dependencies/glew-cmake
 	url = https://github.com/Perlmint/glew-cmake
+[submodule "EpicGameEngine/dependencies/assimp"]
+	path = EpicGameEngine/dependencies/assimp
+	url = https://github.com/assimp/assimp

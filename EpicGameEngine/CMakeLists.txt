@@ -75,6 +75,7 @@ target_link_libraries(EpicGameEngine PUBLIC IMGUI)
 target_link_libraries(EpicGameEngine PUBLIC libglew_static)
 target_link_libraries(EpicGameEngine PUBLIC yaml-cpp)
 target_link_libraries(EpicGameEngine PUBLIC ImGuizmo)
+target_link_libraries(EpicGameEngine PUBLIC assimp)
 target_link_libraries(EpicGameEngine PUBLIC ${MONO_LIBRARY})
 target_link_libraries(EpicGameEngine PUBLIC OpenMP::OpenMP_CXX)
 
