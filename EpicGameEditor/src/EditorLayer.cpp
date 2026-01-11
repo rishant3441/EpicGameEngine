@@ -128,6 +128,7 @@ namespace EpicGameEngine
         {
             frameBuffer->Resize((uint32_t) viewportSize.x, (uint32_t) viewportSize.y);
             editorCamera.SetViewportSize(viewportSize.x, viewportSize.y);
+            activeScene->OnViewportResize(viewportSize.x, viewportSize.y);
         }
 
         frameBuffer->Bind();
@@ -281,25 +282,54 @@ namespace EpicGameEngine
 			    auto cameraTransform = cameraGameObject.GetComponent<TransformComponent>();
 			    glm::mat4 cameraProjection = glm::perspective(glm::radians(cameraC.Camera.perspectiveVerticalFOV), cameraC.Camera.aspectRatio, cameraC.Camera.perspectiveNear, cameraC.Camera.perspectiveFar);
 */
+                glm::mat4 cameraProjection;
+                glm::mat4 cameraView;
+                bool hasCamera = true;
+
+                if (sceneState == SceneState::Play)
+                {
+                    auto cameraGameObject = activeScene->GetPrimaryCamera();
+                    if (!cameraGameObject)
+                    {
+                        hasCamera = false;
+                    }
+                    else
+                    {
+                        const auto& cameraC = cameraGameObject.GetComponent<CameraComponent>();
+                        cameraProjection = cameraC.Camera.GetProjection();
+                        cameraView = glm::inverse(cameraGameObject.GetComponent<TransformComponent>().GetTransform());
+                    }
+                }
+                else
+                {
+                    cameraProjection = editorCamera.GetProjectionMatrix();
+                    cameraView = editorCamera.GetViewMatrix();
+                }
+
+			    /* 
 			    const glm::mat4& cameraProjection = editorCamera.GetProjectionMatrix();
 			    const glm::mat4& cameraView = editorCamera.GetViewMatrix();
+                */
 
-                auto& tc = selectedGameObject.GetComponent<TransformComponent>();
-                glm::mat4 transform = tc.GetTransform();
+                if (hasCamera)
+                {
+                    auto& tc = selectedGameObject.GetComponent<TransformComponent>();
+                    glm::mat4 transform = tc.GetTransform();
 
 
-                ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection), ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::WORLD, glm::value_ptr(transform));
-                //ImGuizmo::ViewManipulate(glm::value_ptr(cameraView), 8.0f, ImVec2(0, 0), ImVec2(10, 10), ImColor(255, 0, 0, 255));
-                glm::vec3 Position = { 0, 0, -2 };
-                glm::vec3 Rotation = { 0, 0, 0 };
-                glm::vec3 Scale = { 1000, 1000, 1000 };
-                cubeTransform = glm::translate(glm::mat4{1.0f}, Position) * glm::toMat4(glm::quat(Rotation)) * glm::scale(glm::mat4{1.0f}, Scale);
-                //ImGuizmo::DrawCubes(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection), glm::value_ptr(cubeTransform), 1);
+                    ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection), ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::WORLD, glm::value_ptr(transform));
+                    //ImGuizmo::ViewManipulate(glm::value_ptr(cameraView), 8.0f, ImVec2(0, 0), ImVec2(10, 10), ImColor(255, 0, 0, 255));
+                    glm::vec3 Position = { 0, 0, -2 };
+                    glm::vec3 Rotation = { 0, 0, 0 };
+                    glm::vec3 Scale = { 1000, 1000, 1000 };
+                    cubeTransform = glm::translate(glm::mat4{1.0f}, Position) * glm::toMat4(glm::quat(Rotation)) * glm::scale(glm::mat4{1.0f}, Scale);
+                    //ImGuizmo::DrawCubes(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection), glm::value_ptr(cubeTransform), 1);
 
-			    if (ImGuizmo::IsUsing())
-			    {
-			        tc.Position = (glm::vec3(transform[3]));
-			    }
+                    if (ImGuizmo::IsUsing())
+                    {
+                        tc.Position = (glm::vec3(transform[3]));
+                    }
+                }
 
 			}
 
